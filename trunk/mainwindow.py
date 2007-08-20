@@ -19,11 +19,11 @@ class MainWindow:
         
         nameRenderer = gtk.CellRendererText()
         nameRenderer.set_property('editable', True)
-        nameRenderer.connect('edited', self.contactEditedCb, 0)
+        nameRenderer.connect('edited', self.__contactEditedCb, 0)
         
         nrRenderer = gtk.CellRendererText()
         nrRenderer.set_property('editable', True)
-        nrRenderer.connect('edited', self.contactEditedCb, 1)
+        nrRenderer.connect('edited', self.__contactEditedCb, 1)
         
         nameColumn  = gtk.TreeViewColumn("Name", nameRenderer, text = 0)
         nrColumn    = gtk.TreeViewColumn("Phone number", nrRenderer, text = 1)
@@ -39,9 +39,7 @@ class MainWindow:
         self.__contactList = contacts.ContactList()
         self.__contactList.load()
         
-        self.__contactListBeingEdited = {}
-        for k in self.__contactList.contacts.keys():
-            self.__contactListBeingEdited[k] = self.__contactList.contacts[k]
+        self.__contactListBeingEdited = self.__cloneDict(self.__contactList.contacts)
         
         self.__updateContactStore()
         self.__recipientBox.set_active(0)
@@ -57,15 +55,10 @@ class MainWindow:
         
     def __showManageContactsDialog(self, widget):
         if  self.__manageContactsDialog.run() == 1:
-            self.__contactList.contacts = {}
-            for k in self.__contactListBeingEdited.keys():
-                self.__contactList.contacts[k] = self.__contactListBeingEdited[k]
+            self.__contactList.contacts = self.__cloneDict(self.__contactListBeingEdited)
             self.__contactList.save()
         else:
-            print 'dont save'
-            self.__contactListBeingEdited = {}
-            for k in self.__contactList.contacts.keys():
-                self.__contactListBeingEdited[k] = self.__contactList.contacts[k]
+            self.__contactListBeingEdited = self.__cloneDict(self.__contactList.contacts)
             self.__updateContactStore()
                 
         self.__manageContactsDialog.hide()
@@ -109,7 +102,7 @@ class MainWindow:
                 self.__updateContactStore()
                 self.__contactsView.set_cursor(path)
                 
-    def contactEditedCb(self, cell, path, newText, column):
+    def __contactEditedCb(self, cell, path, newText, column):
         iter        = self.__contactlistStore.iter_nth_child(None, int(path))
         currentName = self.__contactlistStore.get_value(iter, 0)
         
@@ -122,3 +115,11 @@ class MainWindow:
             
         self.__updateContactStore()
         self.__contactsView.set_cursor(path)
+
+    def __cloneDict(self, otherDict):
+        newDict = {}
+        for k in otherDict.keys():
+            newDict[k] = otherDict[k]
+            
+        return newDict
+        
