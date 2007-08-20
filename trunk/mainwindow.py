@@ -17,11 +17,16 @@ class MainWindow:
 
         self.__contactsView.set_model(self.__contactlistStore)
         
-        renderer    = gtk.CellRendererText()
-        renderer.editable = True
+        nameRenderer = gtk.CellRendererText()
+        nameRenderer.set_property('editable', True)
+        nameRenderer.connect('edited', self.contactEditedCb, 0)
         
-        nameColumn  = gtk.TreeViewColumn("Name", renderer, text = 0)
-        nrColumn    = gtk.TreeViewColumn("Phone number", renderer, text = 1)
+        nrRenderer = gtk.CellRendererText()
+        nrRenderer.set_property('editable', True)
+        nrRenderer.connect('edited', self.contactEditedCb, 1)
+        
+        nameColumn  = gtk.TreeViewColumn("Name", nameRenderer, text = 0)
+        nrColumn    = gtk.TreeViewColumn("Phone number", nrRenderer, text = 1)
         
         self.__recipientBox.set_model(self.__contactlistStore)
         self.__contactsView.append_column(nameColumn)
@@ -33,6 +38,11 @@ class MainWindow:
                         
         self.__contactList = contacts.ContactList()
         self.__contactList.load()
+        
+        self.__contactListBeingEdited = {}
+        for k in self.__contactList.contacts.keys():
+            self.__contactListBeingEdited[k] = self.__contactList.contacts[k]
+        
         self.__updateContactStore()
         self.__recipientBox.set_active(0)
         
@@ -46,19 +56,28 @@ class MainWindow:
         self.__mainWindow.show()
         
     def __showManageContactsDialog(self, widget):
-        if  self.__manageContactsDialog.run() == 1:     
+        if  self.__manageContactsDialog.run() == 1:
+            self.__contactList.contacts = {}
+            for k in self.__contactListBeingEdited.keys():
+                self.__contactList.contacts[k] = self.__contactListBeingEdited[k]
             self.__contactList.save()
+        else:
+            print 'dont save'
+            self.__contactListBeingEdited = {}
+            for k in self.__contactList.contacts.keys():
+                self.__contactListBeingEdited[k] = self.__contactList.contacts[k]
+            self.__updateContactStore()
                 
         self.__manageContactsDialog.hide()
             
     def __updateContactStore(self, widget = 0):
         self.__contactlistStore.clear()
         
-        contactNames = self.__contactList.contacts.keys()
+        contactNames = self.__contactListBeingEdited.keys()
         contactNames.sort()
         
         for contactName in contactNames:
-            self.__contactlistStore.append((contactName, self.__contactList.contacts[contactName]))
+            self.__contactlistStore.append((contactName, self.__contactListBeingEdited[contactName]))
 
     def __sendSMS(self, widget):
         textBuffer = self.__inputField.get_buffer()
@@ -67,25 +86,39 @@ class MainWindow:
         message = textBuffer.get_text(textBuffer.get_start_iter(), textBuffer.get_end_iter())
         phoneNr = listStore[self.__recipientBox.get_active()][1]
         
-        #phone = mobilephone.MobilePhone(mobilephone.BluetoothDevice("00:16:DB:67:D3:DA", 5))
-        #phone.sendSMS(message, phoneNr)
+        phone = mobilephone.MobilePhone(mobilephone.BluetoothDevice("00:16:DB:67:D3:DA", 5, "Serial device"))
+        phone.sendSMS(message, phoneNr)
         
     def __importContacts(self, widget):
         phone = mobilephone.MobilePhone(mobilephone.BluetoothDevice("00:16:DB:67:D3:DA", 5, "Serial device"))
         contacts = phone.getContacts()
         
         for contact in contacts:
-            self.__contactList.addContact(contact)
+            self.__contactListBeingEdited[contact.name] = contact.phoneNumber
             
         self.__updateContactStore()
         
     def __contacsViewKeyReleased(self, widget, event):
-        if event.type == gtk.gdk.KEY_RELEASE and event.keyval == 65535:
+        if event.type == gtk.gdk.KEY_RELEASE and event.keyval == 65535: #escape key
             (path, column) = self.__contactsView.get_cursor()
-            iter = self.__contactlistStore.iter_nth_child(None, path[0])
-            nameToDelete = self.__contactlistStore.get_value(iter, 0)
-            del self.__contactList.contacts[nameToDelete]
-            
-            self.__updateContactStore()
-            self.__contactsView.set_cursor(path)
+            if path != None:
+                iter = self.__contactlistStore.iter_nth_child(None, path[0])
+                nameToDelete = self.__contactlistStore.get_value(iter, 0)
+                del self.__contactListBeingEdited[nameToDelete]
+                
+                self.__updateContactStore()
+                self.__contactsView.set_cursor(path)
+                
+    def contactEditedCb(self, cell, path, newText, column):
+        iter        = self.__contactlistStore.iter_nth_child(None, int(path))
+        currentName = self.__contactlistStore.get_value(iter, 0)
         
+        if column == 0:
+            del self.__contactListBeingEdited[currentName]
+            currentNr = self.__contactlistStore.get_value(iter, 1)
+            self.__contactListBeingEdited[newText] = currentNr
+        else:
+            self.__contactListBeingEdited[currentName] = newText
+            
+        self.__updateContactStore()
+        self.__contactsView.set_cursor(path)
