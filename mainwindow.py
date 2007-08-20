@@ -25,11 +25,11 @@ class MainWindow:
         nrRenderer.set_property('editable', True)
         nrRenderer.connect('edited', self.__contactEditedCb, 1)
         
-        nameColumn  = gtk.TreeViewColumn("Name", nameRenderer, text = 0)
+        self.__nameColumn  = gtk.TreeViewColumn("Name", nameRenderer, text = 0)
         nrColumn    = gtk.TreeViewColumn("Phone number", nrRenderer, text = 1)
         
         self.__recipientBox.set_model(self.__contactlistStore)
-        self.__contactsView.append_column(nameColumn)
+        self.__contactsView.append_column(self.__nameColumn)
         self.__contactsView.append_column(nrColumn)
         
         cell = gtk.CellRendererText()
@@ -48,7 +48,8 @@ class MainWindow:
                'onManageContactsActivated'      : self.__showManageContactsDialog,
                'onSendButtonClicked'            : self.__sendSMS,
                'onImportFromPhoneClicked'       : self.__importContacts,
-               'onContactsViewKeyReleased'      : self.__contacsViewKeyReleased}
+               'onContactsViewKeyReleased'      : self.__contacsViewKeyReleased,
+               'onNewClicked'                   : self.__addContactRow}
                
         self.__widgetTree.signal_autoconnect(dic)
         self.__mainWindow.show()
@@ -92,7 +93,7 @@ class MainWindow:
         self.__updateContactStore()
         
     def __contacsViewKeyReleased(self, widget, event):
-        if event.type == gtk.gdk.KEY_RELEASE and event.keyval == 65535: #escape key
+        if event.type == gtk.gdk.KEY_RELEASE and event.keyval == gtk.keysyms.Delete:
             (path, column) = self.__contactsView.get_cursor()
             if path != None:
                 iter = self.__contactlistStore.iter_nth_child(None, path[0])
@@ -115,6 +116,12 @@ class MainWindow:
             
         self.__updateContactStore()
         self.__contactsView.set_cursor(path)
+        
+    def __addContactRow(self, widget):
+        self.__contactListBeingEdited[''] = ''
+        
+        self.__updateContactStore()
+        self.__contactsView.set_cursor(0, focus_column = self.__nameColumn, start_editing = True)
 
     def __cloneDict(self, otherDict):
         newDict = {}
