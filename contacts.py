@@ -10,8 +10,9 @@ class Contact:
         return self.name + " - " + self.phoneNumber
 
 class ContactList:
-    contacts = {}
-    
+    def __init__(self):
+        self.contacts = {}
+                
     def addContact(self, contact):
         self.contacts[contact.name] = contact.phoneNumber
         
@@ -30,4 +31,11 @@ class ContactList:
             self.contacts = pickle.load(file)
         except:
             self.contacts = {}
+            
+    def __str__(self):
+        contactString = ""
+        for contact in self.contacts:
+            contactString += contact + " - " + self.contacts[contact] + "\n"
+            
+        return contactString
 
