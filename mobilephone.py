@@ -3,20 +3,19 @@ import bluetooth
 import contacts
 
 class BluetoothDevice:
-    def __init__(self, address, port, serviceName):
-        self.serviceName = serviceName
+    def __init__(self, address, port, name):
         self.address = address
         self.port = port
+        self.name = name
 
 class BluetoothDiscovery:
     def findSerialDevices(self):
         services = bluetooth.find_service( name = "Bluetooth Serial Port", uuid = bluetooth.SERIAL_PORT_CLASS )
-        
         devices = []
         for service in services:
-            devices.append(BluetoothDevice(service["host"], service["port"], service["name"]))
+            devices.append(BluetoothDevice(service["host"], service["port"], bluetooth.lookup_name(service["host"])))
         return devices
-        
+
 class MobilePhone:
     def __init__(self, device):
         self.sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
