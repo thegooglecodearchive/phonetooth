@@ -55,5 +55,11 @@ class MainWindow:
         message = textBuffer.get_text(textBuffer.get_start_iter(), textBuffer.get_end_iter())
         phoneNr = listStore[self.__recipientBox.get_active()][1]
         
-        phone = mobilephone.MobilePhone(mobilephone.BluetoothDevice("00:16:DB:67:D3:DA", 5, "Serial device"))
-        phone.sendSMS(message, phoneNr)
+        if self.__preferencesDialog.btDevice != None:
+            phone = mobilephone.MobilePhone(self.__preferencesDialog.btDevice)
+            phone.sendSMS(message, phoneNr)
+        else:
+            dialog = gtk.MessageDialog(parent = self.__mainWindow, flags = gtk.DIALOG_MODAL, type = gtk.MESSAGE_WARNING, buttons = gtk.BUTTONS_CLOSE, message_format = "You need to configure a device first.\nCheck the preferences.")
+            dialog.run()
+            dialog.destroy()
+            
