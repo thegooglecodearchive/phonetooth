@@ -12,6 +12,7 @@ class MainWindow:
         self.__mainWindow           = self.__widgetTree.get_widget('mainWindow')
         self.__recipientBox         = self.__widgetTree.get_widget('recipientBox')
         self.__inputField           = self.__widgetTree.get_widget('textView')
+        self.__charactersLabel      = self.__widgetTree.get_widget('charactersLabel')
                 
         self.__contactlistStore = gtk.ListStore(str, str)
         self.__recipientBox.set_model(self.__contactlistStore)
@@ -34,7 +35,8 @@ class MainWindow:
         dic = {'onMainWindowDestroy'            : gtk.main_quit,
                'onManageContactsActivated'      : self.__contactsDialog.run,
                'onPreferencesActivated'         : self.__preferencesDialog.run,
-               'onSendButtonClicked'            : self.__sendSMS}
+               'onSendButtonClicked'            : self.__sendSMS,
+               'onKeyPressedInMessage'          : self.__updateNrCharacters}
                
         self.__widgetTree.signal_autoconnect(dic)
         self.__mainWindow.show()
@@ -63,3 +65,7 @@ class MainWindow:
             dialog.run()
             dialog.destroy()
             
+    def __updateNrCharacters(self, widget, event):
+        if event.type == gtk.gdk.KEY_RELEASE:
+            nrCharacters = self.__inputField.get_buffer().get_char_count()
+            self.__charactersLabel.set_text('Characters: ' + str(nrCharacters))
