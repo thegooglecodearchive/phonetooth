@@ -11,9 +11,6 @@ class PreferencesDialog:
     def __init__(self, widgetTree):
         self.__preferencesDialog    = widgetTree.get_widget('preferencesDialog')
         self.__deviceSelecterBox    = widgetTree.get_widget('deviceSelecter')
-        self.__okButton             = widgetTree.get_widget('prefOkButton')
-        self.__cancelButton         = widgetTree.get_widget('prefCancelButton')
-        self.__scanButton           = widgetTree.get_widget('scanButton')
         
         self.__deviceListStore = gtk.ListStore(str, str)
         self.__deviceSelecterBox.set_model(self.__deviceListStore)
@@ -32,8 +29,6 @@ class PreferencesDialog:
         
         if self.btDevice != None:
             self.__setDevices([self.btDevice])
-        
-        gtk.gdk.threads_init()
         
     def run(self, widget):
         oldDevice = copy.copy(self.btDevice)
@@ -75,9 +70,7 @@ class PreferencesDialog:
         self.__enableButtons(True)
         
     def __enableButtons(self, enable):
-        self.__okButton.set_sensitive(enable)
-        self.__cancelButton.set_sensitive(enable)
-        self.__scanButton.set_sensitive(enable)
+        self.__preferencesDialog.set_sensitive(enable)
 
     def __saveCurrentDevice(self):
         appDir = os.path.expanduser('~') + '/.phonetooth/'

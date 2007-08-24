@@ -1,10 +1,13 @@
 import gtk
+import gobject
 import gtk.glade
 
 import contacts
 import mobilephone
 import contactsdialog
 import preferencesdialog
+import threading
+import bluetooth
 
 class MainWindow:
     def __init__(self):
@@ -15,6 +18,7 @@ class MainWindow:
         self.__charactersLabel      = self.__widgetTree.get_widget('charactersLabel')
         self.__sendButton           = self.__widgetTree.get_widget('sendButton')
         self.__aboutDialog          = self.__widgetTree.get_widget('aboutDialog')
+        self.__statusBar            = self.__widgetTree.get_widget('statusBar')
         
         self.__aboutDialog.set_name('PhoneTooth')
         self.__sendButton.set_sensitive(False)
@@ -43,8 +47,9 @@ class MainWindow:
                'onSendButtonClicked'            : self.__sendSMS,
                'onKeyPressedInMessage'          : self.__updateNrCharacters,
                'onAboutButtonClicked'           : self.__showAboutDialog}
-               
         self.__widgetTree.signal_autoconnect(dic)
+        
+        gtk.gdk.threads_init()
         self.__mainWindow.show()
         
     def __updateContactStore(self, widget = 0):
@@ -55,21 +60,31 @@ class MainWindow:
         
         for contactName in contactNames:
             self.__contactlistStore.append((contactName, self.__contactListBeingEdited[contactName]))
-
+            
     def __sendSMS(self, widget):
+        self.__mainWindow.set_sensitive(False)
+        self.__mainWindow.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        threading.Thread(target = self.__sendSMSThread).start()
+
+    def __sendSMSThread(self):
         textBuffer = self.__inputField.get_buffer()
         listStore = self.__recipientBox.get_model()
         
         message = textBuffer.get_text(textBuffer.get_start_iter(), textBuffer.get_end_iter())
         phoneNr = listStore[self.__recipientBox.get_active()][1]
         
-        if self.__preferencesDialog.btDevice != None:
-            phone = mobilephone.MobilePhone(self.__preferencesDialog.btDevice)
-            phone.sendSMS(message, phoneNr)
-        else:
-            dialog = gtk.MessageDialog(parent = self.__mainWindow, flags = gtk.DIALOG_MODAL, type = gtk.MESSAGE_WARNING, buttons = gtk.BUTTONS_CLOSE, message_format = "You need to configure a device first.\nCheck the preferences.")
-            dialog.run()
-            dialog.destroy()
+        try:
+            if self.__preferencesDialog.btDevice != None:
+                phone = mobilephone.MobilePhone(self.__preferencesDialog.btDevice)
+                phone.sendSMS(message, phoneNr)
+                self.__pushStatusText('Message succesfully sent: ' + str(e))
+            else:
+                self.__pushStatusText('You need to configure a device first. Check the preferences.')
+        except Exception, e:
+            self.__pushStatusText('Failed to send message: ' + str(e))
+            
+        self.__mainWindow.set_sensitive(True)
+        self.__mainWindow.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.LEFT_PTR))
             
     def __updateNrCharacters(self, widget, event):
         if event.type == gtk.gdk.KEY_RELEASE:
@@ -81,3 +96,7 @@ class MainWindow:
     def __showAboutDialog(self, widget, dummy):
         self.__aboutDialog.run()
         self.__aboutDialog.hide()
+        
+    def __pushStatusText(self, message):
+        self.__statusBar.push(0, message)
+    
