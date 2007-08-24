@@ -14,7 +14,9 @@ class MainWindow:
         self.__inputField           = self.__widgetTree.get_widget('textView')
         self.__charactersLabel      = self.__widgetTree.get_widget('charactersLabel')
         self.__sendButton           = self.__widgetTree.get_widget('sendButton')
+        self.__aboutDialog          = self.__widgetTree.get_widget('aboutDialog')
         
+        self.__aboutDialog.set_name('PhoneTooth')
         self.__sendButton.set_sensitive(False)
                 
         self.__contactlistStore = gtk.ListStore(str, str)
@@ -39,7 +41,8 @@ class MainWindow:
                'onManageContactsActivated'      : self.__contactsDialog.run,
                'onPreferencesActivated'         : self.__preferencesDialog.run,
                'onSendButtonClicked'            : self.__sendSMS,
-               'onKeyPressedInMessage'          : self.__updateNrCharacters}
+               'onKeyPressedInMessage'          : self.__updateNrCharacters,
+               'onAboutButtonClicked'           : self.__showAboutDialog}
                
         self.__widgetTree.signal_autoconnect(dic)
         self.__mainWindow.show()
@@ -74,3 +77,7 @@ class MainWindow:
             self.__charactersLabel.set_text('Characters: ' + str(nrCharacters))
             
             self.__sendButton.set_sensitive(nrCharacters != 0)
+            
+    def __showAboutDialog(self, widget, dummy):
+        self.__aboutDialog.run()
+        self.__aboutDialog.hide()
