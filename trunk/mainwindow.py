@@ -13,6 +13,9 @@ class MainWindow:
         self.__recipientBox         = self.__widgetTree.get_widget('recipientBox')
         self.__inputField           = self.__widgetTree.get_widget('textView')
         self.__charactersLabel      = self.__widgetTree.get_widget('charactersLabel')
+        self.__sendButton           = self.__widgetTree.get_widget('sendButton')
+        
+        self.__sendButton.set_sensitive(False)
                 
         self.__contactlistStore = gtk.ListStore(str, str)
         self.__recipientBox.set_model(self.__contactlistStore)
@@ -69,3 +72,5 @@ class MainWindow:
         if event.type == gtk.gdk.KEY_RELEASE:
             nrCharacters = self.__inputField.get_buffer().get_char_count()
             self.__charactersLabel.set_text('Characters: ' + str(nrCharacters))
+            
+            self.__sendButton.set_sensitive(nrCharacters != 0)
