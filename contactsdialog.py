@@ -3,6 +3,7 @@ import gtk.glade
 
 import contacts
 import mobilephone
+import threading
 
 class ContactsDialog:
     def __init__(self, widgetTree, contactListStore):
@@ -63,8 +64,14 @@ class ContactsDialog:
         
         for contactName in contactNames:
             self.__contactlistStore.append((contactName, contactList.contacts[contactName]))
-
+            
+    
     def __importContacts(self, widget):
+        self.__contactsDialog.set_sensitive(False)
+        self.__contactsDialog.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        threading.Thread(target = self.__importContactsThread).start()
+
+    def __importContactsThread(self):
         phone = mobilephone.MobilePhone(mobilephone.BluetoothDevice("00:16:DB:67:D3:DA", 5, "Serial device"))
         phoneContacts   = phone.getContacts()
         contactList     = self.__createContactListFromStore()
@@ -73,6 +80,8 @@ class ContactsDialog:
             contactList.contacts[contact.name] = contact.phoneNumber
             
         self.updateStoreFromContactList(contactList)
+        self.__contactsDialog.set_sensitive(True)
+        self.__contactsDialog.window.set_cursor(None)
         
     def __contacsViewKeyReleased(self, widget, event):
         if event.type == gtk.gdk.KEY_RELEASE and event.keyval == gtk.keysyms.Delete:
