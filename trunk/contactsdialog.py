@@ -12,9 +12,10 @@ class ContactsDialog:
         self.__contactsDialog       = widgetTree.get_widget('manageContactsDialog')
         self.__contactsView         = widgetTree.get_widget('contactsView')
         
-        dic = {'onImportFromPhoneClicked'       : self.__importContacts,
-               'onContactsViewKeyReleased'      : self.__contacsViewKeyReleased,
-               'onNewClicked'                   : self.__addContactRow}
+        dic = { 'onImportFromPhoneClicked'       : self.__importPhoneContacts,
+                'onImportFromSimClicked'         : self.__importSimContacts,
+                'onContactsViewKeyReleased'      : self.__contacsViewKeyReleased,
+                'onNewClicked'                   : self.__addContactRow}
                
         widgetTree.signal_autoconnect(dic)
         
@@ -66,14 +67,19 @@ class ContactsDialog:
             self.__contactlistStore.append((contactName, contactList.contacts[contactName]))
             
     
-    def __importContacts(self, widget):
+    def __importPhoneContacts(self, widget):
         self.__contactsDialog.set_sensitive(False)
         self.__contactsDialog.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
-        threading.Thread(target = self.__importContactsThread).start()
+        threading.Thread(target = self.__importContactsThread, args = ('PHONE',)).start()
+        
+    def __importSimContacts(self, widget):
+        self.__contactsDialog.set_sensitive(False)
+        self.__contactsDialog.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        threading.Thread(target = self.__importContactsThread, args = ('SIM',)).start()
 
-    def __importContactsThread(self):
+    def __importContactsThread(self, location):
         phone = mobilephone.MobilePhone(mobilephone.BluetoothDevice("00:16:DB:67:D3:DA", 5, "Serial device"))
-        phoneContacts   = phone.getContacts()
+        phoneContacts   = phone.getContacts(location)
         contactList     = self.__createContactListFromStore()
         
         for contact in phoneContacts:
