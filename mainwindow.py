@@ -77,7 +77,7 @@ class MainWindow:
             if self.__preferencesDialog.btDevice != None:
                 phone = mobilephone.MobilePhone(self.__preferencesDialog.btDevice)
                 phone.sendSMS(message, phoneNr)
-                self.__pushStatusText('Message succesfully sent: ' + str(e))
+                self.__pushStatusText('Message succesfully sent.')
             else:
                 self.__pushStatusText('You need to configure a device first. Check the preferences.')
         except Exception, e:
