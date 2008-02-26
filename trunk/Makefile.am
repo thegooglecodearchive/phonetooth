@@ -1,15 +1,15 @@
 bin_SCRIPTS = phonetooth
 
-pkgpython_PYTHON =  contacts.py \
-                    contactsdialog.py \
-                    mainwindow.py \
-                    mobilephone.py \
-                    preferencesdialog.py \
-                    constants.py \
-                    __init__.py
+pkgpython_PYTHON =  phonetooth/contacts.py \
+                    phonetooth/contactsdialog.py \
+                    phonetooth/mainwindow.py \
+                    phonetooth/mobilephone.py \
+                    phonetooth/preferencesdialog.py \
+                    phonetooth/constants.py \
+                    phonetooth/__init__.py
 
 uidir = $(datadir)/phonetooth
-ui_DATA = phonetooth.glade
+ui_DATA = ui/phonetooth.glade
 
 desktopdir = $(datadir)/applications
 desktop_DATA = data/phonetooth.desktop
