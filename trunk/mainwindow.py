@@ -1,17 +1,19 @@
 import gtk
 import gobject
 import gtk.glade
-
-import contacts
-import mobilephone
-import contactsdialog
-import preferencesdialog
+import os
 import threading
 import bluetooth
 
+from phonetooth import contacts
+from phonetooth import mobilephone
+from phonetooth import contactsdialog
+from phonetooth import preferencesdialog
+from phonetooth import constants
+
 class MainWindow:
     def __init__(self):
-        self.__widgetTree           = gtk.glade.XML('phonetooth.glade')
+        self.__widgetTree           = gtk.glade.XML(os.path.join(constants.datadir, 'phonetooth.glade'))
         self.__mainWindow           = self.__widgetTree.get_widget('mainWindow')
         self.__recipientBox         = self.__widgetTree.get_widget('recipientBox')
         self.__inputField           = self.__widgetTree.get_widget('textView')
