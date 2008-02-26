@@ -1,4 +1,4 @@
-bin_SCRIPTS = phonetooth
+bin_SCRIPTS = phonetooth/phonetooth
 
 pkgpython_PYTHON =  phonetooth/contacts.py \
                     phonetooth/contactsdialog.py \
