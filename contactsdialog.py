@@ -1,9 +1,9 @@
 import gtk
 import gtk.glade
-
-import contacts
-import mobilephone
 import threading
+
+from phonetooth import contacts
+from phonetooth import mobilephone
 
 class ContactsDialog:
     def __init__(self, widgetTree, contactListStore):

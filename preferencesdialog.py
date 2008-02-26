@@ -1,11 +1,11 @@
 import gtk
 import gtk.glade
-
-import mobilephone
 import threading
 import copy
 import pickle
 import os
+
+from phonetooth import mobilephone
 
 class PreferencesDialog:
     def __init__(self, widgetTree):
