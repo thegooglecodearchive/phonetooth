@@ -10,15 +10,12 @@ pkgpython_PYTHON =  phonetooth/contacts.py \
 
 uidir = $(datadir)/phonetooth
 ui_DATA =   ui/phonetooth.glade \
-            data/phonetooth-small.svg
+            ui/phonetooth.svg \
+            ui/phonetooth-small.svg
 
 desktopdir = $(datadir)/applications
 desktop_DATA = data/phonetooth.desktop
 
-iconsdir = $(datadir)/pixmaps
-icons_DATA = data/phonetooth.svg
-
 EXTRA_DIST =    $(bin_SCRIPTS) \
                 $(ui_DATA) \
-                $(desktop_DATA) \
-                $(icons_DATA)
+                $(desktop_DATA)
