@@ -52,6 +52,8 @@ class MainWindow:
         self.__widgetTree.signal_autoconnect(dic)
         
         gtk.gdk.threads_init()
+        gtk.window_set_default_icon_from_file(os.path.join(constants.datadir, 'phonetooth-small.svg'))
+        
         self.__mainWindow.show()
         
     def __updateContactStore(self, widget = 0):
