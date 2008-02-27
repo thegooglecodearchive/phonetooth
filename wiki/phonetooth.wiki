@@ -1,11 +1,13 @@
 #summary Send text messages with your mobile phone
 
 = Introduction =
-PhoneTooth is an application written in python that allows you to send text messages using your mobile phone through a bluetooth connection.
+Phonetooth is an application written in python that allows you to send text messages using your mobile phone through a bluetooth connection.
 
 = Screenshots =
 Mainwindow
-http://s248.photobucket.com/albums/gg184/dirk_vdb/?action=view&current=mainwindow.gif
+
+http://i248.photobucket.com/albums/gg184/dirk_vdb/mainwindow.gif
 
 Contacts editor
-http://s248.photobucket.com/albums/gg184/dirk_vdb/?action=view&current=contacts.gif
+
+http://i248.photobucket.com/albums/gg184/dirk_vdb/contacts.gif
