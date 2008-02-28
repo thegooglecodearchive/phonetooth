@@ -19,6 +19,10 @@ class BluetoothDiscovery:
 
 class MobilePhone:
     def __init__(self, device):
+        if device == None:
+            self.__sock = None
+            raise Exception, 'No device configured in preferences'
+                
         try:
             self.__sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
             self.__sock.connect((device.address, device.port))
@@ -27,7 +31,8 @@ class MobilePhone:
             raise Exception, 'Failed to connect to device: ' + str(e)
         
     def __del__(self):
-        self.__sock.close()
+        if self.__sock != None:
+            self.__sock.close()
         
     def getManufacturer(self):
         return self.__sendATCommand('AT+CGMI\r')
