@@ -8,6 +8,9 @@ class BluetoothDevice:
         self.address = address
         self.port = port
         self.name = name
+        
+    def __str__(self):
+        return self.name + ' - ' + self.address + ':' + str(self.port)
 
 class BluetoothDiscovery:
     def findSerialDevices(self):
