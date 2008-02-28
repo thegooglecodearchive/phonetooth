@@ -16,6 +16,7 @@ class MainWindow:
             from pyphonetooth import constants
             datadir = constants.datadir
         except:
+            #fallback when running from repository
             datadir = 'ui'        
         
         self.__widgetTree           = gtk.glade.XML(os.path.join(datadir, 'phonetooth.glade'))
@@ -38,12 +39,12 @@ class MainWindow:
         self.__recipientBox.add_attribute (cell, 'text', 1)
         
         contactList = contacts.ContactList()
-        contactList.load()        
-        
-        self.__contactsDialog = contactsdialog.ContactsDialog(self.__widgetTree, self.__contactlistStore)
-        self.__contactsDialog.updateStoreFromContactList(contactList)
+        contactList.load()
         
         self.__preferencesDialog = preferencesdialog.PreferencesDialog(self.__widgetTree)
+        
+        self.__contactsDialog = contactsdialog.ContactsDialog(self.__widgetTree, self.__contactlistStore, self.__preferencesDialog.btDevice)
+        self.__contactsDialog.updateStoreFromContactList(contactList)
         
         self.__recipientBox.set_active(0)
         
@@ -56,7 +57,7 @@ class MainWindow:
                'onAboutButtonClicked'           : self.__showAboutDialog}
         self.__widgetTree.signal_autoconnect(dic)
         
-        gtk.gdk.threads_init()
+        gobject.threads_init()
         gtk.window_set_default_icon_from_file(os.path.join(datadir, 'phonetooth-small.svg'))
         
         self.__mainWindow.show()
