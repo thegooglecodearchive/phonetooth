@@ -7,8 +7,8 @@ import bluetooth
 import gtk
 import gtk.glade
 
-from phonetooth import mainwindow
-from phonetooth import mobilephone
+from pyphonetooth import mainwindow
+from pyphonetooth import mobilephone
 
 def main():
     mainWindow = mainwindow.MainWindow()

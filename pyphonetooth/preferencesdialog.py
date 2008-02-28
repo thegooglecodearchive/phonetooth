@@ -5,7 +5,7 @@ import copy
 import pickle
 import os
 
-from phonetooth import mobilephone
+from pyphonetooth import mobilephone
 
 class PreferencesDialog:
     def __init__(self, widgetTree):
