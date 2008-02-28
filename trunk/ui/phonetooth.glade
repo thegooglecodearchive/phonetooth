@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.2.2 on Fri Aug 24 22:16:59 2007 by dirk@valkyr-->
+<!--Generated with glade3 3.4.1 on Thu Feb 28 14:52:32 2008 -->
 <glade-interface>
   <widget class="GtkDialog" id="manageContactsDialog">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -347,6 +347,7 @@
     <property name="skip_taskbar_hint">True</property>
     <property name="deletable">False</property>
     <property name="has_separator">False</property>
+    <signal name="hide" handler="onDeviceChanged"/>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox2">
         <property name="visible">True</property>
@@ -472,8 +473,7 @@
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
     <property name="skip_taskbar_hint">True</property>
     <property name="has_separator">False</property>
-    <property name="name">Glade</property>
-    <property name="version">0.1.0</property>
+    <property name="version">1.0.0</property>
     <property name="website">http://code.google.com/p/phonetooth/</property>
     <property name="license" translatable="yes">PhoneTooth is free software; you can redistribute it and/or modify it 
 under the terms of the GNU General Public License version 2 
@@ -820,6 +820,9 @@ consider it more useful to permit linking proprietary applications with the
 library.  If this is what you want to do, use the GNU Library General
 Public License instead of this License.</property>
     <property name="authors">Dirk Vanden Boer</property>
+    <property name="artists">Frédéric Bellaiche
+</property>
+    <property name="logo">phonetooth.svg</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox3">
         <property name="visible">True</property>

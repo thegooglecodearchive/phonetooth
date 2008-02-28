@@ -9,7 +9,7 @@ from pyphonetooth import mobilephone
 class ContactsDialog:
     def __init__(self, widgetTree, contactListStore, btDevice):
         self.__contactlistStore = contactListStore
-        self.__btDevice = btDevice
+        self.btDevice = btDevice
         
         self.__contactsDialog       = widgetTree.get_widget('manageContactsDialog')
         self.__contactsView         = widgetTree.get_widget('contactsView')
@@ -78,7 +78,7 @@ class ContactsDialog:
 
     def __importContactsThread(self, location):
         try:
-            phone = mobilephone.MobilePhone(self.__btDevice)
+            phone = mobilephone.MobilePhone(self.btDevice)
             phoneContacts   = phone.getContacts(location)
             contactList     = self.__createContactListFromStore()
         

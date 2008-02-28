@@ -8,7 +8,8 @@ import os
 from pyphonetooth import mobilephone
 
 class PreferencesDialog:
-    def __init__(self, widgetTree):
+    def __init__(self, parent, widgetTree):
+        self.__parent = parent
         self.__preferencesDialog    = widgetTree.get_widget('preferencesDialog')
         self.__deviceSelecterBox    = widgetTree.get_widget('deviceSelecter')
         
@@ -19,7 +20,8 @@ class PreferencesDialog:
         self.__deviceSelecterBox.pack_start(cell, False)
         self.__deviceSelecterBox.add_attribute (cell, 'text', 1)
                 
-        dic = {'onScanButtonClicked' : self.__scanForDevices}
+        dic = { 'onScanButtonClicked'   : self.__scanForDevices,
+                'onDeviceChanged'       : self.__parent.btDeviceChanged}
         widgetTree.signal_autoconnect(dic)
         
         

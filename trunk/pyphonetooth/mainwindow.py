@@ -41,7 +41,7 @@ class MainWindow:
         contactList = contacts.ContactList()
         contactList.load()
         
-        self.__preferencesDialog = preferencesdialog.PreferencesDialog(self.__widgetTree)
+        self.__preferencesDialog = preferencesdialog.PreferencesDialog(self, self.__widgetTree)
         
         self.__contactsDialog = contactsdialog.ContactsDialog(self.__widgetTree, self.__contactlistStore, self.__preferencesDialog.btDevice)
         self.__contactsDialog.updateStoreFromContactList(contactList)
@@ -61,6 +61,10 @@ class MainWindow:
         gtk.window_set_default_icon_from_file(os.path.join(datadir, 'phonetooth-small.svg'))
         
         self.__mainWindow.show()
+        
+    def btDeviceChanged(self, widget):
+        print 'btDeviceChanged ' + str(self.__preferencesDialog.btDevice)
+        self.__contactsDialog.btDevice = self.__preferencesDialog.btDevice
         
     def __updateContactStore(self, widget = 0):
         self.__contactlistStore.clear()
