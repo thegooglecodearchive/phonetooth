@@ -1,7 +1,7 @@
 import socket
 import bluetooth
 
-from phonetooth import contacts
+from pyphonetooth import contacts
 
 class BluetoothDevice:
     def __init__(self, address, port, name):
