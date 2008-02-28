@@ -9,11 +9,16 @@ from pyphonetooth import contacts
 from pyphonetooth import mobilephone
 from pyphonetooth import contactsdialog
 from pyphonetooth import preferencesdialog
-from pyphonetooth import constants
 
 class MainWindow:
     def __init__(self):
-        self.__widgetTree           = gtk.glade.XML(os.path.join(constants.datadir, 'phonetooth.glade'))
+        try:
+            from pyphonetooth import constants
+            datadir = constants.datadir
+        except:
+            datadir = 'ui'        
+        
+        self.__widgetTree           = gtk.glade.XML(os.path.join(datadir, 'phonetooth.glade'))
         self.__mainWindow           = self.__widgetTree.get_widget('mainWindow')
         self.__recipientBox         = self.__widgetTree.get_widget('recipientBox')
         self.__inputField           = self.__widgetTree.get_widget('textView')
@@ -52,7 +57,7 @@ class MainWindow:
         self.__widgetTree.signal_autoconnect(dic)
         
         gtk.gdk.threads_init()
-        gtk.window_set_default_icon_from_file(os.path.join(constants.datadir, 'phonetooth-small.svg'))
+        gtk.window_set_default_icon_from_file(os.path.join(datadir, 'phonetooth-small.svg'))
         
         self.__mainWindow.show()
         
