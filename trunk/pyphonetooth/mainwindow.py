@@ -63,7 +63,6 @@ class MainWindow:
         self.__mainWindow.show()
         
     def btDeviceChanged(self, widget):
-        print 'btDeviceChanged ' + str(self.__preferencesDialog.btDevice)
         self.__contactsDialog.btDevice = self.__preferencesDialog.btDevice
         
     def __updateContactStore(self, widget = 0):
