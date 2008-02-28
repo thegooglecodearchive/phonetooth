@@ -84,12 +84,9 @@ class MainWindow:
         phoneNr = listStore[self.__recipientBox.get_active()][1]
         
         try:
-            if self.__preferencesDialog.btDevice != None:
-                phone = mobilephone.MobilePhone(self.__preferencesDialog.btDevice)
-                phone.sendSMS(message, phoneNr)
-                self.__pushStatusText('Message succesfully sent.')
-            else:
-                self.__pushStatusText('You need to configure a device first. Check the preferences.')
+            phone = mobilephone.MobilePhone(self.__preferencesDialog.btDevice)
+            phone.sendSMS(message, phoneNr)
+            self.__pushStatusText('Message succesfully sent.')
         except Exception, e:
             self.__pushStatusText('Failed to send message: ' + str(e))
             
