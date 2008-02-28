@@ -1,3 +1,4 @@
+import gobject
 import gtk
 import gtk.glade
 import threading
@@ -6,8 +7,9 @@ from pyphonetooth import contacts
 from pyphonetooth import mobilephone
 
 class ContactsDialog:
-    def __init__(self, widgetTree, contactListStore):
+    def __init__(self, widgetTree, contactListStore, btDevice):
         self.__contactlistStore = contactListStore
+        self.__btDevice = btDevice
         
         self.__contactsDialog       = widgetTree.get_widget('manageContactsDialog')
         self.__contactsView         = widgetTree.get_widget('contactsView')
@@ -66,28 +68,28 @@ class ContactsDialog:
         for contactName in contactNames:
             self.__contactlistStore.append((contactName, contactList.contacts[contactName]))
             
-    
     def __importPhoneContacts(self, widget):
-        self.__contactsDialog.set_sensitive(False)
-        self.__contactsDialog.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        self.__setSensitive(False)
         threading.Thread(target = self.__importContactsThread, args = ('PHONE',)).start()
         
     def __importSimContacts(self, widget):
-        self.__contactsDialog.set_sensitive(False)
-        self.__contactsDialog.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        self.__setSensitive(False)
         threading.Thread(target = self.__importContactsThread, args = ('SIM',)).start()
 
     def __importContactsThread(self, location):
-        phone = mobilephone.MobilePhone(mobilephone.BluetoothDevice("00:16:DB:67:D3:DA", 5, "Serial device"))
-        phoneContacts   = phone.getContacts(location)
-        contactList     = self.__createContactListFromStore()
+        try:
+            phone = mobilephone.MobilePhone(self.__btDevice)
+            phoneContacts   = phone.getContacts(location)
+            contactList     = self.__createContactListFromStore()
         
-        for contact in phoneContacts:
-            contactList.contacts[contact.name] = contact.phoneNumber
+            for contact in phoneContacts:
+                contactList.contacts[contact.name] = contact.phoneNumber
             
-        self.updateStoreFromContactList(contactList)
-        self.__contactsDialog.set_sensitive(True)
-        self.__contactsDialog.window.set_cursor(None)
+            self.updateStoreFromContactList(contactList)
+        except Exception, e:
+            gobject.idle_add(self.__error, str(e))
+       
+        gobject.idle_add(self.__setSensitive, True)
         
     def __contacsViewKeyReleased(self, widget, event):
         if event.type == gtk.gdk.KEY_RELEASE and event.keyval == gtk.keysyms.Delete:
@@ -123,3 +125,18 @@ class ContactsDialog:
         
         self.updateStoreFromContactList(contactList)
         self.__contactsView.set_cursor(0, focus_column = self.__nameColumn, start_editing = True)
+        
+    def __error(self, message):
+        errorDlg = gtk.MessageDialog(parent=self.__contactsDialog, type=gtk.MESSAGE_ERROR, message_format=message, buttons=gtk.BUTTONS_OK)
+        errorDlg.run()
+        errorDlg.destroy()
+        self.__contactsDialog.set_sensitive(True)
+        self.__contactsDialog.window.set_cursor(None)
+        
+    def __setSensitive(self, sensitive):
+        if sensitive == True:
+            self.__contactsDialog.set_sensitive(True)
+            self.__contactsDialog.window.set_cursor(None)
+        else:
+            self.__contactsDialog.set_sensitive(False)
+            self.__contactsDialog.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
