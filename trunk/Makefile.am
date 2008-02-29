@@ -4,6 +4,7 @@ pkgpython_PYTHON =  pyphonetooth/contacts.py \
                     pyphonetooth/contactsdialog.py \
                     pyphonetooth/mainwindow.py \
                     pyphonetooth/mobilephone.py \
+                    pyphonetooth/bluetoothdiscovery.py \
                     pyphonetooth/preferencesdialog.py \
                     pyphonetooth/constants.py \
                     pyphonetooth/__init__.py

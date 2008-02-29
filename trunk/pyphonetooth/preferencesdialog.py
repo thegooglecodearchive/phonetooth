@@ -6,6 +6,7 @@ import pickle
 import os
 
 from pyphonetooth import mobilephone
+from pyphonetooth import bluetoothdiscovery
 
 class PreferencesDialog:
     def __init__(self, parent, widgetTree):
@@ -57,7 +58,7 @@ class PreferencesDialog:
         threading.Thread(target = self.__discoverThread).start()
         
     def __discoverThread(self):
-        discoverer = mobilephone.BluetoothDiscovery()
+        discoverer = bluetoothdiscovery.BluetoothDiscovery()
         self.__setDevices(discoverer.findSerialDevices())
         
     def __setDevices(self, devices):
