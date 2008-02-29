@@ -11,7 +11,7 @@ class BluetoothDevice:
 
 class BluetoothDiscovery:
     def findSerialDevices(self):
-        services = bluetooth.find_service( name = "Bluetooth Serial Port", uuid = bluetooth.SERIAL_PORT_CLASS )
+        services = bluetooth.find_service(name = "Bluetooth Serial Port", uuid = bluetooth.SERIAL_PORT_CLASS)
         devices = []
         for service in services:
             devices.append(BluetoothDevice(service["host"], service["port"], bluetooth.lookup_name(service["host"])))

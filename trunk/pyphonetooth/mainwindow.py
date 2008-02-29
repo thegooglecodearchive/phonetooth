@@ -50,6 +50,7 @@ class MainWindow:
         
         
         dic = {'onMainWindowDestroy'            : gtk.main_quit,
+               'onSendFile'                     : self.__sendFile,
                'onManageContactsActivated'      : self.__contactsDialog.run,
                'onPreferencesActivated'         : self.__preferencesDialog.run,
                'onSendButtonClicked'            : self.__sendSMS,
@@ -75,11 +76,18 @@ class MainWindow:
             self.__contactlistStore.append((contactName, self.__contactListBeingEdited[contactName]))
             
     def __sendSMS(self, widget):
-        self.__mainWindow.set_sensitive(False)
-        self.__mainWindow.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         threading.Thread(target = self.__sendSMSThread).start()
+        
+    def __sendFile(self, widget, dummy):
+        chooser = gtk.FileChooserDialog(title = None, action = gtk.FILE_CHOOSER_ACTION_OPEN,
+                    buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+        response = chooser.run()
+        if response == gtk.RESPONSE_OK:
+            threading.Thread(target = self.__sendFileThread, args = (chooser.get_filename(),)).start()
+        chooser.destroy()
 
     def __sendSMSThread(self):
+        gobject.idle_add(self.__setSensitive, False)
         textBuffer = self.__inputField.get_buffer()
         listStore = self.__recipientBox.get_model()
         
@@ -93,8 +101,20 @@ class MainWindow:
         except Exception, e:
             self.__pushStatusText('Failed to send message: ' + str(e))
             
-        self.__mainWindow.set_sensitive(True)
-        self.__mainWindow.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.LEFT_PTR))
+        gobject.idle_add(self.__setSensitive, True)
+        
+    def __sendFileThread(self, filename):
+        gobject.idle_add(self.__setSensitive, False)
+        
+        try:
+            self.__pushStatusText('Sending file...')
+            phone = mobilephone.MobilePhone(self.__preferencesDialog.btDevice)
+            phone.sendFile(filename)
+            self.__pushStatusText('File succesfully sent.')
+        except Exception, e:
+            self.__pushStatusText('Failed to send file: ' + str(e))
+            
+        gobject.idle_add(self.__setSensitive, True)
             
     def __updateNrCharacters(self, widget, event):
         if event.type == gtk.gdk.KEY_RELEASE:
@@ -110,3 +130,10 @@ class MainWindow:
     def __pushStatusText(self, message):
         self.__statusBar.push(0, message)
     
+    def __setSensitive(self, sensitive):
+        if sensitive == True:
+            self.__mainWindow.set_sensitive(True)
+            self.__mainWindow.window.set_cursor(None)
+        else:
+            self.__mainWindow.set_sensitive(False)
+            self.__mainWindow.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
