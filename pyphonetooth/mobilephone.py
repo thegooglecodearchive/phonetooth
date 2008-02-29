@@ -1,5 +1,6 @@
 import socket
 import bluetooth
+import obexftp
 
 from pyphonetooth import contacts
 
@@ -9,6 +10,7 @@ class MobilePhone:
             self.__sock = None
             raise Exception, 'No device configured in preferences'
                 
+        self.__address = device.address
         try:
             self.__sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
             self.__sock.connect((device.address, device.port))
@@ -71,6 +73,13 @@ class MobilePhone:
             contactList.append(contacts.Contact(fields[3][1:-1], fields[1][1:-1]))
         
         return contactList
+        
+    def sendFile(self, filename):
+        client = obexftp.client(obexftp.BLUETOOTH)
+        client.connect(self.__address, 9)
+        client.put_file(filename)
+        client.disconnect()
+        client.delete
         
     def __sendATCommand(self, atCommand):
         self.__sock.sendall(atCommand)
