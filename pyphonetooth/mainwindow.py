@@ -78,7 +78,7 @@ class MainWindow:
     def __sendSMS(self, widget):
         threading.Thread(target = self.__sendSMSThread).start()
         
-    def __sendFile(self, widget, dummy):
+    def __sendFile(self, widget):
         chooser = gtk.FileChooserDialog(title = None, action = gtk.FILE_CHOOSER_ACTION_OPEN,
                     buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
         response = chooser.run()
@@ -123,7 +123,7 @@ class MainWindow:
             
             self.__sendButton.set_sensitive(nrCharacters != 0)
             
-    def __showAboutDialog(self, widget, dummy):
+    def __showAboutDialog(self, widget):
         self.__aboutDialog.run()
         self.__aboutDialog.hide()
         
