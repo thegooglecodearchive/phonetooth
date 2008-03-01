@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.1 on Fri Feb 29 20:50:14 2008 -->
+<!--Generated with glade3 3.4.1 on Sat Mar  1 11:36:28 2008 -->
 <glade-interface>
   <widget class="GtkDialog" id="manageContactsDialog">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -166,27 +166,24 @@
                     <property name="visible">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <child>
-                      <widget class="GtkImageMenuItem" id="sendMenuitem">
+                      <widget class="GtkMenuItem" id="sendMenuitem">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="label" translatable="yes">Send</property>
+                        <property name="tooltip" translatable="yes">Send a file to your mobile phone</property>
+                        <property name="label" translatable="yes">_Send file</property>
                         <property name="use_underline">True</property>
-                        <signal name="button_release_event" handler="onSendFile"/>
-                        <child internal-child="image">
-                          <widget class="GtkImage" id="menu-item-image2">
-                            <property name="stock">gtk-media-forward</property>
-                          </widget>
-                        </child>
+                        <accelerator key="S" modifiers="GDK_CONTROL_MASK" signal="activate"/>
                       </widget>
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="closeMenuitem">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="tooltip" translatable="yes">Close the application</property>
                         <property name="label" translatable="yes">gtk-close</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="button_release_event" handler="onMainWindowDestroy"/>
+                        <signal name="activate" handler="onMainWindowDestroy"/>
                       </widget>
                     </child>
                   </widget>
@@ -207,6 +204,7 @@
                       <widget class="GtkImageMenuItem" id="manageContactsMenuItem">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="tooltip" translatable="yes">Manage your contacts</property>
                         <property name="label" translatable="yes">_Manage contacts</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="onManageContactsActivated"/>
@@ -221,6 +219,7 @@
                       <widget class="GtkImageMenuItem" id="preferencesMenuItem">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="tooltip" translatable="yes">Open the preferences</property>
                         <property name="label" translatable="yes">gtk-preferences</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
@@ -248,7 +247,7 @@
                         <property name="label" translatable="yes">gtk-about</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="button_release_event" handler="onAboutButtonClicked"/>
+                        <signal name="activate" handler="onAboutButtonClicked"/>
                       </widget>
                     </child>
                   </widget>
@@ -508,9 +507,11 @@
     <property name="title" translatable="yes">About PhoneTooth</property>
     <property name="resizable">False</property>
     <property name="window_position">GTK_WIN_POS_CENTER_ON_PARENT</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
     <property name="skip_taskbar_hint">True</property>
     <property name="has_separator">False</property>
+    <property name="program_name">Phonetooth</property>
     <property name="version">1.0.0</property>
     <property name="website">http://code.google.com/p/phonetooth/</property>
     <property name="license" translatable="yes">PhoneTooth is free software; you can redistribute it and/or modify it 
