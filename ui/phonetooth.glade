@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.1 on Sat Mar  1 11:36:28 2008 -->
+<!--Generated with glade3 3.4.1 on Mon Mar  3 19:43:12 2008 -->
 <glade-interface>
   <widget class="GtkDialog" id="manageContactsDialog">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -172,6 +172,7 @@
                         <property name="tooltip" translatable="yes">Send a file to your mobile phone</property>
                         <property name="label" translatable="yes">_Send file</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="onSendFile"/>
                         <accelerator key="S" modifiers="GDK_CONTROL_MASK" signal="activate"/>
                       </widget>
                     </child>
@@ -445,6 +446,7 @@
                   <widget class="GtkLabel" id="label3">
                     <property name="visible">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <property name="xpad">5</property>
                     <property name="label" translatable="yes">&lt;b&gt;Phone configuration&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
                   </widget>
@@ -512,7 +514,7 @@
     <property name="skip_taskbar_hint">True</property>
     <property name="has_separator">False</property>
     <property name="program_name">Phonetooth</property>
-    <property name="version">1.0.0</property>
+    <property name="version">0.1.0</property>
     <property name="website">http://code.google.com/p/phonetooth/</property>
     <property name="license" translatable="yes">PhoneTooth is free software; you can redistribute it and/or modify it 
 under the terms of the GNU General Public License version 2 

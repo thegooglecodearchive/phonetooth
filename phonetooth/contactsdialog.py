@@ -3,8 +3,8 @@ import gtk
 import gtk.glade
 import threading
 
-from pyphonetooth import contacts
-from pyphonetooth import mobilephone
+from phonetooth import contacts
+from phonetooth import mobilephone
 
 class ContactsDialog:
     def __init__(self, widgetTree, contactListStore, btDevice):
