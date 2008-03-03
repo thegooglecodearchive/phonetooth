@@ -1,13 +1,13 @@
-bin_SCRIPTS = phonetooth
+bin_SCRIPTS = phonetooth.py
 
-pkgpython_PYTHON =  pyphonetooth/contacts.py \
-                    pyphonetooth/contactsdialog.py \
-                    pyphonetooth/mainwindow.py \
-                    pyphonetooth/mobilephone.py \
-                    pyphonetooth/bluetoothdiscovery.py \
-                    pyphonetooth/preferencesdialog.py \
-                    pyphonetooth/constants.py \
-                    pyphonetooth/__init__.py
+pkgpython_PYTHON =  phonetooth/contacts.py \
+                    phonetooth/contactsdialog.py \
+                    phonetooth/mainwindow.py \
+                    phonetooth/mobilephone.py \
+                    phonetooth/bluetoothdiscovery.py \
+                    phonetooth/preferencesdialog.py \
+                    phonetooth/constants.py \
+                    phonetooth/__init__.py
 
 uidir = $(datadir)/phonetooth
 ui_DATA =   ui/phonetooth.glade \
@@ -20,3 +20,6 @@ desktop_DATA = data/phonetooth.desktop
 EXTRA_DIST =    $(bin_SCRIPTS) \
                 $(ui_DATA) \
                 $(desktop_DATA)
+                
+dist-hook:
+	mv $(distdir)/phonetooth.py $(distdir)/phonetooth

@@ -5,10 +5,10 @@ import os
 import threading
 import bluetooth
 
-from pyphonetooth import contacts
-from pyphonetooth import mobilephone
-from pyphonetooth import contactsdialog
-from pyphonetooth import preferencesdialog
+from phonetooth import contacts
+from phonetooth import mobilephone
+from phonetooth import contactsdialog
+from phonetooth import preferencesdialog
 
 class MainWindow:
     def __init__(self):

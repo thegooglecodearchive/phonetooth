@@ -5,8 +5,8 @@ import copy
 import pickle
 import os
 
-from pyphonetooth import mobilephone
-from pyphonetooth import bluetoothdiscovery
+from phonetooth import mobilephone
+from phonetooth import bluetoothdiscovery
 
 class PreferencesDialog:
     def __init__(self, parent, widgetTree):

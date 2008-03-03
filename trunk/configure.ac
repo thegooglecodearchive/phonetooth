@@ -1,4 +1,4 @@
-AC_INIT([pyphonetooth], [1.0.0])
+AC_INIT([phonetooth], [0.1.0])
 AC_CONFIG_SRCDIR([phonetooth])
 AM_INIT_AUTOMAKE
 

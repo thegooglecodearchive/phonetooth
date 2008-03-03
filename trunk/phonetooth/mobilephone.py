@@ -2,7 +2,7 @@ import socket
 import bluetooth
 import obexftp
 
-from pyphonetooth import contacts
+from phonetooth import contacts
 
 class MobilePhone:
     def __init__(self, device):
