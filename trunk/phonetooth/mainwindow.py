@@ -13,7 +13,7 @@ from phonetooth import preferencesdialog
 class MainWindow:
     def __init__(self):
         try:
-            from pyphonetooth import constants
+            from phonetooth import constants
             datadir = constants.datadir
         except:
             #fallback when running from repository
