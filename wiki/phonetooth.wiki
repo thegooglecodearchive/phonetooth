@@ -4,6 +4,20 @@
 Phonetooth is an application written in python that allows you to send text messages using your mobile phone through a bluetooth connection.
 Phonetooth is designed with ease of use in mind. No difficult setup is necessary. You can scan for paired devices in the pereference dialog and select the phone you wish to use.
 
+= Installation =
+Unpack the source archive.
+Run
+{{{
+./configure --prefix=/usr
+}}}
+where prefix is the same prefix as used for the python installation.
+Then run
+{{{
+make install
+}}}
+as root.
+
+You can now launch the application by running phonetoothui from the command line or by clicking it in the application menu.
 
 = Screenshots =
 Mainwindow
