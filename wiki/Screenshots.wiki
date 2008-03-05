@@ -1,4 +1,5 @@
 #summary Screenshots of phonetooth ui
+#labels Featured
 
 Mainwindow
 
