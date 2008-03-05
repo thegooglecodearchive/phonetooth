@@ -4,7 +4,7 @@
 
 inherit autotools eutils
 
-DESCRIPTION="Lightweight video thumbnailer that can be used by file managers"
+DESCRIPTION="Send text message using your mobile phone through a bluetooth connection"
 HOMEPAGE="http://code.google.com/p/phonetooth"
 SRC_URI="http://${PN}.googlecode.com/files/${P}.tar.gz"
 
