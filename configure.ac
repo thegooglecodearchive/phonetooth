@@ -9,4 +9,4 @@ AC_CONFIG_FILES([data/phonetooth.desktop:data/phonetooth.desktop.in])
 
 AC_OUTPUT([
 	Makefile
- ])
+])
