@@ -1,4 +1,5 @@
 #summary Phones confirmed working with phonetooth
+#labels Featured
 
 = Samsung =
   * SGH-D800
