@@ -1,0 +1,6 @@
+#summary Phones confirmed working with phonetooth
+
+= Samsung =
+  * SGH-D800
+
+Please let me know if you have other phones that are working, so I can add them to the list.
