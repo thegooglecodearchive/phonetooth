@@ -43,7 +43,7 @@ class PreferencesDialog:
         
         
         self.btDevice = None
-        self.__deviceList = {}
+        self.__deviceList = []
         self.__loadCurrentDevice()
         
         if self.btDevice != None:
@@ -56,7 +56,8 @@ class PreferencesDialog:
             activeItem = self.__deviceSelecterBox.get_active()
             if activeItem != -1:
                 deviceAddress = self.__deviceListStore[activeItem][2]
-                self.btDevice = self.__deviceList[deviceAddress]
+                serviceName = self.__deviceListStore[activeItem][1]
+                self.btDevice = self.__getDevice(deviceAddress, serviceName)
                 self.__saveCurrentDevice()
         else:
             self.__deviceListStore.clear()
@@ -78,15 +79,21 @@ class PreferencesDialog:
         self.__setDevices(discoverer.findSerialDevices())
         
     def __setDevices(self, devices):
-        self.__deviceList.clear()
-        for device in devices:
+        self.__deviceList = devices
+        for device in self.__deviceList:
             self.__deviceListStore.append((device.deviceName, device.serviceName, device.address))
-            self.__deviceList[device.address] = device
         
         self.__deviceSelecterBox.set_active(0)
         if self.__preferencesDialog.window != None:
             self.__preferencesDialog.window.set_cursor(None)
         self.__enableButtons(True)
+        
+    def __getDevice(self, deviceAddress, serviceName):
+        for device in self.__deviceList:
+            if device.address == deviceAddress and device.serviceName == serviceName:
+                return device
+                
+        raise Exception, 'Device not found'
         
     def __enableButtons(self, enable):
         self.__preferencesDialog.set_sensitive(enable)

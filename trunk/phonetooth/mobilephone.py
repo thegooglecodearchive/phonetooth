@@ -49,10 +49,7 @@ class MobilePhone:
 
     def getBatteryStatus(self):
         return self.__sendATCommand('AT+CBC\r')
-
-    def getSerialNumber(self):
-        return self.__sendATCommand('AT+CGSN\r')
-        
+       
     def powerOff(self):
         return self.__sendATCommand('AT+CPOF\r')
         
