@@ -1,4 +1,8 @@
 Phonetooth
 
+version 0.1.1 (09-03-2008)
+- Device discovery is less strict, should find more devices
+  (~/.phonetooth directory must be deleted or application will crash)
+
 version 0.1.0 (05-03-2008)
 - Initial release of the Phonetooth
