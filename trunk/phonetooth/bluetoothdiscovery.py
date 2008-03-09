@@ -17,18 +17,21 @@
 import bluetooth
 
 class BluetoothDevice:
-    def __init__(self, address, port, name):
+    def __init__(self, address, port, deviceName, serviceName):
         self.address = address
         self.port = port
-        self.name = name
+        self.deviceName = deviceName
+        self.serviceName = serviceName
         
     def __str__(self):
-        return self.name + ' - ' + self.address + ':' + str(self.port)
+        return self.name + '(' + self.serviceName + ') - ' + self.address + ':' + str(self.port)
 
 class BluetoothDiscovery:
     def findSerialDevices(self):
-        services = bluetooth.find_service(name = "Bluetooth Serial Port", uuid = bluetooth.SERIAL_PORT_CLASS)
+        services = bluetooth.find_service(uuid = bluetooth.SERIAL_PORT_CLASS)
+        services.extend(bluetooth.find_service(uuid = bluetooth.DIALUP_NET_CLASS))
+        
         devices = []
         for service in services:
-            devices.append(BluetoothDevice(service["host"], service["port"], bluetooth.lookup_name(service["host"])))
+            devices.append(BluetoothDevice(service["host"], service["port"], bluetooth.lookup_name(service["host"]), service["name"]))
         return devices

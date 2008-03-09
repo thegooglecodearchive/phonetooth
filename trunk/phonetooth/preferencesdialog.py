@@ -30,7 +30,7 @@ class PreferencesDialog:
         self.__preferencesDialog    = widgetTree.get_widget('preferencesDialog')
         self.__deviceSelecterBox    = widgetTree.get_widget('deviceSelecter')
         
-        self.__deviceListStore = gtk.ListStore(str, str)
+        self.__deviceListStore = gtk.ListStore(str, str, str)
         self.__deviceSelecterBox.set_model(self.__deviceListStore)
         
         cell = gtk.CellRendererText()
@@ -55,7 +55,7 @@ class PreferencesDialog:
         if  self.__preferencesDialog.run() == 1:
             activeItem = self.__deviceSelecterBox.get_active()
             if activeItem != -1:
-                deviceAddress = self.__deviceListStore[activeItem][1]
+                deviceAddress = self.__deviceListStore[activeItem][2]
                 self.btDevice = self.__deviceList[deviceAddress]
                 self.__saveCurrentDevice()
         else:
@@ -80,7 +80,7 @@ class PreferencesDialog:
     def __setDevices(self, devices):
         self.__deviceList.clear()
         for device in devices:
-            self.__deviceListStore.append((device.name, device.address))
+            self.__deviceListStore.append((device.deviceName, device.serviceName, device.address))
             self.__deviceList[device.address] = device
         
         self.__deviceSelecterBox.set_active(0)
