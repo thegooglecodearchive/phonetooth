@@ -1,0 +1,12 @@
+
+[Desktop Entry]
+Version=1.0.0
+Encoding=UTF-8
+Name=Phonetooth
+Comment=Send sms messages with your mobile phone trough bluetooth
+Exec=phonetoothui
+Icon=@prefix@/share/phonetooth/phonetooth.svg
+GenericName=Text messenger
+Terminal=false
+Type=Application
+Categories=Utility;
