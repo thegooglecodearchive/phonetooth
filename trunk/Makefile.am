@@ -4,9 +4,11 @@ pkgpython_PYTHON =  phonetooth/contacts.py \
 					phonetooth/contactsdialog.py \
 					phonetooth/mainwindow.py \
 					phonetooth/mobilephone.py \
+                    phonetooth/mobilephonegammu.py \
 					phonetooth/bluetoothdiscovery.py \
 					phonetooth/preferencesdialog.py \
 					phonetooth/constants.py \
+                    phonetooth/bit7alphabet.py \
 					phonetooth/__init__.py
 
 uidir = $(datadir)/phonetooth

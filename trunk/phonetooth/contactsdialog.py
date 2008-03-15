@@ -21,6 +21,7 @@ import threading
 
 from phonetooth import contacts
 from phonetooth import mobilephone
+from phonetooth import mobilephonegammu
 
 class ContactsDialog:
     def __init__(self, widgetTree, contactListStore, btDevice):
@@ -94,7 +95,11 @@ class ContactsDialog:
 
     def __importContactsThread(self, location):
         try:
-            phone = mobilephone.MobilePhone(self.btDevice)
+            if self.btDevice == None:
+                phone = mobilephonegammu.MobilePhoneGammu()
+            else:
+                phone = mobilephone.MobilePhone(self.btDevice)
+
             phoneContacts   = phone.getContacts(location)
             contactList     = self.__createContactListFromStore()
         

@@ -23,6 +23,7 @@ import bluetooth
 
 from phonetooth import contacts
 from phonetooth import mobilephone
+from phonetooth import mobilephonegammu
 from phonetooth import contactsdialog
 from phonetooth import preferencesdialog
 
@@ -33,7 +34,7 @@ class MainWindow:
             datadir = constants.datadir
         except:
             #fallback when running from repository
-            datadir = 'ui'        
+            datadir = 'ui'
         
         self.__widgetTree           = gtk.glade.XML(os.path.join(datadir, 'phonetooth.glade'))
         self.__mainWindow           = self.__widgetTree.get_widget('mainWindow')
@@ -59,7 +60,11 @@ class MainWindow:
         
         self.__preferencesDialog = preferencesdialog.PreferencesDialog(self, self.__widgetTree)
         
-        self.__contactsDialog = contactsdialog.ContactsDialog(self.__widgetTree, self.__contactlistStore, self.__preferencesDialog.btDevice)
+        contactsDevice = None
+        if self.__preferencesDialog.backend == 'phonetooth':
+            contactsDevice = self.__preferencesDialog.btDevice
+        
+        self.__contactsDialog = contactsdialog.ContactsDialog(self.__widgetTree, self.__contactlistStore, contactsDevice)
         self.__contactsDialog.updateStoreFromContactList(contactList)
         
         self.__recipientBox.set_active(0)
@@ -80,7 +85,10 @@ class MainWindow:
         self.__mainWindow.show()
         
     def btDeviceChanged(self, widget):
-        self.__contactsDialog.btDevice = self.__preferencesDialog.btDevice
+        if self.__preferencesDialog.backend == 'phonetooth':
+            self.__contactsDialog.btDevice = self.__preferencesDialog.btDevice
+        else:
+            self.__contactsDialog.btDevice = None
         
     def __updateContactStore(self, widget = 0):
         self.__contactlistStore.clear()
@@ -111,7 +119,10 @@ class MainWindow:
         phoneNr = listStore[self.__recipientBox.get_active()][1]
         
         try:
-            phone = mobilephone.MobilePhone(self.__preferencesDialog.btDevice)
+            if self.__preferencesDialog.backend == 'gammu':
+                phone = mobilephonegammu.MobilePhoneGammu()
+            else:
+                phone = mobilephone.MobilePhone(self.__preferencesDialog.btDevice)
             phone.sendSMS(message, phoneNr)
             self.__pushStatusText('Message succesfully sent.')
         except Exception, e:
