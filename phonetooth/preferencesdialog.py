@@ -18,8 +18,8 @@ import gtk
 import gtk.glade
 import threading
 import copy
-import pickle
 import os
+import ConfigParser
 
 from phonetooth import mobilephone
 from phonetooth import bluetoothdiscovery
@@ -29,9 +29,26 @@ class PreferencesDialog:
         self.__parent = parent
         self.__preferencesDialog    = widgetTree.get_widget('preferencesDialog')
         self.__deviceSelecterBox    = widgetTree.get_widget('deviceSelecter')
+        self.__backendSelecterBox   = widgetTree.get_widget('backendSelecter')
         
         self.__deviceListStore = gtk.ListStore(str, str, str)
         self.__deviceSelecterBox.set_model(self.__deviceListStore)
+        
+        self.__backendListStore = gtk.ListStore(str)
+        self.__backendSelecterBox.set_model(self.__backendListStore)
+        
+        cell = gtk.CellRendererText()
+        self.__deviceSelecterBox.pack_start(cell, False)
+        self.__backendListStore.append(('Phonetooth',))
+        
+        self.__gammuAvailable = False
+        
+        try:
+            import gammu
+            self.__gammuAvailable = True
+            self.__backendListStore.append(('Gammu',))
+        except:
+            print 'python-gammu not found'
         
         cell = gtk.CellRendererText()
         self.__deviceSelecterBox.pack_start(cell, False)
@@ -42,15 +59,17 @@ class PreferencesDialog:
         widgetTree.signal_autoconnect(dic)
         
         
+        self.backend = 'phonetooth'
         self.btDevice = None
         self.__deviceList = []
-        self.__loadCurrentDevice()
+        self.__loadPreferences()
         
         if self.btDevice != None:
             self.__setDevices([self.btDevice])
         
     def run(self, widget):
         oldDevice = copy.copy(self.btDevice)
+        oldBackend = self.__backendSelecterBox.get_active()
         
         if  self.__preferencesDialog.run() == 1:
             activeItem = self.__deviceSelecterBox.get_active()
@@ -58,14 +77,22 @@ class PreferencesDialog:
                 deviceAddress = self.__deviceListStore[activeItem][2]
                 serviceName = self.__deviceListStore[activeItem][1]
                 self.btDevice = self.__getDevice(deviceAddress, serviceName)
-                self.__saveCurrentDevice()
+                
+            if self.__backendSelecterBox.get_active() == 1:
+                self.backend = 'gammu'
+            else:
+                self.backend = 'phonetooth'
+                
+            self.__savePreferences()
         else:
             self.__deviceListStore.clear()
             self.btDevice = oldDevice
             if self.btDevice != None:
                 self.__setDevices([self.btDevice])
+            self.__backendSelecterBox.set_active(oldBackend)
             
         self.__preferencesDialog.hide()
+    
     
     def __scanForDevices(self, widget):
         self.__preferencesDialog.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
@@ -74,10 +101,12 @@ class PreferencesDialog:
         self.__enableButtons(False)
         threading.Thread(target = self.__discoverThread).start()
         
+    
     def __discoverThread(self):
         discoverer = bluetoothdiscovery.BluetoothDiscovery()
         self.__setDevices(discoverer.findSerialDevices())
         
+    
     def __setDevices(self, devices):
         self.__deviceList = devices
         for device in self.__deviceList:
@@ -88,6 +117,7 @@ class PreferencesDialog:
             self.__preferencesDialog.window.set_cursor(None)
         self.__enableButtons(True)
         
+    
     def __getDevice(self, deviceAddress, serviceName):
         for device in self.__deviceList:
             if device.address == deviceAddress and device.serviceName == serviceName:
@@ -95,21 +125,60 @@ class PreferencesDialog:
                 
         raise Exception, 'Device not found'
         
+    
     def __enableButtons(self, enable):
         self.__preferencesDialog.set_sensitive(enable)
 
-    def __saveCurrentDevice(self):
-        appDir = os.path.expanduser('~') + '/.phonetooth/'
+    
+    def __savePreferences(self):
+        appDir = os.path.expanduser('~/.phonetooth')
         
         if not os.path.isdir(appDir):
             os.mkdir(appDir)
-            
-        file = open(appDir + 'device', 'wb')
-        pickle.dump(self.btDevice, file)
         
-    def __loadCurrentDevice(self):
+        config = ConfigParser.ConfigParser()
+        config.add_section('preferences')
+        
+        config.set('preferences', 'backend', self.backend)
+        
+        if self.btDevice != None:
+            config.set('preferences', 'address', self.btDevice.address)
+            config.set('preferences', 'port', str(self.btDevice.port))
+            config.set('preferences', 'deviceName', self.btDevice.deviceName)
+            config.set('preferences', 'serviceName', self.btDevice.serviceName)
+        
+        preferenceFile = os.path.join(appDir, 'config')
+        config.write(open(preferenceFile, 'w'))
+        
+    
+    def __loadPreferences(self):
         try:
-            file = open(os.path.expanduser('~') + '/.phonetooth/device', 'rb')
-            self.btDevice = pickle.load(file)
-        except:
+            preferenceFile = os.path.join(os.path.expanduser('~/.phonetooth'), 'config')
+            config = ConfigParser.ConfigParser()
+            openedFiles = config.read(preferenceFile)
+            
+            if len(openedFiles) == 0:
+                raise Exception, 'No config file found'
+                
+            try:
+                self.btDevice = bluetoothdiscovery.BluetoothDevice(
+                config.get('preferences', 'address'),
+                int(config.get('preferences', 'port')),
+                config.get('preferences', 'deviceName'),
+                config.get('preferences', 'serviceName'))
+            except:
+                self.btDevice == None
+                
+            self.backend = config.get('preferences', 'backend')
+            if self.backend == 'phonetooth':
+                self.__backendSelecterBox.set_active(0)
+            elif self.backend == 'gammu' and self.__gammuAvailable == True:
+                self.__backendSelecterBox.set_active(1)
+            else:
+                self.backend = 'phonetooth'
+                self.__backendSelecterBox.set_active(0)
+
+        except Exception, e:
+            print 'Load config failed: ' + str(e) + ' (reverting to defaults)'
             self.btDevice = None
+            self.__backendSelecterBox.set_active(0)

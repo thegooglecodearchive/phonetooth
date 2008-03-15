@@ -11,11 +11,12 @@ SRC_URI="http://${PN}.googlecode.com/files/${P}.tar.gz"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 ppc ppc64 sparc x86"
-IUSE=""
+IUSE="gammu"
 
 RDEPEND="dev-python/pygtk
 	 dev-python/pybluez
-	 app-mobilephone/obexftp"
+	 app-mobilephone/obexftp
+	 gammu? (dev-python/python-gammu)"
 DEPEND="${RDEPEND}"
 
 pkg_setup() {
