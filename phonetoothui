@@ -40,15 +40,17 @@ if __name__ == "__main__":
     except ImportError:
         installed = False
     
-    locale.setlocale(locale.LC_ALL, '')
-    gettext.textdomain(APP_NAME)
-    gtk.glade.textdomain(APP_NAME)
+    try:
+        locale.setlocale(locale.LC_ALL, '')
+        gettext.textdomain(APP_NAME)
+        gtk.glade.textdomain(APP_NAME)
+        
+        if installed == False:
+            gettext.bindtextdomain(APP_NAME, 'locale')
+            gtk.glade.bindtextdomain(APP_NAME, 'locale')
+    except:
+        pass
     
-    if installed == False:
-        gettext.bindtextdomain(APP_NAME, 'locale')
-        gtk.glade.bindtextdomain(APP_NAME, 'locale')
-    
-    _ = gettext.gettext
     main()
 
 
