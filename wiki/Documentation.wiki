@@ -4,10 +4,20 @@
 Phonetooth is an application written in python that allows you to send text messages and files using your mobile phone through a bluetooth connection.
 Phonetooth is designed with ease of use in mind. No difficult setup is necessary. You can scan for paired devices in the pereference dialog and select the phone you wish to use.
 
+
+= Back end selection =
+As of version 0.2.0 Phonetooth can use 2 back ends, the phonetooth back end and the gammu back end.
+
+If you use the phonetooth back end all configuration is done in the preference dialog.
+This method uses AT-Commands to communicate with the phone, if your phone supports AT-commands this is the recommended back end.
+
+If your phone does not support AT-commands but is supported by gammu (check: http://www.gammu.org/wiki/index.php?title=Phones:Support) you can use the gammu back end. Phonetooth will then use gammu to communcate with the phone, thus  a valid ~/.gammurc file must be present for the communication to work.
+
 = Dependencies =
   * pygtk
   * pybluez
   * obexftp with python bindings installed
+  * python-gammu (only if you want to use the gammu back end)
 
 = Installation =
 Unpack the source archive.
