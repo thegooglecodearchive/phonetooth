@@ -23,6 +23,8 @@ from phonetooth import contacts
 from phonetooth import mobilephone
 from phonetooth import mobilephonegammu
 
+from gettext import gettext as _
+
 class ContactsDialog:
     def __init__(self, widgetTree, contactListStore, btDevice):
         self.__contactlistStore = contactListStore
@@ -46,8 +48,8 @@ class ContactsDialog:
         nrRenderer.set_property('editable', True)
         nrRenderer.connect('edited', self.__contactEditedCb, 1)
         
-        self.__nameColumn  = gtk.TreeViewColumn("Name", nameRenderer, text = 0)
-        self.__nrColumn    = gtk.TreeViewColumn("Phone number", nrRenderer, text = 1)
+        self.__nameColumn  = gtk.TreeViewColumn(_("Name"), nameRenderer, text = 0)
+        self.__nrColumn    = gtk.TreeViewColumn(_("Phone number"), nrRenderer, text = 1)
         
         self.__contactsView.set_model(self.__contactlistStore)
         self.__contactsView.append_column(self.__nameColumn)
