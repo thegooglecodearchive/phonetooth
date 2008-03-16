@@ -19,7 +19,7 @@ ui_DATA =   ui/phonetooth.glade \
 desktopdir = $(datadir)/applications
 desktop_DATA = data/phonetooth.desktop
 
-EXTRA_DIST =    config.rpath m4/ChangeLog \
+EXTRA_DIST =    config.rpath\
                 $(bin_SCRIPTS) \
 				$(ui_DATA) \
 				$(desktop_DATA)

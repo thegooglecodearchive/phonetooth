@@ -2,4 +2,4 @@
 aclocal -I m4
 autoconf
 automake --add-missing
-gettextize -f
+gettextize -f --no-changelog
