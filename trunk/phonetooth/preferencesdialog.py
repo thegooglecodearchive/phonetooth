@@ -24,6 +24,8 @@ import ConfigParser
 from phonetooth import mobilephone
 from phonetooth import bluetoothdiscovery
 
+from gettext import gettext as _
+
 class PreferencesDialog:
     def __init__(self, parent, widgetTree):
         self.__parent = parent
@@ -123,7 +125,7 @@ class PreferencesDialog:
             if device.address == deviceAddress and device.serviceName == serviceName:
                 return device
                 
-        raise Exception, 'Device not found'
+        raise Exception, _('Device not found')
         
     
     def __enableButtons(self, enable):
@@ -158,7 +160,7 @@ class PreferencesDialog:
             openedFiles = config.read(preferenceFile)
             
             if len(openedFiles) == 0:
-                raise Exception, 'No config file found'
+                raise Exception, _('No config file found')
                 
             try:
                 self.btDevice = bluetoothdiscovery.BluetoothDevice(
@@ -179,6 +181,6 @@ class PreferencesDialog:
                 self.__backendSelecterBox.set_active(0)
 
         except Exception, e:
-            print 'Load config failed: ' + str(e) + ' (reverting to defaults)'
+            print _('Load config failed (reverting to defaults): ') + str(e)
             self.btDevice = None
             self.__backendSelecterBox.set_active(0)

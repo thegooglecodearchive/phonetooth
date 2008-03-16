@@ -17,8 +17,14 @@
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import gtk
+import locale
+import gettext
+import os
+import sys
 
 from phonetooth import mainwindow
+
+APP_NAME = 'phonetooth'
 
 def main():
     mainWindow = mainwindow.MainWindow()
@@ -26,6 +32,23 @@ def main():
     
 
 if __name__ == "__main__":
+    installed = True
+    
+    #detect if we are running from local copy
+    try:
+        from phonetooth import constants
+    except ImportError:
+        installed = False
+    
+    locale.setlocale(locale.LC_ALL, '')
+    gettext.textdomain(APP_NAME)
+    gtk.glade.textdomain(APP_NAME)
+    
+    if installed == False:
+        gettext.bindtextdomain(APP_NAME, 'locale')
+        gtk.glade.bindtextdomain(APP_NAME, 'locale')
+    
+    _ = gettext.gettext
     main()
 
 

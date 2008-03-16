@@ -20,12 +20,13 @@ import obexftp
 import bit7alphabet
 
 from phonetooth import contacts
+from gettext import gettext as _
 
 class MobilePhone:
     def __init__(self, device):
         if device == None:
             self.__sock = None
-            raise Exception, 'No device configured in preferences'
+            raise Exception, _('No device configured in preferences')
                 
         self.__address = device.address
         try:
@@ -33,7 +34,7 @@ class MobilePhone:
             self.__sock.connect((device.address, device.port))
             self.__sendATCommand('ATE0')
         except bluetooth.BluetoothError, e:
-            raise Exception, 'Failed to connect to device: ' + str(e)
+            raise Exception, _('Failed to connect to device: ') + str(e)
             
         
     def __del__(self):
@@ -68,7 +69,7 @@ class MobilePhone:
         elif '0' in supportedModes:
             elf.sendSMSPDUMode(message, recipient)
         else:
-            raise Exception, 'Sending SMS not supported by phone'
+            raise Exception, _('Sending SMS not supported by phone')
  
  
     def sendSMSTextMode(self, message, recipient):
@@ -83,7 +84,7 @@ class MobilePhone:
         if reply[-2:] == '> ':
             self.__sendATCommand(message + chr(26), False) # message + CTRL+Z
         else:
-            raise Exception, 'Failed to send message'
+            raise Exception, _('Failed to send message')
             
  
     def sendSMSPDUMode(self, message, recipient):
@@ -123,7 +124,7 @@ class MobilePhone:
         if reply[-2:] == '> ':
             self.__sendATCommand(pduMsg + chr(26), False) # message + CTRL+Z
         else:
-            raise Exception, 'Failed to send message'
+            raise Exception, _('Failed to send message')
             
     def getContacts(self, location):
         if location == 'SIM':
@@ -168,7 +169,7 @@ class MobilePhone:
             end = reply.rfind('\r\nOK\r\n')
             return reply[2:end]
         else:
-            raise Exception, 'AT Command: ' + atCommand[:-1] + ' not supported by phone'
+            raise Exception, _('AT Command not supported by phone: ') + atCommand[:-1]
             
             
     def __parseMemorySlots(self, reply):
