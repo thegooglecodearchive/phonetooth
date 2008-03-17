@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.1 on Sun Mar 16 17:51:34 2008 -->
+<!--Generated with glade3 3.4.1 on Mon Mar 17 20:07:58 2008 -->
 <glade-interface>
   <widget class="GtkDialog" id="manageContactsDialog">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -312,7 +312,9 @@
                     <property name="wrap_mode">GTK_WRAP_WORD</property>
                     <property name="left_margin">5</property>
                     <property name="right_margin">5</property>
-                    <signal name="key_release_event" handler="onKeyPressedInMessage"/>
+                    <signal name="paste_clipboard" handler="onPaste"/>
+                    <signal name="key_release_event" handler="onKeyreleased"/>
+                    <signal name="drag_data_received" handler="onDrop"/>
                   </widget>
                 </child>
               </widget>

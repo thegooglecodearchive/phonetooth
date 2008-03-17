@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phonetooth 0.1.2\n"
 "Report-Msgid-Bugs-To: dirk.vdb@gmail.com\n"
-"POT-Creation-Date: 2008-03-16 17:54+0100\n"
-"PO-Revision-Date: 2008-03-16 19:12+0100\n"
+"POT-Creation-Date: 2008-03-17 20:09+0100\n"
+"PO-Revision-Date: 2008-03-17 20:14+0100\n"
 "Last-Translator: Dirk Vanden Boer <dirk.vdb@gmail.com>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -23,6 +23,30 @@ msgstr "Naam"
 #: phonetooth/contactsdialog.py:52
 msgid "Phone number"
 msgstr "Telefoon nummer"
+
+#: phonetooth/mainwindow.py:131
+msgid "Message succesfully sent"
+msgstr "Bericht succesvol verzonden"
+
+#: phonetooth/mainwindow.py:133
+msgid "Failed to send message: "
+msgstr "Bericht verzenden is mislukt"
+
+#: phonetooth/mainwindow.py:141
+msgid "Sending file..."
+msgstr "_Verzend bestand"
+
+#: phonetooth/mainwindow.py:144
+msgid "File succesfully sent."
+msgstr "Bestand succesvol verzonden"
+
+#: phonetooth/mainwindow.py:146
+msgid "Failed to send file: "
+msgstr "Bestand verzenden is mislukt"
+
+#: phonetooth/mainwindow.py:167
+msgid "Characters: "
+msgstr "Karakters: "
 
 #: phonetooth/mobilephone.py:29
 msgid "No device configured in preferences"
@@ -74,12 +98,12 @@ msgid "gtk-new"
 msgstr "gtk-new"
 
 #: ui/phonetooth.glade:115
-#: ui/phonetooth.glade:555
+#: ui/phonetooth.glade:557
 msgid "gtk-cancel"
 msgstr "gtk-cancel"
 
 #: ui/phonetooth.glade:126
-#: ui/phonetooth.glade:566
+#: ui/phonetooth.glade:568
 msgid "gtk-ok"
 msgstr "gtk-ok"
 
@@ -139,47 +163,47 @@ msgstr "gtk-about"
 msgid "Recipient:"
 msgstr "Ontvanger:"
 
-#: ui/phonetooth.glade:333
+#: ui/phonetooth.glade:335
 msgid "Characters: 0"
 msgstr "Karakters: 0"
 
-#: ui/phonetooth.glade:345
+#: ui/phonetooth.glade:347
 msgid "Send message"
 msgstr "Verstuur bericht"
 
-#: ui/phonetooth.glade:382
+#: ui/phonetooth.glade:384
 msgid "Preferences"
 msgstr "Voorkeuren"
 
-#: ui/phonetooth.glade:424
+#: ui/phonetooth.glade:426
 msgid "Connection backend:"
 msgstr "Connectie methode"
 
-#: ui/phonetooth.glade:454
+#: ui/phonetooth.glade:456
 msgid "<b>Phonetooth backend settings</b>\t"
 msgstr "<b>Instellingen voor Phonetooth methode</b>\t"
 
-#: ui/phonetooth.glade:469
+#: ui/phonetooth.glade:471
 msgid "Mobile phone:"
 msgstr "Telefoon:"
 
-#: ui/phonetooth.glade:504
+#: ui/phonetooth.glade:506
 msgid " Scan "
 msgstr " Zoek "
 
-#: ui/phonetooth.glade:527
+#: ui/phonetooth.glade:529
 msgid "<b>Phone configuration</b>"
 msgstr "<b>Telefoon configuratie</b>"
 
-#: ui/phonetooth.glade:586
+#: ui/phonetooth.glade:588
 msgid "About PhoneTooth"
 msgstr "Over Phonetooth"
 
-#: ui/phonetooth.glade:595
+#: ui/phonetooth.glade:597
 msgid "Copyright © 2008 Dirk Vanden Boer"
 msgstr "Copyright © 2008 Dirk Vanden Boer"
 
-#: ui/phonetooth.glade:597
+#: ui/phonetooth.glade:599
 msgid ""
 "This program is free software; you can redistribute it and/or modify it\n"
 "under the terms of the GNU General Public License as published by the Free\n"
