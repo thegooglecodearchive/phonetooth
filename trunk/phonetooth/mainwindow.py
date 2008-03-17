@@ -27,6 +27,8 @@ from phonetooth import mobilephonegammu
 from phonetooth import contactsdialog
 from phonetooth import preferencesdialog
 
+from gettext import gettext as _
+
 class MainWindow:
     def __init__(self):
         try:
@@ -75,7 +77,9 @@ class MainWindow:
                'onManageContactsActivated'      : self.__contactsDialog.run,
                'onPreferencesActivated'         : self.__preferencesDialog.run,
                'onSendButtonClicked'            : self.__sendSMS,
-               'onKeyPressedInMessage'          : self.__updateNrCharacters,
+               'onKeyreleased'                  : self.__onKeyPressed,
+               'onPaste'                        : self.__onPaste,
+               'onDrop'                         : self.__onDrop,
                'onAboutButtonClicked'           : self.__showAboutDialog}
         self.__widgetTree.signal_autoconnect(dic)
         
@@ -124,9 +128,9 @@ class MainWindow:
             else:
                 phone = mobilephone.MobilePhone(self.__preferencesDialog.btDevice)
             phone.sendSMS(message, phoneNr)
-            self.__pushStatusText('Message succesfully sent.')
+            self.__pushStatusText(_('Message succesfully sent'))
         except Exception, e:
-            self.__pushStatusText('Failed to send message: ' + str(e))
+            self.__pushStatusText(_('Failed to send message: ') + str(e))
             
         gobject.idle_add(self.__setSensitive, True)
         
@@ -134,29 +138,45 @@ class MainWindow:
         gobject.idle_add(self.__setSensitive, False)
         
         try:
-            self.__pushStatusText('Sending file...')
+            self.__pushStatusText(_('Sending file...'))
             phone = mobilephone.MobilePhone(self.__preferencesDialog.btDevice)
             phone.sendFile(filename)
-            self.__pushStatusText('File succesfully sent.')
+            self.__pushStatusText(_('File succesfully sent.'))
         except Exception, e:
-            self.__pushStatusText('Failed to send file: ' + str(e))
+            self.__pushStatusText(_('Failed to send file: ') + str(e))
             
         gobject.idle_add(self.__setSensitive, True)
-            
-    def __updateNrCharacters(self, widget, event):
+
+    
+    def __onKeyPressed(self, widget, event):
         if event.type == gtk.gdk.KEY_RELEASE:
-            nrCharacters = self.__inputField.get_buffer().get_char_count()
-            self.__charactersLabel.set_text('Characters: ' + str(nrCharacters))
+            self.__updateNrCharacters()
+
+
+    def __onPaste(self, widget):
+        self.__updateNrCharacters()
+        
+        
+    def __onDrop(self, widget, drag_context, x, y, selection_data, info, timestamp):
+        print selection_data
+        self.__updateNrCharacters(len(selection_data.get_text()))
+        
+    
+    def __updateNrCharacters(self, dropSize = 0):
+        nrCharacters = self.__inputField.get_buffer().get_char_count() + dropSize
+        self.__charactersLabel.set_text(_('Characters: ') + str(nrCharacters))
+        self.__sendButton.set_sensitive(nrCharacters != 0)
             
-            self.__sendButton.set_sensitive(nrCharacters != 0)
-            
+
     def __showAboutDialog(self, widget):
         self.__aboutDialog.run()
         self.__aboutDialog.hide()
         
+
     def __pushStatusText(self, message):
         self.__statusBar.push(0, message)
     
+
     def __setSensitive(self, sensitive):
         if sensitive == True:
             self.__mainWindow.set_sensitive(True)
