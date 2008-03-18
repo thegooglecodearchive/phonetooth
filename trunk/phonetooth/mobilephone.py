@@ -33,6 +33,13 @@ class MobilePhone:
             self.__sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
             self.__sock.connect((device.address, device.port))
             self.__sendATCommand('ATE0')
+            
+            
+            #use UTF-8 where possible
+            characterSets = self.__getSupportedCharacterSets()
+            if 'UTF-8' in characterSets:
+                self.__setCharacterSet('UTF-8')
+            
         except bluetooth.BluetoothError, e:
             raise Exception, _('Failed to connect to device: ') + str(e)
             
@@ -179,15 +186,27 @@ class MobilePhone:
         
         return reply[begin:end]
         
+    
+    def __setCharacterSet(self, characterSet):
+        self.__sendATCommand('AT+CSCS=' + characterSet)
         
+    
+    def __getSupportedCharacterSets(self):
+        response = self.__sendATCommand('AT+CSCS=?')
+        return self.__parseCommaseperatedList(response)
+        
+
     def __getSupportedSMSModes(self):
         response = self.__sendATCommand('AT+CMGF=?')
-        start = response.find('(')
-        end = response.rfind(')')
+        return self.__parseCommaseperatedList(response)
         
-        return response.strip(',')
-        
-        
+    
+    def __parseCommaseperatedList(self, list):
+        start = list.find('(')
+        end = list.rfind(')')
+        return list[start+1:end].split(',')
+
+
     def __phoneNrToOctet(self, phoneNr):
         if phoneNr[0] == '+':
             phoneNr = phoneNr[1:]
