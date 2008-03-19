@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 #    Copyright (C) 2008 Dirk Vanden Boer <dirk.vdb@gmail.com>
 #
 #    This program is free software; you can redistribute it and/or modify
@@ -16,44 +14,19 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import gtk
-import locale
-import gettext
-import os
-import sys
+from phonetooth import mobilephone
+from phonetooth import mobilephonegammu
+from phonetooth import bluetoothconnection
 
-from phonetooth import mainwindow
+from gettext import gettext as _
 
-APP_NAME = 'phonetooth'
-
-def main():
-    setLocale()
-    mainWindow = mainwindow.MainWindow()
-    gtk.main()
-    
-def setLocale():
-    installed = True
-    
-    #detect if we are running from local copy
-    try:
-        from phonetooth import constants
-    except ImportError:
-        installed = False
-    
-    try:
-        locale.setlocale(locale.LC_ALL, '')
-        gettext.textdomain(APP_NAME)
-        gtk.glade.textdomain(APP_NAME)
-        
-        if installed == False:
-            gettext.bindtextdomain(APP_NAME, 'locale')
-            gtk.glade.bindtextdomain(APP_NAME, 'locale')
-    except:
-        pass
-    
-
-if __name__ == "__main__":
-    main()
-
-
+def createPhone(backEnd, device = None):
+    if backEnd == 'gammu':
+        return mobilephonegammu.MobilePhoneGammu()
+    elif backEnd == 'phonetooth':
+        if device == None:
+            raise Exception, _('No device configured in the preferences')
+        return mobilephone.MobilePhone(bluetoothconnection.BluetoothConnection(device.address, device.port))
+    else:
+        raise Exception, 'Invalid back end specified: ' + backEnd
 

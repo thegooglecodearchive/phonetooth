@@ -1,8 +1,10 @@
 Phonetooth
 
-next version 0.2.0 (15-03-2008)
+version 0.2.1 (19-03-2008)
 - gettext support
 - Dutch translations
+- Set UTF-8 character set on phone if available
+- Character count updates on paste and drag
 
 version 0.2.0 (15-03-2008)
 - Support for sending messages in PDU mode (some devices don't support text mode)

@@ -22,6 +22,7 @@ import threading
 from phonetooth import contacts
 from phonetooth import mobilephone
 from phonetooth import mobilephonegammu
+from phonetooth import mobilephonefactory
 
 from gettext import gettext as _
 
@@ -97,14 +98,16 @@ class ContactsDialog:
 
     def __importContactsThread(self, location):
         try:
+            #todo refactor preferences so we can access the back end pref
             if self.btDevice == None:
-                phone = mobilephonegammu.MobilePhoneGammu()
+                phone = mobilephonefactory.createPhone('gammu')
             else:
-                phone = mobilephone.MobilePhone(self.btDevice)
-
+                phone = mobilephonefactory.createPhone('phonetooth', self.btDevice)
+            
+            phone.connect()
             phoneContacts   = phone.getContacts(location)
             contactList     = self.__createContactListFromStore()
-        
+
             for contact in phoneContacts:
                 contactList.contacts[contact.name] = contact.phoneNumber
             

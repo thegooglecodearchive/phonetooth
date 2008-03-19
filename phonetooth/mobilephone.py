@@ -23,87 +23,79 @@ from phonetooth import contacts
 from gettext import gettext as _
 
 class MobilePhone:
-    def __init__(self, device):
-        if device == None:
-            self.__sock = None
-            raise Exception, _('No device configured in preferences')
-                
-        self.__address = device.address
-        try:
-            self.__sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-            self.__sock.connect((device.address, device.port))
-            self.__sendATCommand('ATE0')
-            
-            
-            #use UTF-8 where possible
-            characterSets = self.__getSupportedCharacterSets()
-            if 'UTF-8' in characterSets:
-                self.__setCharacterSet('UTF-8')
-            
-        except bluetooth.BluetoothError, e:
-            raise Exception, _('Failed to connect to device: ') + str(e)
-            
+    def __init__(self, connection):
+        self.__connection = connection
         
+    
     def __del__(self):
-        if self.__sock != None:
-            self.__sock.close()
-            
-        
-    def getManufacturer(self):
-        return self.__sendATCommand('AT+CGMI')
-        
-        
-    def getModel(self):
-        return self.__sendATCommand('AT+CGMM')
-        
-        
-    def getSerialNumber(self):
-        return self.__sendATCommand('AT+CGSN')
+        self.disconnect()
         
 
+    def connect(self):
+        self.__connection.connect()
+        self.__sendATCommand('ATE0')
+
+        #use UTF-8 where possible
+        characterSets = self.__getSupportedCharacterSets()
+        if 'UTF-8' in characterSets:
+            self.__setCharacterSet('UTF-8')
+
+    
+    def disconnect(self):
+        self.__connection.disconnect()
+
+    
+    def getManufacturer(self):
+        return self.__sendATCommand('AT+CGMI')
+
+
+    def getModel(self):
+        return self.__sendATCommand('AT+CGMM')
+
+
+    def getSerialNumber(self):
+        return self.__sendATCommand('AT+CGSN')
+
+
     def getBatteryStatus(self):
-        return self.__sendATCommand('AT+CBC')
-        
-       
-    def powerOff(self):
-        return self.__sendATCommand('AT+CPOF')
-        
-        
+        response = self.__sendATCommand('AT+CBC')
+        return int(response.split(',')[1])
+
+
     def sendSMS(self, message, recipient):
         supportedModes = self.__getSupportedSMSModes()
         if '1' in supportedModes:
-             self.sendSMSTextMode(message, recipient)
+            self.__sendSMSTextMode(message, recipient)
         elif '0' in supportedModes:
-            elf.sendSMSPDUMode(message, recipient)
+            self.__sendSMSPDUMode(message, recipient)
         else:
             raise Exception, _('Sending SMS not supported by phone')
  
  
-    def sendSMSTextMode(self, message, recipient):
+    def __sendSMSTextMode(self, message, recipient):
         self.__sendATCommand('ATZ')
         self.__sendATCommand('AT+CMGF=1') # text mode
         
         # send message information and wait for prompt
         messageCommand = 'AT+CMGS="' + recipient + '"\r'
-        self.__sock.sendall(messageCommand)
-        reply = self.__sock.recv(len(messageCommand) + 4, socket.MSG_WAITALL) # read message + '\r\n> '
+        self.__connection.send(messageCommand)
+        reply = self.__connection.recv(len(messageCommand) + 4, wait=True) # read message + '\r\n> '
 
         if reply[-2:] == '> ':
             self.__sendATCommand(message + chr(26), False) # message + CTRL+Z
         else:
             raise Exception, _('Failed to send message')
-            
+
  
-    def sendSMSPDUMode(self, message, recipient):
+    def __sendSMSPDUMode(self, message, recipient):
         self.__sendATCommand('ATZ')
         self.__sendATCommand('AT+CMGF=0') # PDU mode
         
         if recipient[0] == '+':
+            recipient = recipient[1:]
             addressType = '91'
-            recipientLen = len(recipient) - 1
         else:
             addressType = '81'
-            recipientLen = len(recipient)
             
         #PDU Message
         #11         SMS-Submit
@@ -116,7 +108,7 @@ class MobilePhone:
         #length     User data length
         #user data
         
-        pduMsg = '000100' + self.__byteToString(recipientLen)
+        pduMsg = '000100' + self.__byteToString(len(recipient))
         pduMsg += addressType + self.__phoneNrToOctet(recipient)
         pduMsg += '0000' + self.__byteToString(len(message))
         msg7Bit = bit7alphabet.convert7BitToOctet(message)
@@ -125,8 +117,8 @@ class MobilePhone:
         
         # send message information and wait for prompt
         messageCommand = 'AT+CMGS=' + str(len(pduMsg) / 2 - 1) + '\r'
-        self.__sock.sendall(messageCommand)
-        reply = self.__sock.recv(len(messageCommand) + 4, socket.MSG_WAITALL) # read message + '\r\n> '
+        self.__connection.send(messageCommand)
+        reply = self.__connection.recv(len(messageCommand) + 4, wait=True) # read message + '\r\n> '
 
         if reply[-2:] == '> ':
             self.__sendATCommand(pduMsg + chr(26), False) # message + CTRL+Z
@@ -156,7 +148,7 @@ class MobilePhone:
         
     def sendFile(self, filename):
         client = obexftp.client(obexftp.BLUETOOTH)
-        client.connect(self.__address, 9)
+        client.connect(self.__connection.address, 9)
         client.put_file(filename)
         client.disconnect()
         client.delete
@@ -166,11 +158,11 @@ class MobilePhone:
         command = atCommand
         if lineBreak:
             command += '\r'
-        self.__sock.sendall(command)
+        self.__connection.send(command)
          
-        reply = ""
+        reply = ''
         while not (reply.endswith('OK\r\n') or reply.endswith('ERROR\r\n')):
-            reply += self.__sock.recv(1024)
+            reply += self.__connection.recv()
             
         if reply.endswith('OK\r\n'):
             end = reply.rfind('\r\nOK\r\n')
@@ -183,34 +175,30 @@ class MobilePhone:
         #+CPBR:(1-100),40,14,0
         begin   = reply.find('-') + 1
         end     = reply.rfind(')')
-        
         return reply[begin:end]
-        
-    
+
+
     def __setCharacterSet(self, characterSet):
-        self.__sendATCommand('AT+CSCS=' + characterSet)
+        self.__sendATCommand('AT+CSCS="' + characterSet + '"')
         
     
     def __getSupportedCharacterSets(self):
         response = self.__sendATCommand('AT+CSCS=?')
         return self.__parseCommaseperatedList(response)
-        
+
 
     def __getSupportedSMSModes(self):
         response = self.__sendATCommand('AT+CMGF=?')
         return self.__parseCommaseperatedList(response)
-        
+
     
     def __parseCommaseperatedList(self, list):
-        start = list.find('(')
+        start = list.find('(') + 1
         end = list.rfind(')')
-        return list[start+1:end].split(',')
+        return list[start:end].split(',')
 
 
     def __phoneNrToOctet(self, phoneNr):
-        if phoneNr[0] == '+':
-            phoneNr = phoneNr[1:]
-            
         result = ''
         i = 0
         while (i + 1) < len(phoneNr):

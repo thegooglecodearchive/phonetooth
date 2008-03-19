@@ -19,11 +19,11 @@ import gobject
 import gtk.glade
 import os
 import threading
-import bluetooth
 
 from phonetooth import contacts
 from phonetooth import mobilephone
 from phonetooth import mobilephonegammu
+from phonetooth import mobilephonefactory
 from phonetooth import contactsdialog
 from phonetooth import preferencesdialog
 
@@ -103,9 +103,11 @@ class MainWindow:
         for contactName in contactNames:
             self.__contactlistStore.append((contactName, self.__contactListBeingEdited[contactName]))
             
+    
     def __sendSMS(self, widget):
         threading.Thread(target = self.__sendSMSThread).start()
         
+    
     def __sendFile(self, widget):
         chooser = gtk.FileChooserDialog(title = None, action = gtk.FILE_CHOOSER_ACTION_OPEN,
                     buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
@@ -114,6 +116,7 @@ class MainWindow:
             threading.Thread(target = self.__sendFileThread, args = (chooser.get_filename(),)).start()
         chooser.destroy()
 
+    
     def __sendSMSThread(self):
         gobject.idle_add(self.__setSensitive, False)
         textBuffer = self.__inputField.get_buffer()
@@ -123,27 +126,26 @@ class MainWindow:
         phoneNr = listStore[self.__recipientBox.get_active()][1]
         
         try:
-            if self.__preferencesDialog.backend == 'gammu':
-                phone = mobilephonegammu.MobilePhoneGammu()
-            else:
-                phone = mobilephone.MobilePhone(self.__preferencesDialog.btDevice)
+            phone = mobilephonefactory.createPhone(self.__preferencesDialog.backend, self.__preferencesDialog.btDevice)
+            phone.connect()
             phone.sendSMS(message, phoneNr)
-            self.__pushStatusText(_('Message succesfully sent'))
+            gobject.idle_add(self.__pushStatusText, _('Message succesfully sent'))
         except Exception, e:
-            self.__pushStatusText(_('Failed to send message: ') + str(e))
+            gobject.idle_add(self.__pushStatusText, _('Failed to send message: ') + str(e))
             
         gobject.idle_add(self.__setSensitive, True)
+        
         
     def __sendFileThread(self, filename):
         gobject.idle_add(self.__setSensitive, False)
         
         try:
             self.__pushStatusText(_('Sending file...'))
-            phone = mobilephone.MobilePhone(self.__preferencesDialog.btDevice)
+            phone = mobilephonefactory.createPhone(self.__preferencesDialog.backend, self.__preferencesDialog.btDevice)
             phone.sendFile(filename)
             self.__pushStatusText(_('File succesfully sent.'))
         except Exception, e:
-            self.__pushStatusText(_('Failed to send file: ') + str(e))
+            gobject.idle_add(self.__pushStatusText, _('Failed to send file: ') + str(e))
             
         gobject.idle_add(self.__setSensitive, True)
 
@@ -158,7 +160,6 @@ class MainWindow:
         
         
     def __onDrop(self, widget, drag_context, x, y, selection_data, info, timestamp):
-        print selection_data
         self.__updateNrCharacters(len(selection_data.get_text()))
         
     
