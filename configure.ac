@@ -8,6 +8,5 @@ AM_PO_SUBDIRS
 AC_CONFIG_FILES([phonetooth/constants.py:phonetooth/constants.py.in po/Makefile.in])
 AC_CONFIG_FILES([data/phonetooth.desktop:data/phonetooth.desktop.in])
 
-AC_CONFIG_FILES(Makefile)
 AC_OUTPUT
 
