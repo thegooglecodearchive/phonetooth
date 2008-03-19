@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phonetooth 0.1.2\n"
 "Report-Msgid-Bugs-To: dirk.vdb@gmail.com\n"
-"POT-Creation-Date: 2008-03-17 20:09+0100\n"
-"PO-Revision-Date: 2008-03-17 20:14+0100\n"
+"POT-Creation-Date: 2008-03-19 22:38+0100\n"
+"PO-Revision-Date: 2008-03-19 22:37+0100\n"
 "Last-Translator: Dirk Vanden Boer <dirk.vdb@gmail.com>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -16,58 +16,53 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: phonetooth/contactsdialog.py:51
+#: phonetooth/contactsdialog.py:52
 msgid "Name"
 msgstr "Naam"
 
-#: phonetooth/contactsdialog.py:52
+#: phonetooth/contactsdialog.py:53
 msgid "Phone number"
 msgstr "Telefoon nummer"
 
-#: phonetooth/mainwindow.py:131
+#: phonetooth/mainwindow.py:132
 msgid "Message succesfully sent"
 msgstr "Bericht succesvol verzonden"
 
-#: phonetooth/mainwindow.py:133
+#: phonetooth/mainwindow.py:134
 msgid "Failed to send message: "
-msgstr "Bericht verzenden is mislukt"
+msgstr "Bericht verzenden is mislukt: "
 
-#: phonetooth/mainwindow.py:141
+#: phonetooth/mainwindow.py:143
 msgid "Sending file..."
 msgstr "_Verzend bestand"
 
-#: phonetooth/mainwindow.py:144
+#: phonetooth/mainwindow.py:146
 msgid "File succesfully sent."
 msgstr "Bestand succesvol verzonden"
 
-#: phonetooth/mainwindow.py:146
+#: phonetooth/mainwindow.py:148
 msgid "Failed to send file: "
 msgstr "Bestand verzenden is mislukt"
 
-#: phonetooth/mainwindow.py:167
+#: phonetooth/mainwindow.py:168
 msgid "Characters: "
 msgstr "Karakters: "
-
-#: phonetooth/mobilephone.py:29
-msgid "No device configured in preferences"
-msgstr "Geen apparaat geconfigureerd in de instellingen"
-
-#: phonetooth/mobilephone.py:37
-msgid "Failed to connect to device: "
-msgstr "Connectie naar het apparaat is mislukt: "
 
 #: phonetooth/mobilephone.py:72
 msgid "Sending SMS not supported by phone"
 msgstr "SMS versturen wordt niet ondersteund door de telefoon"
 
-#: phonetooth/mobilephone.py:87
-#: phonetooth/mobilephone.py:127
+#: phonetooth/mobilephone.py:87 phonetooth/mobilephone.py:126
 msgid "Failed to send message"
 msgstr "Bericht verzenden is mislukt"
 
-#: phonetooth/mobilephone.py:172
+#: phonetooth/mobilephone.py:171
 msgid "AT Command not supported by phone: "
 msgstr "AT commando wordt niet ondersteund door de telefoon: "
+
+#: phonetooth/mobilephonefactory.py:28
+msgid "No device configured in the preferences"
+msgstr "Geen apparaat geconfigureerd in de instellingen"
 
 #: phonetooth/preferencesdialog.py:128
 msgid "Device not found"
@@ -80,6 +75,10 @@ msgstr "Geen configuratie bestand gevonden"
 #: phonetooth/preferencesdialog.py:184
 msgid "Load config failed (reverting to defaults): "
 msgstr "Configuratie bestand niet gevonden (standaard waardes worden hersteld)"
+
+#: phonetooth/bluetoothconnection.py:25
+msgid "Failed to connect to device: "
+msgstr "Connectie naar het apparaat is mislukt: "
 
 #: ui/phonetooth.glade:8
 msgid "Manage contacts"
@@ -97,13 +96,11 @@ msgstr "Importeren van telefoon"
 msgid "gtk-new"
 msgstr "gtk-new"
 
-#: ui/phonetooth.glade:115
-#: ui/phonetooth.glade:557
+#: ui/phonetooth.glade:115 ui/phonetooth.glade:557
 msgid "gtk-cancel"
 msgstr "gtk-cancel"
 
-#: ui/phonetooth.glade:126
-#: ui/phonetooth.glade:568
+#: ui/phonetooth.glade:126 ui/phonetooth.glade:568
 msgid "gtk-ok"
 msgstr "gtk-ok"
 
@@ -215,13 +212,18 @@ msgid ""
 "FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for\n"
 "more details.\n"
 "\n"
-"You should have received a copy of the GNU General Public License along with\n"
-"this program; if not, write to the Free Software Foundation, Inc., 59 Temple\n"
+"You should have received a copy of the GNU General Public License along "
+"with\n"
+"this program; if not, write to the Free Software Foundation, Inc., 59 "
+"Temple\n"
 "Place, Suite 330, Boston, MA  02111-1307  USA."
 msgstr ""
-"Dit Programma is vrije software; U kan het verspreiden en/of wijzigen onder de\n"
-"bepalingen van de GNU Algemene Publieke Licentie, zoals uitgegeven door de Free\n"
-"Software Foundation; oftewel versie 2 van de Licentie,of (naar vrije keuze) een\n"
+"Dit Programma is vrije software; U kan het verspreiden en/of wijzigen onder "
+"de\n"
+"bepalingen van de GNU Algemene Publieke Licentie, zoals uitgegeven door de "
+"Free\n"
+"Software Foundation; oftewel versie 2 van de Licentie,of (naar vrije keuze) "
+"een\n"
 "latere versie.\n"
 "\n"
 "Dit Programma is verspreid met de hoop dat het nuttig zal zijn maar\n"
@@ -233,4 +235,3 @@ msgstr ""
 "hebben samen met dit Programma; indien dit niet zo is, schrijf naar de\n"
 "Free Software Foundation, Inc.,\n"
 "59 Temple Place, Suite 330, Boston, MA 02111-1307 USA"
-

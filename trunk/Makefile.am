@@ -5,7 +5,9 @@ pkgpython_PYTHON =  phonetooth/contacts.py \
 					phonetooth/mainwindow.py \
 					phonetooth/mobilephone.py \
 					phonetooth/mobilephonegammu.py \
+                    phonetooth/mobilephonefactory.py \
 					phonetooth/bluetoothdiscovery.py \
+                    phonetooth/bluetoothconnection.py \
 					phonetooth/preferencesdialog.py \
 					phonetooth/constants.py \
 					phonetooth/bit7alphabet.py \

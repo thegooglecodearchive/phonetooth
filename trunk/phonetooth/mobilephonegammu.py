@@ -25,12 +25,21 @@ class MobilePhoneGammu:
     def __init__(self):
         self.__gammuStateMachine = gammu.StateMachine()
         self.__gammuStateMachine.ReadConfig()
-        self.__gammuStateMachine.Init()
 
 
     def __del__(self):
-        self.__gammuStateMachine.Terminate()
+        self.disconnect()
         
+        
+    def connect(self):
+        self.__gammuStateMachine.Init()
+        
+        
+    def disconnect(self):
+        try:
+            self.__gammuStateMachine.Terminate()
+        except: pass
+
     
     def getManufacturer(self):
         return self.__gammuStateMachine.GetManufacturer()
@@ -90,9 +99,5 @@ class MobilePhoneGammu:
 
 
     def sendFile(self, filename):
-        client = obexftp.client(obexftp.BLUETOOTH)
-        client.connect(self.__address, 9)
-        client.put_file(filename)
-        client.disconnect()
-        client.delete
+        raise Exception, 'Send file not yet implemented in Gammu back end'
         
