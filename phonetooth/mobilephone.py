@@ -37,8 +37,8 @@ class MobilePhone:
 
         #use UTF-8 where possible
         characterSets = self.__getSupportedCharacterSets()
-        if 'UTF-8' in characterSets:
-            self.__setCharacterSet('UTF-8')
+        if '"UTF-8"' in characterSets:
+            self.__setCharacterSet('"UTF-8"')
 
     
     def disconnect(self):
@@ -179,7 +179,7 @@ class MobilePhone:
 
 
     def __setCharacterSet(self, characterSet):
-        self.__sendATCommand('AT+CSCS="' + characterSet + '"')
+        self.__sendATCommand('AT+CSCS=' + characterSet)
         
     
     def __getSupportedCharacterSets(self):
