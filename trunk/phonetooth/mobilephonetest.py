@@ -43,7 +43,7 @@ class MobilePhoneTest(unittest.TestCase):
 
     def testConnect(self):
         self.connection.replies.append('\r\nOK\r\n')
-        self.connection.replies.append('\r\nOK\r\n')
+        self.connection.replies.append('("GSM")\r\nOK\r\n')
         
         self.mobilePhone.connect()
         
@@ -54,7 +54,7 @@ class MobilePhoneTest(unittest.TestCase):
         
     def testConnectUtf8Supported(self):
         self.connection.replies.append('\r\nOK\r\n')
-        self.connection.replies.append('(GSM,UTF-8)\r\nOK\r\n')
+        self.connection.replies.append('("GSM","UTF-8")\r\nOK\r\n')
         self.connection.replies.append('\r\nOK\r\n')
         
         self.mobilePhone.connect()
