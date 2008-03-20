@@ -1,0 +1,7 @@
+phonetooth/contactsdialog.py
+phonetooth/mainwindow.py
+phonetooth/mobilephone.py
+phonetooth/mobilephonefactory.py
+phonetooth/preferencesdialog.py
+phonetooth/bluetoothconnection.py
+ui/phonetooth.glade
