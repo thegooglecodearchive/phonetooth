@@ -1,5 +1,8 @@
 Phonetooth
 
+version 0.2.1 (20-03-2008)
+- Fixed bug in UTF-8 detection
+
 version 0.2.1 (19-03-2008)
 - gettext support
 - Dutch translations
