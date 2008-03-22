@@ -27,9 +27,14 @@ from phonetooth import mobilephonefactory
 from gettext import gettext as _
 
 class ContactsDialog:
-    def __init__(self, widgetTree, contactListStore, btDevice):
-        self.__contactlistStore = contactListStore
-        self.btDevice = btDevice
+    def __init__(self, widgetTree, prefs):
+        self.contactList = contacts.ContactList()
+        self.contactList.load()
+        
+        self.contactlistStore = gtk.ListStore(str, str)
+        self.__updateStoreFromContactList()
+       
+        self.__prefs = prefs
         
         self.__contactsDialog       = widgetTree.get_widget('manageContactsDialog')
         self.__contactsView         = widgetTree.get_widget('contactsView')
@@ -52,106 +57,102 @@ class ContactsDialog:
         self.__nameColumn  = gtk.TreeViewColumn(_("Name"), nameRenderer, text = 0)
         self.__nrColumn    = gtk.TreeViewColumn(_("Phone number"), nrRenderer, text = 1)
         
-        self.__contactsView.set_model(self.__contactlistStore)
+        self.__contactsView.set_model(self.contactlistStore)
         self.__contactsView.append_column(self.__nameColumn)
         self.__contactsView.append_column(self.__nrColumn)
         
-    def run(self, widget):
-        contactsBackup = self.__createContactListFromStore()
         
+    def run(self, widget):
         if  self.__contactsDialog.run() == 1:
-            self.__createContactListFromStore().save()
+            self.__updateContactListFromStore()
+            self.contactList.save()
         else:
-            self.updateStoreFromContactList(contactsBackup)
-                
+            self.contactList.load()
+            self.__updateStoreFromContactList()
         self.__contactsDialog.hide()
         
-    def __createContactListFromStore(self):
-        contactList = contacts.ContactList()
-        iter = self.__contactlistStore.get_iter_first()
+
+    def __updateContactListFromStore(self):
+        self.contactList = contacts.ContactList()
+        iter = self.contactlistStore.get_iter_first()
         
         while iter != None:
-            name    = self.__contactlistStore.get_value(iter, 0)
-            nr      = self.__contactlistStore.get_value(iter, 1)
+            name    = self.contactlistStore.get_value(iter, 0)
+            nr      = self.contactlistStore.get_value(iter, 1)
             
-            contactList.addContact(contacts.Contact(name, nr))
-            iter = self.__contactlistStore.iter_next(iter)
-            
-        return contactList
+            self.contactList.addContact(contacts.Contact(name, nr))
+            iter = self.contactlistStore.iter_next(iter)
         
-    def updateStoreFromContactList(self, contactList):
-        self.__contactlistStore.clear()
+    
+    def __updateStoreFromContactList(self):
+        self.contactlistStore.clear()
         
-        contactNames = contactList.contacts.keys()
+        contactNames = self.contactList.contacts.keys()
         contactNames.sort()
         
         for contactName in contactNames:
-            self.__contactlistStore.append((contactName, contactList.contacts[contactName]))
+            self.contactlistStore.append((contactName, self.contactList.contacts[contactName]))
             
+    
     def __importPhoneContacts(self, widget):
         self.__setSensitive(False)
         threading.Thread(target = self.__importContactsThread, args = ('PHONE',)).start()
         
+    
     def __importSimContacts(self, widget):
         self.__setSensitive(False)
         threading.Thread(target = self.__importContactsThread, args = ('SIM',)).start()
 
+    
     def __importContactsThread(self, location):
         try:
-            #todo refactor preferences so we can access the back end pref
-            if self.btDevice == None:
-                phone = mobilephonefactory.createPhone('gammu')
-            else:
-                phone = mobilephonefactory.createPhone('phonetooth', self.btDevice)
-            
+            phone = mobilephonefactory.createPhone(self.__prefs.backend, self.__prefs.btDevice)
             phone.connect()
-            phoneContacts   = phone.getContacts(location)
-            contactList     = self.__createContactListFromStore()
 
+            phoneContacts   = phone.getContacts(location)
             for contact in phoneContacts:
-                contactList.contacts[contact.name] = contact.phoneNumber
+                self.contactList.contacts[contact.name] = contact.phoneNumber
             
-            self.updateStoreFromContactList(contactList)
+            self.__updateStoreFromContactList()
         except Exception, e:
             gobject.idle_add(self.__error, str(e))
        
         gobject.idle_add(self.__setSensitive, True)
         
+
     def __contacsViewKeyReleased(self, widget, event):
         if event.type == gtk.gdk.KEY_RELEASE and event.keyval == gtk.keysyms.Delete:
             (path, column) = self.__contactsView.get_cursor()
             if path != None:
-                iter = self.__contactlistStore.iter_nth_child(None, path[0])
-                nameToDelete = self.__contactlistStore.get_value(iter, 0)
-                
-                contactList = self.__createContactListFromStore()
-                del contactList.contacts[nameToDelete]
-                self.updateStoreFromContactList(contactList)
-
+                iter = self.contactlistStore.iter_nth_child(None, path[0])
+                nameToDelete = self.contactlistStore.get_value(iter, 0)
+                del self.contactList.contacts[nameToDelete]
+                self.__updateStoreFromContactList()
                 self.__contactsView.set_cursor(path)
                 
+
     def __contactEditedCb(self, cell, path, newText, column):
-        iter        = self.__contactlistStore.iter_nth_child(None, int(path))
-        currentName = self.__contactlistStore.get_value(iter, 0)
-        contactList = self.__createContactListFromStore()
+        iter        = self.contactlistStore.iter_nth_child(None, int(path))
+        currentName = self.contactlistStore.get_value(iter, 0)
+        self.__updateContactListFromStore()
         
         if column == 0:
-            del contactList.contacts[currentName]
-            currentNr = self.__contactlistStore.get_value(iter, 1)
-            contactList.contacts[newText] = currentNr
+            del self.contactList.contacts[currentName]
+            currentNr = self.contactlistStore.get_value(iter, 1)
+            self.contactList.contacts[newText] = currentNr
         else:
-            contactList.contacts[currentName] = newText
+            self.contactList.contacts[currentName] = newText
             
-        self.updateStoreFromContactList(contactList)
+        self.__updateStoreFromContactList()
         self.__contactsView.set_cursor(path)
         
+
     def __addContactRow(self, widget):
-        contactList = self.__createContactListFromStore()
-        contactList.contacts[''] = ''
-        
-        self.updateStoreFromContactList(contactList)
+        self.contactList.contacts[''] = ''
+        self.__updateStoreFromContactList()
         self.__contactsView.set_cursor(0, focus_column = self.__nameColumn, start_editing = True)
         
+
     def __error(self, message):
         errorDlg = gtk.MessageDialog(parent=self.__contactsDialog, type=gtk.MESSAGE_ERROR, message_format=message, buttons=gtk.BUTTONS_OK)
         errorDlg.run()
@@ -159,6 +160,7 @@ class ContactsDialog:
         self.__contactsDialog.set_sensitive(True)
         self.__contactsDialog.window.set_cursor(None)
         
+
     def __setSensitive(self, sensitive):
         if sensitive == True:
             self.__contactsDialog.set_sensitive(True)

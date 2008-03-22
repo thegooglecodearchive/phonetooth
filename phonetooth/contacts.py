@@ -22,6 +22,7 @@ class Contact:
         self.name = name
         self.phoneNumber = phoneNumber
         
+
     def __str__(self):
         return self.name + " - " + self.phoneNumber
 
@@ -29,29 +30,52 @@ class ContactList:
     def __init__(self):
         self.contacts = {}
                 
+
     def addContact(self, contact):
         self.contacts[contact.name] = contact.phoneNumber
         
-    def save(self):
-        appDir = os.path.expanduser('~') + '/.phonetooth/'
+
+    def load(self, filename = None):
+        if filename == None:
+            filename = self.__getContactsLocation()
         
-        if not os.path.isdir(appDir):
-            os.mkdir(appDir)
-            
-        file = open(appDir + 'contacts', 'wb')
-        pickle.dump(self.contacts, file)
-        
-    def load(self):
+        self.contacts = {}
         try:
-            file = open(os.path.expanduser('~') + '/.phonetooth/contacts', 'rb')
-            self.contacts = pickle.load(file)
-        except:
+            file = open(filename)
+            for line in file.readlines():
+                splitted = line.split(',')
+                if len(splitted) == 2 and len(splitted[0]) > 0 and len(splitted[1]) > 0:
+                    self.contacts[splitted[0].strip()] = splitted[1].strip()
+        except Exception, e:
+            print str(e)
             self.contacts = {}
-            
+
+
+    def save(self, filename = None):
+        if filename == None:
+            filename = self.__getContactsLocation()
+        
+        try:
+            file = open(filename, 'w')
+            for name, nr in self.contacts.items():
+                file.write(name + ', ' + nr + '\n')
+            file.close()
+        except:
+            pass
+
+
     def __str__(self):
         contactString = ""
         for contact in self.contacts:
             contactString += contact + " - " + self.contacts[contact] + "\n"
             
         return contactString
+        
 
+    def __getContactsLocation(self):
+        configDir = os.path.join(os.path.expanduser('~'), '.config/phonetooth')
+        
+        if not os.path.isdir(configDir):
+            os.makedirs(configDir)
+            
+        return os.path.join(configDir, 'contacts.csv')
