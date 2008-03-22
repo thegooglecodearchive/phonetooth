@@ -25,6 +25,7 @@ from phonetooth import mobilephone
 from phonetooth import mobilephonegammu
 from phonetooth import mobilephonefactory
 from phonetooth import contactsdialog
+from phonetooth import preferences
 from phonetooth import preferencesdialog
 
 from gettext import gettext as _
@@ -50,28 +51,17 @@ class MainWindow:
         self.__aboutDialog.set_name('PhoneTooth')
         self.__sendButton.set_sensitive(False)
                 
-        self.__contactlistStore = gtk.ListStore(str, str)
-        self.__recipientBox.set_model(self.__contactlistStore)
+        self.__prefs = preferences.Preferences()
+        self.__prefs.load()
+        self.__preferencesDialog = preferencesdialog.PreferencesDialog(self.__widgetTree, self.__prefs)        
+        
+        self.__contactsDialog = contactsdialog.ContactsDialog(self.__widgetTree, self.__prefs)
+        self.__recipientBox.set_model(self.__contactsDialog.contactlistStore)
         
         cell = gtk.CellRendererText()
         self.__recipientBox.pack_start (cell, False)
         self.__recipientBox.add_attribute (cell, 'text', 1)
-        
-        contactList = contacts.ContactList()
-        contactList.load()
-        
-        self.__preferencesDialog = preferencesdialog.PreferencesDialog(self, self.__widgetTree)
-        
-        contactsDevice = None
-        if self.__preferencesDialog.backend == 'phonetooth':
-            contactsDevice = self.__preferencesDialog.btDevice
-        
-        self.__contactsDialog = contactsdialog.ContactsDialog(self.__widgetTree, self.__contactlistStore, contactsDevice)
-        self.__contactsDialog.updateStoreFromContactList(contactList)
-        
-        self.__recipientBox.set_active(0)
-        
-        
+
         dic = {'onMainWindowDestroy'            : gtk.main_quit,
                'onSendFile'                     : self.__sendFile,
                'onManageContactsActivated'      : self.__contactsDialog.run,
@@ -88,22 +78,7 @@ class MainWindow:
         
         self.__mainWindow.show()
         
-    def btDeviceChanged(self, widget):
-        if self.__preferencesDialog.backend == 'phonetooth':
-            self.__contactsDialog.btDevice = self.__preferencesDialog.btDevice
-        else:
-            self.__contactsDialog.btDevice = None
-        
-    def __updateContactStore(self, widget = 0):
-        self.__contactlistStore.clear()
-        
-        contactNames = self.__contactListBeingEdited.keys()
-        contactNames.sort()
-        
-        for contactName in contactNames:
-            self.__contactlistStore.append((contactName, self.__contactListBeingEdited[contactName]))
-            
-    
+   
     def __sendSMS(self, widget):
         threading.Thread(target = self.__sendSMSThread).start()
         
