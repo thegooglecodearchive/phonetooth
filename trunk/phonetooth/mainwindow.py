@@ -101,7 +101,7 @@ class MainWindow:
         phoneNr = listStore[self.__recipientBox.get_active()][1]
         
         try:
-            phone = mobilephonefactory.createPhone(self.__preferencesDialog.backend, self.__preferencesDialog.btDevice)
+            phone = mobilephonefactory.createPhone(self.__prefs)
             phone.connect()
             phone.sendSMS(message, phoneNr)
             gobject.idle_add(self.__pushStatusText, _('Message succesfully sent'))

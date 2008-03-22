@@ -29,25 +29,23 @@ class PreferencesDialog:
     def __init__(self, widgetTree, prefs):
         self.__preferencesDialog    = widgetTree.get_widget('preferencesDialog')
         self.__deviceSelecterBox    = widgetTree.get_widget('deviceSelecter')
-        self.__backendSelecterBox   = widgetTree.get_widget('backendSelecter')
+        self.__customPortEntry      = widgetTree.get_widget('customPortEntry')
+        self.__gammuIndexSpinBox   = widgetTree.get_widget('configIndexSpinButton')
+        self.__btRadio              = widgetTree.get_widget('bluetoothRadio')
+        self.__customPortRadio      = widgetTree.get_widget('customPortRadio')
+        self.__gammuRadio           = widgetTree.get_widget('gammuRadio')
         
         self.__deviceListStore = gtk.ListStore(str, str, str)
         self.__deviceSelecterBox.set_model(self.__deviceListStore)
         
-        self.__backendListStore = gtk.ListStore(str)
-        self.__backendSelecterBox.set_model(self.__backendListStore)
-        
         cell = gtk.CellRendererText()
         self.__deviceSelecterBox.pack_start(cell, False)
-        
-        self.__backendListStore.append(('Phonetooth',))
         
         self.__gammuAvailable = False
         
         try:
             import gammu
             self.__gammuAvailable = True
-            self.__backendListStore.append(('Gammu',))
         except:
             print 'python-gammu not found'
         
@@ -61,6 +59,7 @@ class PreferencesDialog:
         self.__prefs = prefs
         self.__applyPreferences()
         
+    
     def run(self, widget):
         if  self.__preferencesDialog.run() == 1:
             activeItem = self.__deviceSelecterBox.get_active()
@@ -68,11 +67,15 @@ class PreferencesDialog:
                 deviceAddress = self.__deviceListStore[activeItem][2]
                 serviceName = self.__deviceListStore[activeItem][1]
                 self.__prefs.btDevice = self.__getDevice(deviceAddress, serviceName)
+                self.__prefs.customPort = self.__customPortEntry.get_text()
+                self.__prefs.gammuIndex = int(self.__gammuIndexSpinBox.get_value())
                 
-            if self.__backendSelecterBox.get_active() == 1:
-                self.__prefs.backend = 'gammu'
+            if self.__btRadio.get_active() == True:
+                self.__prefs.connectionMethod = 'bluetooth'
+            elif self.__customPortRadio.get_active() == True:
+                self.__prefs.connectionMethod = 'customPort'
             else:
-                self.__prefs.backend = 'phonetooth'
+                self.__prefs.connectionMethod = 'gammu'
                 
             self.__prefs.save()
         else:
@@ -99,13 +102,20 @@ class PreferencesDialog:
         self.__deviceListStore.clear()
         if self.__prefs.btDevice != None:
             self.__setDevices([self.__prefs.btDevice])
-        
-        if self.__prefs.backend == 'gammu':
-            self.__backendSelecterBox.set_active(1)
+            
+        if self.__prefs.connectionMethod == 'bluetooth':
+            self.__btRadio.set_active(True)
+        elif self.__prefs.connectionMethod == 'customPort':
+            self.__customPortRadio.set_active(True)
+        elif self.__prefs.connectionMethod == 'gammu':
+            self.__gammuRadio.set_active(True)
         else:
-            self.__backendSelecterBox.set_active(0)
+            raise Exception('Invalid connection method in preferences')
+        
+        self.__customPortEntry.set_text(self.__prefs.customPort)
+        self.__gammuIndexSpinBox.set_value(self.__prefs.gammuIndex)
+            
 
-    
     def __setDevices(self, devices):
         self.__deviceList = devices
         for device in self.__deviceList:

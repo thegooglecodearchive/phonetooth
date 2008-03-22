@@ -23,14 +23,18 @@ from gettext import gettext as _
 class Preferences:
     def __init__(self, preferenceFile = None):
         self.__preferenceFile = preferenceFile
-        self.backend = 'phonetooth'
+        self.connectionMethod = 'bluetooth'
         self.btDevice = None
+        self.customPort = ''
+        self.gammuIndex = 0
         
 
     def save(self):
         config = ConfigParser.ConfigParser()
         config.add_section('preferences')
-        config.set('preferences', 'backend', self.backend)
+        config.set('preferences', 'connectionMethod', self.connectionMethod)
+        config.set('preferences', 'customPort', self.customPort)
+        config.set('preferences', 'gammuIndex', str(self.gammuIndex))
         
         if self.btDevice != None:
             config.set('preferences', 'address', self.btDevice.address)
@@ -47,30 +51,31 @@ class Preferences:
         
     
     def load(self):
+        if self.__preferenceFile == None:
+            self.__preferenceFile = self.__getPreferenceLocation()
+            
+        config = ConfigParser.ConfigParser()
+        openedFiles = config.read(self.__preferenceFile)
+            
+        if len(openedFiles) == 0:
+            return
+                
         try:
-            if self.__preferenceFile == None:
-                self.__preferenceFile = self.__getPreferenceLocation()
-            
-            config = ConfigParser.ConfigParser()
-            openedFiles = config.read(self.__preferenceFile)
-            
-            if len(openedFiles) == 0:
-                raise Exception, _('No config file found')
+            self.btDevice = bluetoothdiscovery.BluetoothDevice(
+            config.get('preferences', 'address'),
+            int(config.get('preferences', 'port')),
+            config.get('preferences', 'deviceName'),
+            config.get('preferences', 'serviceName'))
+        except:
+            self.btDevice == None
                 
-            try:
-                self.btDevice = bluetoothdiscovery.BluetoothDevice(
-                config.get('preferences', 'address'),
-                int(config.get('preferences', 'port')),
-                config.get('preferences', 'deviceName'),
-                config.get('preferences', 'serviceName'))
-            except:
-                self.btDevice == None
-                
-            self.backend = config.get('preferences', 'backend')
-        except Exception, e:
-            print _('Load config failed (reverting to defaults): ') + str(e)
-            self.btDevice = None
-
+        try: self.connectionMethod = config.get('preferences', 'connectionMethod')
+        except: pass
+        try: self.customPort = config.get('preferences', 'customPort')
+        except: pass
+        try: self.gammuIndex = int(config.get('preferences', 'gammuIndex'))
+        except: pass
+            
 
     def __getPreferenceLocation(self):
         configDir = os.path.join(os.path.expanduser('~'), '.config/phonetooth')
