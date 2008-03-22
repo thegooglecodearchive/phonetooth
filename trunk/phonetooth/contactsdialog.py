@@ -42,7 +42,9 @@ class ContactsDialog:
         dic = { 'onImportFromPhoneClicked'       : self.__importPhoneContacts,
                 'onImportFromSimClicked'         : self.__importSimContacts,
                 'onContactsViewKeyReleased'      : self.__contacsViewKeyReleased,
-                'onNewClicked'                   : self.__addContactRow}
+                'onNewClicked'                   : self.__addContactRow,
+                'onExportContacts'               : self.__exportContacts
+        }
                
         widgetTree.signal_autoconnect(dic)
         
@@ -118,6 +120,20 @@ class ContactsDialog:
             gobject.idle_add(self.__error, str(e))
        
         gobject.idle_add(self.__setSensitive, True)
+        
+        
+    def __exportContacts(self, widget):
+        chooser = gtk.FileChooserDialog(title = None, action = gtk.FILE_CHOOSER_ACTION_SAVE,
+                    buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+                    
+        filter = gtk.FileFilter()
+        filter.add_pattern("*.csv")
+        chooser.set_filter(filter)
+        
+        response = chooser.run()
+        if response == gtk.RESPONSE_OK:
+            self.contactList.save(chooser.get_filename())
+        chooser.destroy()
         
 
     def __contacsViewKeyReleased(self, widget, event):
