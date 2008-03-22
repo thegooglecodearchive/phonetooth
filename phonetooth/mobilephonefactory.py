@@ -17,16 +17,19 @@
 from phonetooth import mobilephone
 from phonetooth import mobilephonegammu
 from phonetooth import bluetoothconnection
+from phonetooth import serialconnection
 
 from gettext import gettext as _
 
-def createPhone(backEnd, device = None):
-    if backEnd == 'gammu':
-        return mobilephonegammu.MobilePhoneGammu()
-    elif backEnd == 'phonetooth':
-        if device == None:
+def createPhone(prefs):
+    if prefs.connectionMethod == 'gammu':
+        return mobilephonegammu.MobilePhoneGammu(prefs.gammuIndex)
+    elif prefs.connectionMethod == 'bluetooth':
+        if prefs.btDevice == None:
             raise Exception, _('No device configured in the preferences')
-        return mobilephone.MobilePhone(bluetoothconnection.BluetoothConnection(device.address, device.port))
+        return mobilephone.MobilePhone(bluetoothconnection.BluetoothConnection(prefs.btDevice.address, prefs.btDevice.port))
+    elif prefs.connectionMethod == 'customPort':
+        return mobilephone.MobilePhone(serialconnection.SerialConnection(prefs.customPort))
     else:
         raise Exception, 'Invalid back end specified: ' + backEnd
 

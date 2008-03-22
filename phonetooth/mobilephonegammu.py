@@ -22,9 +22,9 @@ except ImportError, e:
 from phonetooth import contacts
 
 class MobilePhoneGammu:
-    def __init__(self):
+    def __init__(self, configIndex = 0):
         self.__gammuStateMachine = gammu.StateMachine()
-        self.__gammuStateMachine.ReadConfig()
+        self.__gammuStateMachine.ReadConfig(configIndex)
 
 
     def __del__(self):

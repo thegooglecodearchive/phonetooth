@@ -108,7 +108,7 @@ class ContactsDialog:
     
     def __importContactsThread(self, location):
         try:
-            phone = mobilephonefactory.createPhone(self.__prefs.backend, self.__prefs.btDevice)
+            phone = mobilephonefactory.createPhone(self.__prefs)
             phone.connect()
 
             phoneContacts   = phone.getContacts(location)
