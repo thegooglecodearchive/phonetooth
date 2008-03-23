@@ -28,8 +28,8 @@ def createPhone(prefs):
         if prefs.btDevice == None:
             raise Exception, _('No device configured in the preferences')
         return mobilephone.MobilePhone(bluetoothconnection.BluetoothConnection(prefs.btDevice.address, prefs.btDevice.port))
-    elif prefs.connectionMethod == 'customPort':
-        return mobilephone.MobilePhone(serialconnection.SerialConnection(prefs.customPort))
+    elif prefs.connectionMethod == 'customDevice':
+        return mobilephone.MobilePhone(serialconnection.SerialConnection(prefs.customDevice))
     else:
         raise Exception, 'Invalid back end specified: ' + backEnd
 

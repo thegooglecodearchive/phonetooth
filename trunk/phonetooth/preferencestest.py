@@ -16,12 +16,12 @@ class PreferencesTest(unittest.TestCase):
         
         self.assertEqual(None, prefs.btDevice)
         self.assertEqual('bluetooth', prefs.connectionMethod)
-        self.assertEqual('', prefs.customPort)
+        self.assertEqual('', prefs.customDevice)
         self.assertEqual(0, prefs.gammuIndex)
         
         prefs.btDevice = BluetoothDevice('00:00:00:00', 42, 'deviceName', 'serviceName')
         prefs.connectionMethod = 'connection'
-        prefs.customPort = '/dev/rfcomm0'
+        prefs. = '/dev/rfcomm0'
         prefs.gammuIndex = 2
                 
         prefs.save()
@@ -35,5 +35,5 @@ class PreferencesTest(unittest.TestCase):
         self.assertEqual('deviceName', prefsLoaded.btDevice.deviceName)
         self.assertEqual('serviceName', prefsLoaded.btDevice.serviceName)
         self.assertEqual('connection', prefsLoaded.connectionMethod)
-        self.assertEqual('/dev/rfcomm0', prefsLoaded.customPort)
+        self.assertEqual('/dev/rfcomm0', prefsLoaded.customDevice)
         self.assertEqual(2, prefsLoaded.gammuIndex)
