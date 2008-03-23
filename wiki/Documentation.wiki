@@ -16,6 +16,7 @@ If your phone does not support AT-commands but is supported by gammu (check: htt
 = Dependencies =
   * pygtk
   * pybluez
+  * pyserial
   * obexftp with python bindings installed
   * python-gammu (only if you want to use the gammu back end)
 
