@@ -63,9 +63,8 @@ class MainWindow:
         self.__recipientBox.pack_start (cell, False)
         self.__recipientBox.add_attribute (cell, 'text', 1)
         
-        if not (self.__prefs.connectionMethod == 'bluetooth' and self.__prefs.btDevice.obexPort != 0):
-            self.__sendMenuItem.set_sensitive(False)
-
+        self.__checkSendFileButtonSensitivity()
+        
         dic = {'onMainWindowDestroy'            : gtk.main_quit,
                'onSendFile'                     : self.__sendFile,
                'onManageContactsActivated'      : self.__contactsDialog.run,
@@ -74,7 +73,9 @@ class MainWindow:
                'onKeyreleased'                  : self.__onKeyPressed,
                'onPaste'                        : self.__onPaste,
                'onDrop'                         : self.__onDrop,
-               'onAboutButtonClicked'           : self.__showAboutDialog}
+               'onAboutButtonClicked'           : self.__showAboutDialog,
+               'onPreferencesChanged'           : self.__preferencesChanged
+        }
         self.__widgetTree.signal_autoconnect(dic)
         
         gobject.threads_init()
@@ -164,3 +165,12 @@ class MainWindow:
         else:
             self.__mainWindow.set_sensitive(False)
             self.__mainWindow.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+            
+    def __checkSendFileButtonSensitivity(self):
+        if self.__prefs.connectionMethod == 'bluetooth' and self.__prefs.btDevice.obexPort != 0:
+            self.__sendMenuItem.set_sensitive(True)
+        else:
+            self.__sendMenuItem.set_sensitive(False)
+    
+    def __preferencesChanged(self, widget):
+        self.__checkSendFileButtonSensitivity()
