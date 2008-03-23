@@ -167,7 +167,7 @@ class MainWindow:
             self.__mainWindow.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
             
     def __checkSendFileButtonSensitivity(self):
-        if self.__prefs.connectionMethod == 'bluetooth' and self.__prefs.btDevice.obexPort != 0:
+        if self.__prefs.connectionMethod == 'bluetooth' and self.__prefs.btDevice != None and self.__prefs.btDevice.obexPort != 0:
             self.__sendMenuItem.set_sensitive(True)
         else:
             self.__sendMenuItem.set_sensitive(False)
