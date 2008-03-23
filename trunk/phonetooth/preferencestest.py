@@ -19,9 +19,9 @@ class PreferencesTest(unittest.TestCase):
         self.assertEqual('', prefs.customDevice)
         self.assertEqual(0, prefs.gammuIndex)
         
-        prefs.btDevice = BluetoothDevice('00:00:00:00', 42, 'deviceName', 'serviceName')
+        prefs.btDevice = BluetoothDevice('00:00:00:00', 42, 'deviceName', 'serviceName', 6)
         prefs.connectionMethod = 'connection'
-        prefs. = '/dev/rfcomm0'
+        prefs.customDevice = '/dev/rfcomm0'
         prefs.gammuIndex = 2
                 
         prefs.save()
@@ -32,6 +32,7 @@ class PreferencesTest(unittest.TestCase):
         self.assertNotEqual(None, prefsLoaded.btDevice, "Device has not been loaded")
         self.assertEqual('00:00:00:00', prefsLoaded.btDevice.address)
         self.assertEqual(42, prefsLoaded.btDevice.port)
+        self.assertEqual(6, prefsLoaded.btDevice.obexPort)
         self.assertEqual('deviceName', prefsLoaded.btDevice.deviceName)
         self.assertEqual('serviceName', prefsLoaded.btDevice.serviceName)
         self.assertEqual('connection', prefsLoaded.connectionMethod)

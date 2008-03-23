@@ -39,6 +39,7 @@ class Preferences:
         if self.btDevice != None:
             config.set('preferences', 'address', self.btDevice.address)
             config.set('preferences', 'port', str(self.btDevice.port))
+            config.set('preferences', 'obexPort', str(self.btDevice.obexPort))
             config.set('preferences', 'deviceName', self.btDevice.deviceName)
             config.set('preferences', 'serviceName', self.btDevice.serviceName)
         
@@ -62,10 +63,11 @@ class Preferences:
                 
         try:
             self.btDevice = bluetoothdiscovery.BluetoothDevice(
-            config.get('preferences', 'address'),
-            int(config.get('preferences', 'port')),
-            config.get('preferences', 'deviceName'),
-            config.get('preferences', 'serviceName'))
+                config.get('preferences', 'address'),
+                int(config.get('preferences', 'port')),
+                config.get('preferences', 'deviceName'),
+                config.get('preferences', 'serviceName'),
+                int(config.get('preferences', 'obexPort')))
         except:
             self.btDevice == None
                 

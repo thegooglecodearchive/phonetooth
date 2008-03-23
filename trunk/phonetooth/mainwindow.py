@@ -47,6 +47,7 @@ class MainWindow:
         self.__sendButton           = self.__widgetTree.get_widget('sendButton')
         self.__aboutDialog          = self.__widgetTree.get_widget('aboutDialog')
         self.__statusBar            = self.__widgetTree.get_widget('statusBar')
+        self.__sendMenuItem         = self.__widgetTree.get_widget('sendMenuitem')
         
         self.__aboutDialog.set_name('PhoneTooth')
         self.__sendButton.set_sensitive(False)
@@ -61,6 +62,9 @@ class MainWindow:
         cell = gtk.CellRendererText()
         self.__recipientBox.pack_start (cell, False)
         self.__recipientBox.add_attribute (cell, 'text', 1)
+        
+        if not (self.__prefs.connectionMethod == 'bluetooth' and self.__prefs.btDevice.obexPort != 0):
+            self.__sendMenuItem.set_sensitive(False)
 
         dic = {'onMainWindowDestroy'            : gtk.main_quit,
                'onSendFile'                     : self.__sendFile,
@@ -116,7 +120,7 @@ class MainWindow:
         
         try:
             self.__pushStatusText(_('Sending file...'))
-            phone = mobilephonefactory.createPhone(self.__preferencesDialog.backend, self.__preferencesDialog.btDevice)
+            phone = mobilephonefactory.createPhone(self.__prefs)
             phone.sendFile(filename)
             self.__pushStatusText(_('File succesfully sent.'))
         except Exception, e:
