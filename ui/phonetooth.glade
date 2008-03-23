@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.1 on Sat Mar 22 20:33:08 2008 -->
+<!--Generated with glade3 3.4.1 on Sun Mar 23 13:09:08 2008 -->
 <glade-interface>
   <widget class="GtkDialog" id="manageContactsDialog">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -504,7 +504,7 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="customPortRadio">
+                      <widget class="GtkRadioButton" id="customDeviceRadio">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -516,7 +516,7 @@
                           <widget class="GtkLabel" id="customPortLabel">
                             <property name="visible">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                            <property name="label" translatable="yes">&lt;b&gt;Custom port&lt;/b&gt;</property>
+                            <property name="label" translatable="yes">&lt;b&gt;Custom serial device&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
                           </widget>
                         </child>
@@ -526,7 +526,7 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkAlignment" id="customPortAlign">
+                      <widget class="GtkAlignment" id="customDeviceAlign">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="top_padding">5</property>
@@ -543,14 +543,14 @@
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="yes">Port location:</property>
+                                <property name="label" translatable="yes">Device location:</property>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkEntry" id="customPortEntry">
+                              <widget class="GtkEntry" id="customDeviceEntry">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>

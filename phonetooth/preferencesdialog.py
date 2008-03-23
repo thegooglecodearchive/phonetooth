@@ -29,10 +29,10 @@ class PreferencesDialog:
     def __init__(self, widgetTree, prefs):
         self.__preferencesDialog    = widgetTree.get_widget('preferencesDialog')
         self.__deviceSelecterBox    = widgetTree.get_widget('deviceSelecter')
-        self.__customPortEntry      = widgetTree.get_widget('customPortEntry')
-        self.__gammuIndexSpinBox   = widgetTree.get_widget('configIndexSpinButton')
+        self.__customDeviceEntry    = widgetTree.get_widget('customDeviceEntry')
+        self.__gammuIndexSpinBox    = widgetTree.get_widget('configIndexSpinButton')
         self.__btRadio              = widgetTree.get_widget('bluetoothRadio')
-        self.__customPortRadio      = widgetTree.get_widget('customPortRadio')
+        self.__customDeviceRadio    = widgetTree.get_widget('customDeviceRadio')
         self.__gammuRadio           = widgetTree.get_widget('gammuRadio')
         
         self.__deviceListStore = gtk.ListStore(str, str, str)
@@ -67,13 +67,14 @@ class PreferencesDialog:
                 deviceAddress = self.__deviceListStore[activeItem][2]
                 serviceName = self.__deviceListStore[activeItem][1]
                 self.__prefs.btDevice = self.__getDevice(deviceAddress, serviceName)
-                self.__prefs.customPort = self.__customPortEntry.get_text()
-                self.__prefs.gammuIndex = int(self.__gammuIndexSpinBox.get_value())
+
+            self.__prefs.customDevice = self.__customDeviceEntry.get_text()
+            self.__prefs.gammuIndex = int(self.__gammuIndexSpinBox.get_value())
                 
             if self.__btRadio.get_active() == True:
                 self.__prefs.connectionMethod = 'bluetooth'
-            elif self.__customPortRadio.get_active() == True:
-                self.__prefs.connectionMethod = 'customPort'
+            elif self.__customDeviceRadio.get_active() == True:
+                self.__prefs.connectionMethod = 'customDevice'
             else:
                 self.__prefs.connectionMethod = 'gammu'
                 
@@ -105,14 +106,15 @@ class PreferencesDialog:
             
         if self.__prefs.connectionMethod == 'bluetooth':
             self.__btRadio.set_active(True)
-        elif self.__prefs.connectionMethod == 'customPort':
-            self.__customPortRadio.set_active(True)
+        elif self.__prefs.connectionMethod == 'customDevice':
+            self.__customDeviceRadio.set_active(True)
         elif self.__prefs.connectionMethod == 'gammu':
             self.__gammuRadio.set_active(True)
         else:
-            raise Exception('Invalid connection method in preferences')
+            print 'Invalid connection method in preferences'
+            self.__btRadio.set_active(True)
         
-        self.__customPortEntry.set_text(self.__prefs.customPort)
+        self.__customDeviceEntry.set_text(self.__prefs.customDevice)
         self.__gammuIndexSpinBox.set_value(self.__prefs.gammuIndex)
             
 

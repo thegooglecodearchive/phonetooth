@@ -25,7 +25,7 @@ class Preferences:
         self.__preferenceFile = preferenceFile
         self.connectionMethod = 'bluetooth'
         self.btDevice = None
-        self.customPort = ''
+        self.customDevice = ''
         self.gammuIndex = 0
         
 
@@ -33,7 +33,7 @@ class Preferences:
         config = ConfigParser.ConfigParser()
         config.add_section('preferences')
         config.set('preferences', 'connectionMethod', self.connectionMethod)
-        config.set('preferences', 'customPort', self.customPort)
+        config.set('preferences', 'customDevice', self.customDevice)
         config.set('preferences', 'gammuIndex', str(self.gammuIndex))
         
         if self.btDevice != None:
@@ -71,7 +71,7 @@ class Preferences:
                 
         try: self.connectionMethod = config.get('preferences', 'connectionMethod')
         except: pass
-        try: self.customPort = config.get('preferences', 'customPort')
+        try: self.customDevice = config.get('preferences', 'customDevice')
         except: pass
         try: self.gammuIndex = int(config.get('preferences', 'gammuIndex'))
         except: pass
