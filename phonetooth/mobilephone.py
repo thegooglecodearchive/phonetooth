@@ -23,8 +23,9 @@ from phonetooth import contacts
 from gettext import gettext as _
 
 class MobilePhone:
-    def __init__(self, connection):
+    def __init__(self, connection, obexPort = 0):
         self.__connection = connection
+        self.__obexPort = obexPort
         
     
     def __del__(self):
@@ -147,8 +148,10 @@ class MobilePhone:
         
         
     def sendFile(self, filename):
+        if self.__obexPort == 0:
+            raise Exception('Current device does not support sending files')
         client = obexftp.client(obexftp.BLUETOOTH)
-        client.connect(self.__connection.address, 9)
+        client.connect(self.__connection.address, self.__obexPort)
         client.put_file(filename)
         client.disconnect()
         client.delete
