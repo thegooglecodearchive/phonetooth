@@ -63,12 +63,12 @@ class MobilePhone:
         return int(response.split(',')[1])
 
 
-    def sendSMS(self, message, recipient):
+    def sendSMS(self, message, recipient, statusReport = False):
         supportedModes = self.__getSupportedSMSModes()
-        if '1' in supportedModes:
+        if '0' in supportedModes:
+            self.__sendSMSPDUMode(message, recipient, statusReport)
+        elif '1' in supportedModes:
             self.__sendSMSTextMode(message, recipient)
-        elif '0' in supportedModes:
-            self.__sendSMSPDUMode(message, recipient)
         else:
             raise Exception, _('Sending SMS not supported by phone')
  
@@ -88,7 +88,7 @@ class MobilePhone:
             raise Exception, _('Failed to send message')
 
  
-    def __sendSMSPDUMode(self, message, recipient):
+    def __sendSMSPDUMode(self, message, recipient, statusReport):
         self.__sendATCommand('ATZ')
         self.__sendATCommand('AT+CMGF=0') # PDU mode
         
@@ -97,6 +97,8 @@ class MobilePhone:
             addressType = '91'
         else:
             addressType = '81'
+            
+        pduMsg = []
             
         #PDU Message
         #11         SMS-Submit
@@ -109,12 +111,28 @@ class MobilePhone:
         #length     User data length
         #user data
         
-        pduMsg = '000100' + self.__byteToString(len(recipient))
-        pduMsg += addressType + self.__phoneNrToOctet(recipient)
-        pduMsg += '0000' + self.__byteToString(len(message))
-        msg7Bit = bit7alphabet.convert7BitToOctet(message)
-        for byte in msg7Bit:
-            pduMsg += self.__byteToString(byte)
+        pduMsg.append('00')
+        pduMsg.append('21' if statusReport else '01')
+        pduMsg.append('00')
+        pduMsg.append(self.__byteToString(len(recipient)))
+        pduMsg.append(addressType)
+        pduMsg.append(self.__phoneNrToOctet(recipient))
+        pduMsg.append('00')
+        
+        if bit7alphabet.is7bitString(unicode(message, 'utf-8')):
+            msg7Bit = bit7alphabet.convert7BitToOctet(message)
+            pduMsg.append('00')
+            pduMsg.append(self.__byteToString(len(message)))
+            for byte in msg7Bit:
+                pduMsg.append(self.__byteToString(byte))
+        else:
+            unicodeMsg = unicode(message, 'utf-8')
+            pduMsg.append('08')
+            pduMsg.append(self.__byteToString(len(unicodeMsg) * 2))
+            for char in unicodeMsg:
+                pduMsg.append(self.__unicodeCharToString(char))
+               
+        pduMsg = ''.join(pduMsg)
         
         # send message information and wait for prompt
         messageCommand = 'AT+CMGS=' + str(len(pduMsg) / 2 - 1) + '\r'
@@ -218,4 +236,7 @@ class MobilePhone:
         
     def __byteToString(self, byte):
         return '%2.2X' % byte
+        
+    def __unicodeCharToString(self, char):
+        return '%4.4X' % ord(char)
 
