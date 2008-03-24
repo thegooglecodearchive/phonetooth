@@ -19,6 +19,7 @@ import gobject
 import gtk.glade
 import os
 import threading
+import bit7alphabet
 
 from phonetooth import contacts
 from phonetooth import mobilephone
@@ -44,10 +45,13 @@ class MainWindow:
         self.__recipientBox         = self.__widgetTree.get_widget('recipientBox')
         self.__inputField           = self.__widgetTree.get_widget('textView')
         self.__charactersLabel      = self.__widgetTree.get_widget('charactersLabel')
+        self.__encodingLabel        = self.__widgetTree.get_widget('encodingLabel')
         self.__sendButton           = self.__widgetTree.get_widget('sendButton')
         self.__aboutDialog          = self.__widgetTree.get_widget('aboutDialog')
         self.__statusBar            = self.__widgetTree.get_widget('statusBar')
         self.__sendMenuItem         = self.__widgetTree.get_widget('sendMenuitem')
+        self.__deliveryReportCheck  = self.__widgetTree.get_widget('deliveryReportCheck')
+        
         
         self.__aboutDialog.set_name('PhoneTooth')
         self.__sendButton.set_sensitive(False)
@@ -98,17 +102,20 @@ class MainWindow:
 
     
     def __sendSMSThread(self):
+        if self.__recipientBox.get_active() == -1:
+            gobject.idle_add(self.__pushStatusText, _('No recipient selected'))
+            return
+        
         gobject.idle_add(self.__setSensitive, False)
         textBuffer = self.__inputField.get_buffer()
         listStore = self.__recipientBox.get_model()
         
-        message = textBuffer.get_text(textBuffer.get_start_iter(), textBuffer.get_end_iter())
+        message = textBuffer.get_text(textBuffer.get_start_iter(), textBuffer.get_end_iter())    
         phoneNr = listStore[self.__recipientBox.get_active()][1]
-        
         try:
             phone = mobilephonefactory.createPhone(self.__prefs)
             phone.connect()
-            phone.sendSMS(message, phoneNr)
+            phone.sendSMS(message, phoneNr, self.__deliveryReportCheck.get_active())
             gobject.idle_add(self.__pushStatusText, _('Message succesfully sent'))
         except Exception, e:
             gobject.idle_add(self.__pushStatusText, _('Failed to send message: ') + str(e))
@@ -132,22 +139,28 @@ class MainWindow:
     
     def __onKeyPressed(self, widget, event):
         if event.type == gtk.gdk.KEY_RELEASE:
-            self.__updateNrCharacters()
+            self.__updateInfo()
 
 
     def __onPaste(self, widget):
-        self.__updateNrCharacters()
+        self.__updateInfo()
         
         
     def __onDrop(self, widget, drag_context, x, y, selection_data, info, timestamp):
-        self.__updateNrCharacters(len(selection_data.get_text()))
+        self.__updateInfo(len(selection_data.get_text()))
         
     
-    def __updateNrCharacters(self, dropSize = 0):
+    def __updateInfo(self, dropSize = 0):
         nrCharacters = self.__inputField.get_buffer().get_char_count() + dropSize
         self.__charactersLabel.set_text(_('Characters: ') + str(nrCharacters))
         self.__sendButton.set_sensitive(nrCharacters != 0)
-            
+        
+        textBuffer = self.__inputField.get_buffer()
+        if bit7alphabet.is7bitString(unicode(textBuffer.get_text(textBuffer.get_start_iter(), textBuffer.get_end_iter()), 'utf-8')):
+            self.__encodingLabel.set_text(_('Encoding: ') + 'GSM 7-bit')
+        else:
+            self.__encodingLabel.set_text(_('Encoding: ') + 'UCS2')
+
 
     def __showAboutDialog(self, widget):
         self.__aboutDialog.run()
