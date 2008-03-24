@@ -16,11 +16,15 @@
 
 import socket
 import bluetooth
-import obexftp
 import bit7alphabet
 
 from phonetooth import contacts
 from gettext import gettext as _
+
+try:
+    import obexftp
+except ImportError:
+    print 'Obexftp not found: File transfer will not be possible'
 
 class MobilePhone:
     def __init__(self, connection, obexPort = 0):
