@@ -28,6 +28,7 @@ from phonetooth import mobilephonefactory
 from phonetooth import contactsdialog
 from phonetooth import preferences
 from phonetooth import preferencesdialog
+from phonetooth import sms
 
 from gettext import gettext as _
 
@@ -52,6 +53,7 @@ class MainWindow:
         self.__sendMenuItem         = self.__widgetTree.get_widget('sendMenuitem')
         self.__deliveryReportCheck  = self.__widgetTree.get_widget('deliveryReportCheck')
         
+        self.__sms = sms.Sms()
         
         self.__aboutDialog.set_name('PhoneTooth')
         self.__sendButton.set_sensitive(False)
@@ -110,12 +112,13 @@ class MainWindow:
         textBuffer = self.__inputField.get_buffer()
         listStore = self.__recipientBox.get_model()
         
-        message = textBuffer.get_text(textBuffer.get_start_iter(), textBuffer.get_end_iter())    
-        phoneNr = listStore[self.__recipientBox.get_active()][1]
+        self.__sms.message = textBuffer.get_text(textBuffer.get_bounds())
+        self.__sms.recipient = listStore[self.__recipientBox.get_active()][1]
+
         try:
             phone = mobilephonefactory.createPhone(self.__prefs)
             phone.connect()
-            phone.sendSMS(message, phoneNr, self.__deliveryReportCheck.get_active())
+            phone.sendSMS(self.__sms, self.__deliveryReportCheck.get_active())
             gobject.idle_add(self.__pushStatusText, _('Message succesfully sent'))
         except Exception, e:
             gobject.idle_add(self.__pushStatusText, _('Failed to send message: ') + str(e))
