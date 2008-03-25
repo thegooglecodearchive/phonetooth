@@ -2,6 +2,7 @@
 
 import unittest
 import mobilephone
+import sms
 
 class BluetoothConnectionStub:
     def __init__(self):
@@ -98,7 +99,8 @@ class MobilePhoneTest(unittest.TestCase):
         self.connection.replies.append('AT+CMGS="+320497123456"\r\r\n> ')
         self.connection.replies.append('\r\nOK\r\n')
         
-        self.mobilePhone.sendSMS('Message\r\nNext line', '+320497123456')
+        smsMsg = sms.Sms('Message\r\nNext line', '+320497123456')
+        self.mobilePhone.sendSMS(smsMsg)
         
         self.assertSent('AT+CMGF=?\r')
         self.assertSent('ATZ\r')
@@ -115,7 +117,8 @@ class MobilePhoneTest(unittest.TestCase):
         self.connection.replies.append('AT+CMGS=22\r\r\n> ')
         self.connection.replies.append('\r\nOK\r\n')
         
-        self.mobilePhone.sendSMS('hellohello', '46708251358')
+        smsMsg = sms.Sms('hellohello', '46708251358')
+        self.mobilePhone.sendSMS(smsMsg)
         
         self.assertSent('AT+CMGF=?\r')
         self.assertSent('ATZ\r')
@@ -132,7 +135,8 @@ class MobilePhoneTest(unittest.TestCase):
         self.connection.replies.append('AT+CMGS=22\r\r\n> ')
         self.connection.replies.append('\r\nOK\r\n')
         
-        self.mobilePhone.sendSMS('hellohello', '46708251358', statusReport=True)
+        smsMsg = sms.Sms('hellohello', '46708251358')
+        self.mobilePhone.sendSMS(smsMsg, statusReport=True)
         
         self.assertSent('AT+CMGF=?\r')
         self.assertSent('ATZ\r')
@@ -149,7 +153,8 @@ class MobilePhoneTest(unittest.TestCase):
         self.connection.replies.append('AT+CMGS=38\r\r\n> ')
         self.connection.replies.append('\r\nOK\r\n')
         
-        self.mobilePhone.sendSMS('Миха Шестоков', '0192292309')
+        smsMsg = sms.Sms('Миха Шестоков', '0192292309')
+        self.mobilePhone.sendSMS(smsMsg)
         
         self.assertSent('AT+CMGF=?\r')
         self.assertSent('ATZ\r')
@@ -166,7 +171,8 @@ class MobilePhoneTest(unittest.TestCase):
         self.connection.replies.append('AT+CMGS=22\r\r\n> ')
         self.connection.replies.append('\r\nOK\r\n')
         
-        self.mobilePhone.sendSMS('hellohello', '+46708251358')
+        smsMsg = sms.Sms('hellohello', '+46708251358')
+        self.mobilePhone.sendSMS(smsMsg)
         
         self.assertSent('AT+CMGF=?\r')
         self.assertSent('ATZ\r')

@@ -67,76 +67,36 @@ class MobilePhone:
         return int(response.split(',')[1])
 
 
-    def sendSMS(self, message, recipient, statusReport = False):
+    def sendSMS(self, sms, statusReport = False):
         supportedModes = self.__getSupportedSMSModes()
         if '0' in supportedModes:
-            self.__sendSMSPDUMode(message, recipient, statusReport)
+            self.__sendSMSPDUMode(sms, statusReport)
         elif '1' in supportedModes:
-            self.__sendSMSTextMode(message, recipient)
+            self.__sendSMSTextMode(sms)
         else:
             raise Exception, _('Sending SMS not supported by phone')
  
  
-    def __sendSMSTextMode(self, message, recipient):
+    def __sendSMSTextMode(self, sms):
         self.__sendATCommand('ATZ')
         self.__sendATCommand('AT+CMGF=1') # text mode
         
         # send message information and wait for prompt
-        messageCommand = 'AT+CMGS="' + recipient + '"\r'
+        messageCommand = 'AT+CMGS="' + sms.recipient + '"\r'
         self.__connection.send(messageCommand)
         reply = self.__connection.recv(len(messageCommand) + 4, wait=True) # read message + '\r\n> '
 
         if reply[-2:] == '> ':
-            self.__sendATCommand(message + chr(26), False) # message + CTRL+Z
+            self.__sendATCommand(sms.message + chr(26), False) # message + CTRL+Z
         else:
             raise Exception, _('Failed to send message')
 
  
-    def __sendSMSPDUMode(self, message, recipient, statusReport):
+    def __sendSMSPDUMode(self, sms, statusReport):
         self.__sendATCommand('ATZ')
         self.__sendATCommand('AT+CMGF=0') # PDU mode
         
-        if recipient[0] == '+':
-            recipient = recipient[1:]
-            addressType = '91'
-        else:
-            addressType = '81'
-            
-        pduMsg = []
-            
-        #PDU Message
-        #11         SMS-Submit
-        #00         Message reference (Set by phone)
-        #length     Message Length
-        #81 or 91   Address type 81(national) 91 (international)
-        #phone nr
-        #00         Protocol
-        #00         Data coding scheme (7bit default alphabet)
-        #length     User data length
-        #user data
-        
-        pduMsg.append('00')
-        pduMsg.append('21' if statusReport else '01')
-        pduMsg.append('00')
-        pduMsg.append(self.__byteToString(len(recipient)))
-        pduMsg.append(addressType)
-        pduMsg.append(self.__phoneNrToOctet(recipient))
-        pduMsg.append('00')
-        
-        if bit7alphabet.is7bitString(unicode(message, 'utf-8')):
-            msg7Bit = bit7alphabet.convert7BitToOctet(message)
-            pduMsg.append('00')
-            pduMsg.append(self.__byteToString(len(message)))
-            for byte in msg7Bit:
-                pduMsg.append(self.__byteToString(byte))
-        else:
-            unicodeMsg = unicode(message, 'utf-8')
-            pduMsg.append('08')
-            pduMsg.append(self.__byteToString(len(unicodeMsg) * 2))
-            for char in unicodeMsg:
-                pduMsg.append(self.__unicodeCharToString(char))
-               
-        pduMsg = ''.join(pduMsg)
+        pduMsg = sms.getPDUMessage(statusReport)
         
         # send message information and wait for prompt
         messageCommand = 'AT+CMGS=' + str(len(pduMsg) / 2 - 1) + '\r'
@@ -147,7 +107,8 @@ class MobilePhone:
             self.__sendATCommand(pduMsg + chr(26), False) # message + CTRL+Z
         else:
             raise Exception, _('Failed to send message')
-            
+
+
     def getContacts(self, location):
         if location == 'SIM':
             self.__sendATCommand('AT+CPBS="SM"')
@@ -167,8 +128,8 @@ class MobilePhone:
             contactList.append(contacts.Contact(fields[3][1:-1], fields[1][1:-1]))
         
         return contactList
-        
-        
+
+
     def sendFile(self, filename):
         if self.__obexPort == 0:
             raise Exception('Current device does not support sending files')
@@ -221,26 +182,3 @@ class MobilePhone:
         start = list.find('(') + 1
         end = list.rfind(')')
         return list[start:end].split(',')
-
-
-    def __phoneNrToOctet(self, phoneNr):
-        result = ''
-        i = 0
-        while (i + 1) < len(phoneNr):
-            result += phoneNr[i + 1]
-            result += phoneNr[i]
-            i += 2
-            
-        if len(phoneNr) % 2 != 0:
-            result += 'F'
-            result += phoneNr[len(phoneNr) - 1]
-            
-        return result
-        
-        
-    def __byteToString(self, byte):
-        return '%2.2X' % byte
-        
-    def __unicodeCharToString(self, char):
-        return '%4.4X' % ord(char)
-
