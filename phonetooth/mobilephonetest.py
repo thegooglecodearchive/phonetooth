@@ -146,42 +146,7 @@ class MobilePhoneTest(unittest.TestCase):
         self.assertEqual(0, len(self.connection.recieves))
         self.assertEqual(0, len(self.connection.replies))
         
-    def testSendSMSPDUModeUnicode(self):
-        self.connection.replies.append('\r\n(0)\r\nOK\r\n') #phone supports only pdu, so pdu will be chosen
-        self.connection.replies.append('\r\nOK\r\n')
-        self.connection.replies.append('\r\nOK\r\n')
-        self.connection.replies.append('AT+CMGS=38\r\r\n> ')
-        self.connection.replies.append('\r\nOK\r\n')
-        
-        smsMsg = sms.Sms('Миха Шестоков', '0192292309')
-        self.mobilePhone.sendSMS(smsMsg)
-        
-        self.assertSent('AT+CMGF=?\r')
-        self.assertSent('ATZ\r')
-        self.assertSent('AT+CMGF=0\r')
-        self.assertSent('AT+CMGS=38\r')
-        self.assertSent('0001000A81102992329000081A041C04380445043000200428043504410442043E043A043E0432' + chr(26))
-        self.assertEqual(0, len(self.connection.recieves))
-        self.assertEqual(0, len(self.connection.replies))
-        
-    def testSendSMSPDUModeInternational(self):
-        self.connection.replies.append('\r\n(0)\r\nOK\r\n') #phone supports only pdu, so pdu will be chosen
-        self.connection.replies.append('\r\nOK\r\n')
-        self.connection.replies.append('\r\nOK\r\n')
-        self.connection.replies.append('AT+CMGS=22\r\r\n> ')
-        self.connection.replies.append('\r\nOK\r\n')
-        
-        smsMsg = sms.Sms('hellohello', '+46708251358')
-        self.mobilePhone.sendSMS(smsMsg)
-        
-        self.assertSent('AT+CMGF=?\r')
-        self.assertSent('ATZ\r')
-        self.assertSent('AT+CMGF=0\r')
-        self.assertSent('AT+CMGS=22\r')
-        self.assertSent('0001000B916407281553F800000AE8329BFD4697D9EC37' + chr(26))
-        self.assertEqual(0, len(self.connection.recieves))
-        self.assertEqual(0, len(self.connection.replies))
-        
+       
     def testGetContactsFromSIM(self):
         self.connection.replies.append('\r\nOK\r\n')
         self.connection.replies.append('\r\n+CPBR:(1-100),40,14,0\r\nOK\r\n')

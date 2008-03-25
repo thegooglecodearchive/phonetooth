@@ -96,7 +96,7 @@ class MobilePhone:
         self.__sendATCommand('ATZ')
         self.__sendATCommand('AT+CMGF=0') # PDU mode
         
-        pduMsg = sms.getPDUMessage(statusReport)
+        pduMsg = sms.getPDU(statusReport)
         
         # send message information and wait for prompt
         messageCommand = 'AT+CMGS=' + str(len(pduMsg) / 2 - 1) + '\r'

@@ -28,7 +28,7 @@ class Sms:
         return bit7alphabet.is7bitString(unicode(self.message, 'utf-8'))
 
     
-    def getPDUMessage(self, statusReport):
+    def getPDU(self, statusReport):
         recipient = self.recipient
         if recipient[0] == '+':
             recipient = recipient[1:]
