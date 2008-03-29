@@ -1,9 +1,10 @@
 Phonetooth
 
-next version
+version 0.3.0 (29-03-2008)
 - Allow connection through serial device
 - Contacts can be exported to csv
 - Support for unicode text messages
+- Support for multi-part messages
 - Delivery report option added
 - Autodetect port for file transfer
 

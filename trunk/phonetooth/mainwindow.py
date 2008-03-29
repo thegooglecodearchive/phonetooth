@@ -19,7 +19,6 @@ import gobject
 import gtk.glade
 import os
 import threading
-import bit7alphabet
 
 from phonetooth import contacts
 from phonetooth import mobilephone
@@ -46,6 +45,7 @@ class MainWindow:
         self.__recipientBox         = self.__widgetTree.get_widget('recipientBox')
         self.__inputField           = self.__widgetTree.get_widget('textView')
         self.__charactersLabel      = self.__widgetTree.get_widget('charactersLabel')
+        self.__messageCountLabel    = self.__widgetTree.get_widget('messageCountLabel')
         self.__encodingLabel        = self.__widgetTree.get_widget('encodingLabel')
         self.__sendButton           = self.__widgetTree.get_widget('sendButton')
         self.__aboutDialog          = self.__widgetTree.get_widget('aboutDialog')
@@ -112,7 +112,7 @@ class MainWindow:
         textBuffer = self.__inputField.get_buffer()
         listStore = self.__recipientBox.get_model()
         
-        self.__sms.message = textBuffer.get_text(textBuffer.get_bounds())
+        self.__sms.setMessage(textBuffer.get_text(textBuffer.get_start_iter(), textBuffer.get_end_iter()))
         self.__sms.recipient = listStore[self.__recipientBox.get_active()][1]
 
         try:
@@ -154,12 +154,17 @@ class MainWindow:
         
     
     def __updateInfo(self, dropSize = 0):
+        textBuffer = self.__inputField.get_buffer()
+        smsMsg = sms.Sms(textBuffer.get_text(textBuffer.get_start_iter(), textBuffer.get_end_iter()))
+        
         nrCharacters = self.__inputField.get_buffer().get_char_count() + dropSize
         self.__charactersLabel.set_text(_('Characters: ') + str(nrCharacters))
         self.__sendButton.set_sensitive(nrCharacters != 0)
         
-        textBuffer = self.__inputField.get_buffer()
-        if bit7alphabet.is7bitString(unicode(textBuffer.get_text(textBuffer.get_start_iter(), textBuffer.get_end_iter()), 'utf-8')):
+        
+        self.__messageCountLabel.set_text(_('Messages: ') + str(smsMsg.getNumMessages()))
+        
+        if smsMsg.is7Bit():
             self.__encodingLabel.set_text(_('Encoding: ') + 'GSM 7-bit')
         else:
             self.__encodingLabel.set_text(_('Encoding: ') + 'UCS2')
