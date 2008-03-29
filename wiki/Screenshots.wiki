@@ -3,7 +3,11 @@
 
 Mainwindow
 
-http://i248.photobucket.com/albums/gg184/dirk_vdb/mainwindow.gif
+http://i248.photobucket.com/albums/gg184/dirk_vdb/phonetooth.mainwindow.gif
+
+Preferences
+
+http://i248.photobucket.com/albums/gg184/dirk_vdb/phonetooth.preferences.gif
 
 Contacts editor
 
