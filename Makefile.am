@@ -8,6 +8,7 @@ pkgpython_PYTHON =  phonetooth/contacts.py \
                     phonetooth/mobilephonefactory.py \
 					phonetooth/bluetoothdiscovery.py \
                     phonetooth/bluetoothconnection.py \
+                    phonetooth/serialconnection.py \
                     phonetooth/preferences.py \
 					phonetooth/preferencesdialog.py \
 					phonetooth/constants.py \
