@@ -15,62 +15,170 @@
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import bit7alphabet
+import math
 
 from gettext import gettext as _
 
 class Sms:
+    __msgLength = 0
+    __is7Bit = True
+    __characters7BitPart = 153
+    __charactersUnicodePart = 67
+    
     def __init__(self, message = '', recipient = ''):
-        self.message = message
+        self.setMessage(message)
         self.recipient = recipient
 
     
     def is7Bit(self):
-        return bit7alphabet.is7bitString(unicode(self.message, 'utf-8'))
+        return self.__is7Bit
 
     
-    def getPDU(self, statusReport):
-        recipient = self.recipient
-        if recipient[0] == '+':
-            recipient = recipient[1:]
-            addressType = '91'
+    def __checkIs7Bit(self):
+        self.__is7Bit = bit7alphabet.is7bitString(self.__message)
+        
+        
+    def getMessage(self):
+        return self.__message
+             
+        
+    def setMessage(self, message):
+        self.__message = unicode(message, 'utf-8')
+        self.__checkIs7Bit()
+        self.__msgLength = len(self.__message)
+        
+        
+    def getNumMessages(self):
+        if self.__is7Bit:
+            if self.__msgLength <= 160:
+                return 1
+            else:
+                return int(math.ceil(self.__msgLength / float(self.__characters7BitPart)))
         else:
-            addressType = '81'
+            if self.__msgLength <= 70:
+                return 1
+            else:
+                return int(math.ceil(self.__msgLength / float(self.__charactersUnicodePart)))
             
+    
+    def getPDU(self, statusReport):
+        if (self.__is7Bit and self.__msgLength <= 160) or (not self.__is7Bit and self.__msgLength <= 70):
+            return [self.__createSinglePartPDU(statusReport)]
+        elif self.__is7Bit:
+            return self.__createMultiPartPDU7Bit(statusReport)
+        else:
+            return self.__createMultiPartPDUUnicode(statusReport)
+        
+        
+    def __createSinglePartPDU(self, statusReport):
         pduMsg = []
+        pduMsg.append(self.__createPDUHeader(statusReport))
+        
+        if self.__is7Bit:
+            msg7Bit = bit7alphabet.convert7BitToOctet(self.__message)
+            pduMsg.append(self.__byteToString(self.__msgLength))
+            pduMsg.append(self.__bytesToString(msg7Bit))
+        else:
+            pduMsg.append(self.__byteToString(self.__msgLength * 2))
+            pduMsg.append(self.__unicodeCharsToString(self.__message))
             
-        #PDU Message
-        #11         SMS-Submit
+        return ''.join(pduMsg)
+            
+            
+    def __createMultiPartPDU7Bit(self, statusReport):
+        charactersPerPart   = self.__characters7BitPart
+        charactersLeft      = self.__msgLength
+        parts               = self.getNumMessages()
+       
+        pduMessages = []
+        for i in range(0, parts):
+            pduMsg = []
+            finalPart = charactersLeft <= charactersPerPart
+            
+            startIndex = i * charactersPerPart
+            endIndex = startIndex + (charactersLeft if finalPart else charactersPerPart)
+            udh = self.__createUDHHeader(i+1, parts)
+            
+            #prepend 7 @ (0x00 in 7bit) characters to the message to have correcrt 7-bit padding after udh
+            data = bit7alphabet.convert7BitToOctet('@@@@@@@' + self.__message[startIndex:endIndex])
+            
+            #overwrite the prepended zeros with udh header
+            for index in range(0, len(udh)):
+                data[index] = udh[index]
+
+            pduMsg.append(self.__createPDUHeader(statusReport, i + 1))
+            pduMsg.append(self.__byteToString((endIndex - startIndex) + 7)) #dataLength in septets
+            pduMsg.append(self.__bytesToString(data))
+
+            pduMessages.append(''.join(pduMsg))
+            charactersLeft -= charactersPerPart
+            
+        return pduMessages
+            
+    def __createMultiPartPDUUnicode(self, statusReport):
+        data = self.__message
+        parts = self.getNumMessages()
+        partLength = self.__charactersUnicodePart
+            
+        charactersLeft = len(data)
+        pduMessages = []
+        for i in range(0, parts):
+            pduMsg = []
+            pduMsg.append(self.__createPDUHeader(statusReport, i + 1))
+            
+            udh = self.__createUDHHeader(i+1, parts)
+            
+            finalPart = charactersLeft <= partLength
+            startIndex = i * self.__charactersUnicodePart
+            endIndex = startIndex + (charactersLeft if finalPart else self.__charactersUnicodePart)
+            pduMsg.append(self.__byteToString((endIndex - startIndex) * 2 + len(udh)))
+            pduMsg.append(self.__bytesToString(udh))
+            pduMsg.append(self.__unicodeCharsToString(self.__message[startIndex:endIndex]))
+            pduMessages.append(''.join(pduMsg))
+            charactersLeft -= partLength
+            
+        return pduMessages
+
+
+    def __createPDUHeader(self, statusReport, partNr = 0):
+        #PDU Message Header
+        #01         SMS-Submit
         #00         Message reference (Set by phone)
         #length     Message Length
         #81 or 91   Address type 81(national) 91 (international)
         #phone nr
         #00         Protocol
-        #00         Data coding scheme (7bit default alphabet)
-        #length     User data length
-        #user data
+        #00         Data coding scheme (7bit default alphabet = 0x00, UCS2 = 0x08)
+        pduHeader = []
         
-        pduMsg.append('00')
-        pduMsg.append('21' if statusReport else '01')
-        pduMsg.append('00')
-        pduMsg.append(self.__byteToString(len(recipient)))
-        pduMsg.append(addressType)
-        pduMsg.append(self.__phoneNrToOctet(recipient))
-        pduMsg.append('00')
+        smsSubmit = 0x01
+        if self.__is7Bit and self.__msgLength > 160:
+            smsSubmit = smsSubmit | 0x40
+        if not self.__is7Bit and self.__msgLength > 70:
+            smsSubmit = smsSubmit | 0x40
+        if statusReport and partNr == 0:
+            smsSubmit = smsSubmit | 0x20
+            
+        recipient = self.recipient
+        international = False
+        if recipient[0] == '+':
+            recipient = recipient[1:]
+            international = True
+            
+        pduHeader.append('00')
+        pduHeader.append(self.__byteToString(smsSubmit))
+        pduHeader.append(self.__byteToString(partNr))
+        pduHeader.append(self.__byteToString(len(recipient)))
+        pduHeader.append('91' if international else '81')
+        pduHeader.append(self.__phoneNrToOctet(recipient))
+        pduHeader.append('00')
+        pduHeader.append('00' if self.__is7Bit else '08')
         
-        if self.is7Bit():
-            msg7Bit = bit7alphabet.convert7BitToOctet(self.message)
-            pduMsg.append('00')
-            pduMsg.append(self.__byteToString(len(self.message)))
-            for byte in msg7Bit:
-                pduMsg.append(self.__byteToString(byte))
-        else:
-            unicodeMsg = unicode(self.message, 'utf-8')
-            pduMsg.append('08')
-            pduMsg.append(self.__byteToString(len(unicodeMsg) * 2))
-            for char in unicodeMsg:
-                pduMsg.append(self.__unicodeCharToString(char))
-               
-        return ''.join(pduMsg)
+        return ''.join(pduHeader)
+        
+        
+    def __createUDHHeader(self, partNr, nrParts):
+        return [0x05, 0x00, 0x03, 0x42, nrParts, partNr]
         
     
     def __phoneNrToOctet(self, phoneNr):
@@ -88,8 +196,24 @@ class Sms:
         return result
 
 
+    def __bytesToString(self, bytes):
+        string = []
+        for byte in bytes:
+            string.append(self.__byteToString(byte))
+            
+        return ''.join(string)
+    
+    
     def __byteToString(self, byte):
         return '%2.2X' % byte
+
+
+    def __unicodeCharsToString(self, chars):
+        string = []
+        for char in chars:
+            string.append(self.__unicodeCharToString(char))
+            
+        return ''.join(string)
 
 
     def __unicodeCharToString(self, char):

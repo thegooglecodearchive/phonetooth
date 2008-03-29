@@ -65,7 +65,22 @@ class MobilePhone:
     def getBatteryStatus(self):
         response = self.__sendATCommand('AT+CBC')
         return int(response.split(',')[1])
+        
+    
+    def storeSMS(self, sms):
+        self.__sendATCommand('ATZ')
+        self.__sendATCommand('AT+CMGF=0') # PDU mode
+        
+        for pduMsg in sms.getPDU(False):
+            # send message information and wait for prompt
+            messageCommand = 'AT+CMGW=' + str(len(pduMsg) / 2 - 1) + '\r'
+            self.__connection.send(messageCommand)
+            reply = self.__connection.recv(len(messageCommand) + 4, wait=True) # read message + '\r\n> '
 
+            if reply[-2:] == '> ':
+                self.__sendATCommand(pduMsg + chr(26), False) # message + CTRL+Z
+            else:
+                raise Exception, _('Failed to store message')
 
     def sendSMS(self, sms, statusReport = False):
         supportedModes = self.__getSupportedSMSModes()
@@ -87,7 +102,7 @@ class MobilePhone:
         reply = self.__connection.recv(len(messageCommand) + 4, wait=True) # read message + '\r\n> '
 
         if reply[-2:] == '> ':
-            self.__sendATCommand(sms.message + chr(26), False) # message + CTRL+Z
+            self.__sendATCommand(sms.getMessage() + chr(26), False) # message + CTRL+Z
         else:
             raise Exception, _('Failed to send message')
 
@@ -96,17 +111,16 @@ class MobilePhone:
         self.__sendATCommand('ATZ')
         self.__sendATCommand('AT+CMGF=0') # PDU mode
         
-        pduMsg = sms.getPDU(statusReport)
-        
-        # send message information and wait for prompt
-        messageCommand = 'AT+CMGS=' + str(len(pduMsg) / 2 - 1) + '\r'
-        self.__connection.send(messageCommand)
-        reply = self.__connection.recv(len(messageCommand) + 4, wait=True) # read message + '\r\n> '
+        for pduMsg in sms.getPDU(statusReport):
+            # send message information and wait for prompt
+            messageCommand = 'AT+CMGS=' + str(len(pduMsg) / 2 - 1) + '\r'
+            self.__connection.send(messageCommand)
+            reply = self.__connection.recv(len(messageCommand) + 4, wait=True) # read message + '\r\n> '
 
-        if reply[-2:] == '> ':
-            self.__sendATCommand(pduMsg + chr(26), False) # message + CTRL+Z
-        else:
-            raise Exception, _('Failed to send message')
+            if reply[-2:] == '> ':
+                self.__sendATCommand(pduMsg + chr(26), False) # message + CTRL+Z
+            else:
+                raise Exception, _('Failed to send message')
 
 
     def getContacts(self, location):
