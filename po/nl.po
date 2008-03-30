@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phonetooth 0.1.2\n"
 "Report-Msgid-Bugs-To: dirk.vdb@gmail.com\n"
-"POT-Creation-Date: 2008-03-29 14:53+0100\n"
+"POT-Creation-Date: 2008-03-30 23:13+0200\n"
 "PO-Revision-Date: 2008-03-29 14:46+0100\n"
 "Last-Translator: Dirk Vanden Boer <dirk.vdb@gmail.com>\n"
 "Language-Team: Dutch\n"
@@ -116,11 +116,11 @@ msgstr "Importeren van telefoon"
 msgid "gtk-new"
 msgstr "gtk-new"
 
-#: ui/phonetooth.glade:151 ui/phonetooth.glade:726
+#: ui/phonetooth.glade:151 ui/phonetooth.glade:727
 msgid "gtk-cancel"
 msgstr "gtk-cancel"
 
-#: ui/phonetooth.glade:162 ui/phonetooth.glade:737
+#: ui/phonetooth.glade:162 ui/phonetooth.glade:738
 msgid "gtk-ok"
 msgstr "gtk-ok"
 
@@ -179,59 +179,59 @@ msgstr "gtk-about"
 msgid "Recipient:"
 msgstr "Ontvanger:"
 
-#: ui/phonetooth.glade:377
+#: ui/phonetooth.glade:378
 msgid "Characters: 0"
 msgstr "Karakters: 0"
 
-#: ui/phonetooth.glade:387
+#: ui/phonetooth.glade:388
 msgid "Messages: 0"
 msgstr "Berichten: 0"
 
-#: ui/phonetooth.glade:399
+#: ui/phonetooth.glade:400
 msgid "Encoding: GSM 7-bit"
 msgstr "Encodering: GSM 7-bit"
 
-#: ui/phonetooth.glade:430
+#: ui/phonetooth.glade:431
 msgid "Delivery report"
 msgstr "Verzend rapport"
 
-#: ui/phonetooth.glade:444
+#: ui/phonetooth.glade:445
 msgid "Send message"
 msgstr "Verstuur bericht"
 
-#: ui/phonetooth.glade:481
+#: ui/phonetooth.glade:482
 msgid "Preferences"
 msgstr "Voorkeuren"
 
-#: ui/phonetooth.glade:551
+#: ui/phonetooth.glade:552
 msgid " Scan "
 msgstr " Zoek "
 
-#: ui/phonetooth.glade:580
+#: ui/phonetooth.glade:581
 msgid "<b>Custom serial device</b>"
 msgstr "Ander serieel apparaat:"
 
-#: ui/phonetooth.glade:607
+#: ui/phonetooth.glade:608
 msgid "Device location:"
 msgstr "Apparaat locatie:"
 
-#: ui/phonetooth.glade:669
+#: ui/phonetooth.glade:670
 msgid "Gammu configuration index:"
 msgstr "Gammu configuratie index:"
 
-#: ui/phonetooth.glade:698
+#: ui/phonetooth.glade:699
 msgid "<b>Phone connection method</b>"
 msgstr "<b>Telefoon verbindingsmethode</b>"
 
-#: ui/phonetooth.glade:757
+#: ui/phonetooth.glade:758
 msgid "About PhoneTooth"
 msgstr "Over Phonetooth"
 
-#: ui/phonetooth.glade:766
+#: ui/phonetooth.glade:767
 msgid "Copyright © 2008 Dirk Vanden Boer"
 msgstr "Copyright © 2008 Dirk Vanden Boer"
 
-#: ui/phonetooth.glade:768
+#: ui/phonetooth.glade:769
 msgid ""
 "This program is free software; you can redistribute it and/or modify it\n"
 "under the terms of the GNU General Public License as published by the Free\n"
