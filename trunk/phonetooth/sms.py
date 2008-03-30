@@ -96,7 +96,10 @@ class Sms:
             finalPart = charactersLeft <= charactersPerPart
             
             startIndex = i * charactersPerPart
-            endIndex = startIndex + (charactersLeft if finalPart else charactersPerPart)
+            if finalPart:
+                endIndex = startIndex + charactersLeft
+            else:
+                endIndex = startIndex + charactersPerPart
             udh = self.__createUDHHeader(i+1, parts)
             
             #prepend 7 @ (0x00 in 7bit) characters to the message to have correcrt 7-bit padding after udh
@@ -130,7 +133,10 @@ class Sms:
             
             finalPart = charactersLeft <= partLength
             startIndex = i * self.__charactersUnicodePart
-            endIndex = startIndex + (charactersLeft if finalPart else self.__charactersUnicodePart)
+            if finalPart:
+                endIndex = startIndex + charactersLeft
+            else:
+                endIndex = startIndex +  self.__charactersUnicodePart
             pduMsg.append(self.__byteToString((endIndex - startIndex) * 2 + len(udh)))
             pduMsg.append(self.__bytesToString(udh))
             pduMsg.append(self.__unicodeCharsToString(self.__message[startIndex:endIndex]))
@@ -169,10 +175,16 @@ class Sms:
         pduHeader.append(self.__byteToString(smsSubmit))
         pduHeader.append(self.__byteToString(partNr))
         pduHeader.append(self.__byteToString(len(recipient)))
-        pduHeader.append('91' if international else '81')
+        if international:
+            pduHeader.append('91')
+        else:
+            pduHeader.append('81')
         pduHeader.append(self.__phoneNrToOctet(recipient))
         pduHeader.append('00')
-        pduHeader.append('00' if self.__is7Bit else '08')
+        if self.__is7Bit:
+            pduHeader.append('00')
+        else:
+            pduHeader.append('08')
         
         return ''.join(pduHeader)
         
