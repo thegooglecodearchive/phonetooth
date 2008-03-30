@@ -40,7 +40,11 @@ class BluetoothConnection:
     
     def recv(self, size = 1024, wait = False):
         self.__raiseOnNoneSocket('BluetoothConnection: recv failed, not connected');
-        return self.__sock.recv(size, socket.MSG_WAITALL if wait == True else 0)
+        if wait:
+            flags = socket.MSG_WAITALL
+        else:
+            flags = 0
+        return self.__sock.recv(size, flags)
         
     
     def __raiseOnNoneSocket(self, message):
