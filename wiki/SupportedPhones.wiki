@@ -8,4 +8,7 @@
   * W610i
   * K800i
 
+= Siemens =
+ * S55
+
 Please let me know if you have other phones that are working, so I can add them to the list.
