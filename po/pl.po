@@ -7,184 +7,234 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phonetooth\n"
 "Report-Msgid-Bugs-To: dirk.vdb@gmail.com\n"
-"POT-Creation-Date: 2008-03-31 20:39+0200\n"
+"POT-Creation-Date: 2008-03-30 23:13+0200\n"
 "PO-Revision-Date: 2008-03-31 20:49+0100\n"
 "Last-Translator: Tomasz Dominikowski <dominikowski@gmail.com>\n"
 "Language-Team: Tomasz Dominikowski (Aviary.pl) <dominikowski@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
 "X-Poedit-Language: Polish\n"
 "X-Poedit-Country: Poland\n"
 
-#: ../phonetooth/contactsdialog.py:59
+#: phonetooth/contactsdialog.py:59
 msgid "Name"
 msgstr "Kontakt"
 
-#: ../phonetooth/contactsdialog.py:60
+#: phonetooth/contactsdialog.py:60
 msgid "Phone number"
 msgstr "Numer telefonu"
 
-#: ../phonetooth/mainwindow.py:108
+#: phonetooth/mainwindow.py:108
 msgid "No recipient selected"
 msgstr "Nie wybrano odbiorcy"
 
-#: ../phonetooth/mainwindow.py:122
+#: phonetooth/mainwindow.py:122
 msgid "Message succesfully sent"
 msgstr "Wiadomość wysłano z powodzeniem"
 
-#: ../phonetooth/mainwindow.py:124
+#: phonetooth/mainwindow.py:124
 msgid "Failed to send message: "
 msgstr "Wysłanie wiadomości nie powiodło się:"
 
-#: ../phonetooth/mainwindow.py:133
+#: phonetooth/mainwindow.py:133
 msgid "Sending file..."
 msgstr "Wysyłanie pliku..."
 
-#: ../phonetooth/mainwindow.py:136
+#: phonetooth/mainwindow.py:136
 msgid "File succesfully sent."
 msgstr "Plik wysłano z powodzeniem."
 
-#: ../phonetooth/mainwindow.py:138
+#: phonetooth/mainwindow.py:138
 msgid "Failed to send file: "
 msgstr "Wysłanie pliku nie powiodło się:"
 
-#: ../phonetooth/mainwindow.py:161
+#: phonetooth/mainwindow.py:161
 msgid "Characters: "
 msgstr "Znaków:"
 
-#: ../phonetooth/mainwindow.py:165
+#: phonetooth/mainwindow.py:165
 msgid "Messages: "
 msgstr "Wiadomości:"
 
-#: ../phonetooth/mainwindow.py:168
-#: ../phonetooth/mainwindow.py:170
+#: phonetooth/mainwindow.py:168 phonetooth/mainwindow.py:170
 msgid "Encoding: "
 msgstr "Kodowanie:"
 
-#: ../phonetooth/mobilephone.py:83
+#: phonetooth/mobilephone.py:83
 msgid "Failed to store message"
 msgstr "Zapis wiadomości nieudany"
 
-#: ../phonetooth/mobilephone.py:92
+#: phonetooth/mobilephone.py:92
 msgid "Sending SMS not supported by phone"
 msgstr "Wysyłanie wiadomości SMS nieobsługiwane przez telefon"
 
-#: ../phonetooth/mobilephone.py:107
-#: ../phonetooth/mobilephone.py:123
+#: phonetooth/mobilephone.py:107 phonetooth/mobilephone.py:123
 msgid "Failed to send message"
 msgstr "Wysłanie wiadomości nie powiodło się"
 
-#: ../phonetooth/mobilephone.py:171
+#: phonetooth/mobilephone.py:171
 msgid "AT Command not supported by phone: "
 msgstr "Polecenie AT nieobsługiwane przez telefon:"
 
-#: ../phonetooth/mobilephonefactory.py:29
+#: phonetooth/mobilephonefactory.py:29
 msgid "No device configured in the preferences"
 msgstr "Brak skonfigurowanego urządzenia w preferencjach"
 
-#: ../phonetooth/preferencesdialog.py:137
+#: phonetooth/preferencesdialog.py:137
 msgid "Device not found"
 msgstr "Urządzenie nieodnalezione"
 
-#: ../phonetooth/bluetoothconnection.py:27
+#: phonetooth/bluetoothconnection.py:27
 msgid "Failed to connect to device: "
 msgstr "Połączenie z urządzeniem nie powiodło się:"
 
-#: ../ui/phonetooth.glade.h:1
-msgid " Scan "
-msgstr " Skanuj"
-
-#: ../ui/phonetooth.glade.h:2
-msgid "<b>Custom serial device</b>"
-msgstr "<b>Własne urządzenie szeregowe</b>"
-
-#: ../ui/phonetooth.glade.h:3
-msgid "<b>Phone connection method</b>"
-msgstr "<b>Rodzaj połączenia z telefonem</b>"
-
-#: ../ui/phonetooth.glade.h:4
-msgid "About PhoneTooth"
-msgstr "O PhoneTooth"
-
-#: ../ui/phonetooth.glade.h:5
-msgid "Characters: 0"
-msgstr "Znaków: 0"
-
-#: ../ui/phonetooth.glade.h:6
-msgid "Close the application"
-msgstr "Zakończenie aplikacji"
-
-#: ../ui/phonetooth.glade.h:7
-msgid "Copyright © 2008 Dirk Vanden Boer"
-msgstr "Copyright © 2008 Dirk Vanden Boer"
-
-#: ../ui/phonetooth.glade.h:8
-msgid "Delivery report"
-msgstr "Raport o dostarczeniu"
-
-#: ../ui/phonetooth.glade.h:9
-msgid "Device location:"
-msgstr "Położenie urządzenia:"
-
-#: ../ui/phonetooth.glade.h:10
-msgid "Encoding: GSM 7-bit"
-msgstr "Kodowanie: GSM 7-bit"
-
-#: ../ui/phonetooth.glade.h:11
-msgid "Gammu configuration index:"
-msgstr "Indeks konfiguracji Gammu:"
-
-#: ../ui/phonetooth.glade.h:12
-msgid "Import from SIM"
-msgstr "Zaimportuj z SIM"
-
-#: ../ui/phonetooth.glade.h:13
-msgid "Import from phone"
-msgstr "Zaimportuj z telefonu"
-
-#: ../ui/phonetooth.glade.h:14
+#: ui/phonetooth.glade:7
 msgid "Manage contacts"
 msgstr "Zarządzaj kontaktami"
 
-#: ../ui/phonetooth.glade.h:15
-msgid "Manage your contacts"
-msgstr "Zarządzanie kontaktami"
+#: ui/phonetooth.glade:28 ui/phonetooth.glade:198
+msgid "_File"
+msgstr "_Plik"
 
-#: ../ui/phonetooth.glade.h:16
-msgid "Messages: 0"
-msgstr "Wiadomości: 0"
-
-#: ../ui/phonetooth.glade.h:17
-msgid "Open the preferences"
-msgstr "Otwarcie preferencji"
-
-#: ../ui/phonetooth.glade.h:18
-msgid "Phonetooth"
-msgstr "Phonetooth"
-
-#: ../ui/phonetooth.glade.h:19
-msgid "Preferences"
-msgstr "Preferencje"
-
-#: ../ui/phonetooth.glade.h:20
-msgid "Recipient:"
-msgstr "Odbiorca:"
-
-#: ../ui/phonetooth.glade.h:21
+#: ui/phonetooth.glade:38
 msgid "Send a file to your mobile phone"
 msgstr "Wyślij plik do telefonu komórkowego"
 
-#: ../ui/phonetooth.glade.h:22
-msgid "Send a file to your mobile phone (only available for bluetooth connections)"
-msgstr "Wysłanie pliku do telefonu komórkowego (dostępne wyłącznie dla połączeń Bluetooth)"
+#: ui/phonetooth.glade:39
+msgid "_Export contacts..."
+msgstr "E_ksportowanie kontaktów..."
 
-#: ../ui/phonetooth.glade.h:23
+#: ui/phonetooth.glade:95
+msgid "Import from SIM"
+msgstr "Zaimportuj z SIM"
+
+#: ui/phonetooth.glade:106
+msgid "Import from phone"
+msgstr "Zaimportuj z telefonu"
+
+#: ui/phonetooth.glade:120
+msgid "gtk-new"
+msgstr "Nowy"
+
+#: ui/phonetooth.glade:151 ui/phonetooth.glade:727
+msgid "gtk-cancel"
+msgstr "Anuluj"
+
+#: ui/phonetooth.glade:162 ui/phonetooth.glade:738
+msgid "gtk-ok"
+msgstr "OK"
+
+#: ui/phonetooth.glade:184
+msgid "Phonetooth"
+msgstr "Phonetooth"
+
+#: ui/phonetooth.glade:208
+msgid ""
+"Send a file to your mobile phone (only available for bluetooth connections)"
+msgstr ""
+"Wysłanie pliku do telefonu komórkowego (dostępne wyłącznie dla połączeń "
+"Bluetooth)"
+
+#: ui/phonetooth.glade:209
+msgid "_Send file"
+msgstr "_Wyślij plik"
+
+#: ui/phonetooth.glade:219
+msgid "Close the application"
+msgstr "Zakończenie aplikacji"
+
+#: ui/phonetooth.glade:220
+msgid "gtk-close"
+msgstr "Zamknij"
+
+#: ui/phonetooth.glade:234
+msgid "_Edit"
+msgstr "_Edycja"
+
+#: ui/phonetooth.glade:244
+msgid "Manage your contacts"
+msgstr "Zarządzanie kontaktami"
+
+#: ui/phonetooth.glade:245
+msgid "_Manage contacts"
+msgstr "_Zarządzaj kontaktami"
+
+#: ui/phonetooth.glade:259
+msgid "Open the preferences"
+msgstr "Otwarcie preferencji"
+
+#: ui/phonetooth.glade:260
+msgid "gtk-preferences"
+msgstr "Preferencje"
+
+#: ui/phonetooth.glade:274
+msgid "_Help"
+msgstr "Pomo_c"
+
+#: ui/phonetooth.glade:284
+msgid "gtk-about"
+msgstr "O programie"
+
+#: ui/phonetooth.glade:314
+msgid "Recipient:"
+msgstr "Odbiorca:"
+
+#: ui/phonetooth.glade:378
+msgid "Characters: 0"
+msgstr "Znaków: 0"
+
+#: ui/phonetooth.glade:388
+msgid "Messages: 0"
+msgstr "Wiadomości: 0"
+
+#: ui/phonetooth.glade:400
+msgid "Encoding: GSM 7-bit"
+msgstr "Kodowanie: GSM 7-bit"
+
+#: ui/phonetooth.glade:431
+msgid "Delivery report"
+msgstr "Raport o dostarczeniu"
+
+#: ui/phonetooth.glade:445
 msgid "Send message"
 msgstr "Wyślij wiadomość"
 
-#: ../ui/phonetooth.glade.h:24
+#: ui/phonetooth.glade:482
+msgid "Preferences"
+msgstr "Preferencje"
+
+#: ui/phonetooth.glade:552
+msgid " Scan "
+msgstr " Skanuj"
+
+#: ui/phonetooth.glade:581
+msgid "<b>Custom serial device</b>"
+msgstr "<b>Własne urządzenie szeregowe</b>"
+
+#: ui/phonetooth.glade:608
+msgid "Device location:"
+msgstr "Położenie urządzenia:"
+
+#: ui/phonetooth.glade:670
+msgid "Gammu configuration index:"
+msgstr "Indeks konfiguracji Gammu:"
+
+#: ui/phonetooth.glade:699
+msgid "<b>Phone connection method</b>"
+msgstr "<b>Rodzaj połączenia z telefonem</b>"
+
+#: ui/phonetooth.glade:758
+msgid "About PhoneTooth"
+msgstr "O PhoneTooth"
+
+#: ui/phonetooth.glade:767
+msgid "Copyright © 2008 Dirk Vanden Boer"
+msgstr "Copyright © 2008 Dirk Vanden Boer"
+
+#: ui/phonetooth.glade:769
 msgid ""
 "This program is free software; you can redistribute it and/or modify it\n"
 "under the terms of the GNU General Public License as published by the Free\n"
@@ -196,8 +246,10 @@ msgid ""
 "FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for\n"
 "more details.\n"
 "\n"
-"You should have received a copy of the GNU General Public License along with\n"
-"this program; if not, write to the Free Software Foundation, Inc., 59 Temple\n"
+"You should have received a copy of the GNU General Public License along "
+"with\n"
+"this program; if not, write to the Free Software Foundation, Inc., 59 "
+"Temple\n"
 "Place, Suite 330, Boston, MA  02111-1307  USA."
 msgstr ""
 "This program is free software; you can redistribute it and/or modify it\n"
@@ -210,55 +262,8 @@ msgstr ""
 "FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for\n"
 "more details.\n"
 "\n"
-"You should have received a copy of the GNU General Public License along with\n"
-"this program; if not, write to the Free Software Foundation, Inc., 59 Temple\n"
+"You should have received a copy of the GNU General Public License along "
+"with\n"
+"this program; if not, write to the Free Software Foundation, Inc., 59 "
+"Temple\n"
 "Place, Suite 330, Boston, MA  02111-1307  USA."
-
-#: ../ui/phonetooth.glade.h:37
-msgid "_Edit"
-msgstr "_Edycja"
-
-#: ../ui/phonetooth.glade.h:38
-msgid "_Export contacts..."
-msgstr "E_ksportowanie kontaktów..."
-
-#: ../ui/phonetooth.glade.h:39
-msgid "_File"
-msgstr "_Plik"
-
-#: ../ui/phonetooth.glade.h:40
-msgid "_Help"
-msgstr "Pomo_c"
-
-#: ../ui/phonetooth.glade.h:41
-msgid "_Manage contacts"
-msgstr "_Zarządzaj kontaktami"
-
-#: ../ui/phonetooth.glade.h:42
-msgid "_Send file"
-msgstr "_Wyślij plik"
-
-#: ../ui/phonetooth.glade.h:43
-msgid "gtk-about"
-msgstr "O programie"
-
-#: ../ui/phonetooth.glade.h:44
-msgid "gtk-cancel"
-msgstr "Anuluj"
-
-#: ../ui/phonetooth.glade.h:45
-msgid "gtk-close"
-msgstr "Zamknij"
-
-#: ../ui/phonetooth.glade.h:46
-msgid "gtk-new"
-msgstr "Nowy"
-
-#: ../ui/phonetooth.glade.h:47
-msgid "gtk-ok"
-msgstr "OK"
-
-#: ../ui/phonetooth.glade.h:48
-msgid "gtk-preferences"
-msgstr "Preferencje"
-
