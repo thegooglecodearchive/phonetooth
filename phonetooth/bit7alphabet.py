@@ -77,8 +77,9 @@ def convert7BitToOctet(data):
             
         i = i+1
 
-    end = lookup(data[len(data) - 1])
-    value = (end & leftMask) >> leftShift
-    result.append(value)
+    if len(data) % 8 != 0:
+        end = lookup(data[len(data) - 1])
+        value = (end & leftMask) >> leftShift
+        result.append(value)
     
     return result
