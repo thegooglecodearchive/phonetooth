@@ -17,7 +17,7 @@ RDEPEND="dev-python/pygtk
 	 dev-python/pybluez
  	 dev-python/pyserial
 	 app-mobilephone/obexftp
-	 gammu? (dev-python/python-gammu)"
+	 gammu? ( dev-python/python-gammu )"
 DEPEND="${RDEPEND}"
 
 pkg_setup() {
