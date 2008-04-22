@@ -68,8 +68,7 @@ class Sms:
             return self.__createMultiPartPDU7Bit(statusReport)
         else:
             return self.__createMultiPartPDUUnicode(statusReport)
-        
-        
+            
     def __createSinglePartPDU(self, statusReport):
         pduMsg = []
         pduMsg.append(self.__createPDUHeader(statusReport))

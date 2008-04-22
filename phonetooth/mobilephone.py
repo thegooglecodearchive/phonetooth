@@ -69,18 +69,22 @@ class MobilePhone:
     
     def storeSMS(self, sms):
         self.__sendATCommand('ATZ')
-        self.__sendATCommand('AT+CMGF=0') # PDU mode
+        self.__sendATCommand('AT+CMGF=0') # store PDU mode in sent messages
+        self.selectWriteStorage('PHONE')
         
         for pduMsg in sms.getPDU(False):
             # send message information and wait for prompt
-            messageCommand = 'AT+CMGW=' + str(len(pduMsg) / 2 - 1) + '\r'
+            messageCommand = 'AT+CMGW=' + str(len(pduMsg) / 2 - 1) + ',3\r'
             self.__connection.send(messageCommand)
             reply = self.__connection.recv(len(messageCommand) + 4, wait=True) # read message + '\r\n> '
 
             if reply[-2:] == '> ':
-                self.__sendATCommand(pduMsg + chr(26), False) # message + CTRL+Z
+                response = self.__sendATCommand(pduMsg + chr(26), False) # message + CTRL+Z
             else:
                 raise Exception, _('Failed to store message')
+                
+            location = response[response.find(':') + 1:]
+    
 
     def sendSMS(self, sms, statusReport = False):
         supportedModes = self.__getSupportedSMSModes()
@@ -142,7 +146,85 @@ class MobilePhone:
             contactList.append(contacts.Contact(fields[3][1:-1], fields[1][1:-1]))
         
         return contactList
+        
 
+    def selectReadStorage(self, location):
+        currentStorageInfo = self.getCurrentStorageInfo()
+        readStorage, writeStorage, recieveStorage = self.getSupportedStorage()
+                
+        if location == 'SIM' and '"SM"' in readStorage:
+            location = '"SM"'
+        elif location == 'PHONE' and '"ME"' in readStorage:
+            location = '"ME"'
+        else:
+            raise Exception('Failed to select read storage')
+            
+            
+        self.__sendATCommand('AT+CPMS=%s,%s,%s' % (location, currentStorageInfo[2], currentStorageInfo[4]));
+        
+    
+    def selectWriteStorage(self, location):
+        currentStorageInfo = self.getCurrentStorageInfo()
+        readStorage, writeStorage, recieveStorage = self.getSupportedStorage()
+                
+        if location == 'SIM' and '"SM"' in writeStorage:
+            location = '"SM"'
+        elif location == 'PHONE' and '"ME"' in writeStorage:
+            location = '"ME"'
+        else:
+            raise Exception('Failed to select write storage')
+            
+            
+        self.__sendATCommand('AT+CPMS=%s,%s,%s' % (currentStorageInfo[0], location, currentStorageInfo[4]));
+    
+    def getSupportedStorage(self):
+        supportedStorage = self.__sendATCommand('AT+CPMS=?')
+        
+        readStorage, supportedStorage     = self.__parseSupportedStorage(supportedStorage)
+        writeStorage, supportedStorage    = self.__parseSupportedStorage(supportedStorage)
+        recieveStorage, supportedStorage  = self.__parseSupportedStorage(supportedStorage)
+        
+        return readStorage, writeStorage, recieveStorage
+        
+    
+    def getCurrentStorageInfo(self):
+        #+CPMS:"SM",3,10,"SM",3,10,"SM",3,10
+        currentStorage = self.__sendATCommand('AT+CPMS?')
+        storageInfo = []
+        
+        type, free, currentStorage = self.__parseStorageInfo(currentStorage)
+        storageInfo.extend([type, free])
+        type, free, currentStorage = self.__parseStorageInfo(currentStorage)
+        storageInfo.extend([type, free])
+        type, free, currentStorage = self.__parseStorageInfo(currentStorage + '"') #extra quote helps parsing
+        storageInfo.extend([type, free])
+        
+        return storageInfo
+    
+    
+    def __parseStorageInfo(self, info):
+        index = info.find('"')
+        storageType = info[index:index + 4]
+        
+        info = info[index + 5:]
+        index = info.find('"')
+        storageDetails = info[:index].split(',')
+        storageFree = int(storageDetails[1]) - int(storageDetails[0])
+        
+        return storageType, storageFree, info[index:]
+    
+    
+    def __parseSupportedStorage(self, storage):
+        start = storage.find('(')
+        end = storage.find(')')
+        
+        readStorage = []
+        if start != -1 and end != -1:
+            readStorage = storage[start + 1:end].split(',')
+        
+        storage = storage[end + 1:]
+        return readStorage, storage
+    
 
     def sendFile(self, filename):
         if self.__obexPort == 0:
