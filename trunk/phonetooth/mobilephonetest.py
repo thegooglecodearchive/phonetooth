@@ -186,3 +186,52 @@ class MobilePhoneTest(unittest.TestCase):
         self.assertEqual("Name 2", contacts[1].name)
         self.assertEqual("3456", contacts[2].phoneNumber)
         self.assertEqual("Name 3", contacts[2].name)
+        
+    def testFindSupportedStorage(self):
+        self.connection.replies.append('\r\n+CPMS:("BM","ME","SM"),("ME","SM")\r\nOK\r\n')
+        
+        st1, st2, st3 = self.mobilePhone.getSupportedStorage()
+        
+        self.assertSent('AT+CPMS=?\r')
+        self.assertEqual(0, len(self.connection.recieves))
+        self.assertEqual(0, len(self.connection.replies))
+        
+        self.assertEqual(st1[0], '"BM"')
+        self.assertEqual(st1[1], '"ME"')
+        self.assertEqual(st1[2], '"SM"')
+        
+        self.assertEqual(st2[0], '"ME"')
+        self.assertEqual(st2[1], '"SM"')
+
+        self.assertEqual(0, len(st3))
+        
+    def testGetCurrentStorageInfo(self):
+        self.connection.replies.append('\r\n+CPMS:"SM",3,10,"ME",45,100,"SM",3,14\r\nOK\r\n')
+        
+        storageInfo = self.mobilePhone.getCurrentStorageInfo()
+        
+        self.assertSent('AT+CPMS?\r')
+        self.assertEqual(0, len(self.connection.recieves))
+        self.assertEqual(0, len(self.connection.replies))
+        
+        self.assertEqual('"SM"', storageInfo[0])
+        self.assertEqual('"ME"', storageInfo[2])
+        self.assertEqual('"SM"', storageInfo[4])
+        
+        self.assertEqual(7,  storageInfo[1])
+        self.assertEqual(55, storageInfo[3])
+        self.assertEqual(11, storageInfo[5])
+        
+    def testSlectReadStorage(self):
+        self.connection.replies.append('\r\n+CPMS:"SM",3,10,"ME",45,100,"SM",3,14\r\nOK\r\n')
+        self.connection.replies.append('\r\n+CPMS:("BM","ME","SM"),("ME","SM")\r\nOK\r\n')
+        self.connection.replies.append('\r\nOK\r\n')
+        
+        self.mobilePhone.selectReadStorage('PHONE')
+        
+        self.assertSent('AT+CPMS?\r')
+        self.assertSent('AT+CPMS=?\r')
+        self.assertSent('AT+CPMS="ME","ME","SM"\r')
+        self.assertEqual(0, len(self.connection.recieves))
+        self.assertEqual(0, len(self.connection.replies))
+        

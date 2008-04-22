@@ -52,6 +52,7 @@ class MainWindow:
         self.__statusBar            = self.__widgetTree.get_widget('statusBar')
         self.__sendMenuItem         = self.__widgetTree.get_widget('sendMenuitem')
         self.__deliveryReportCheck  = self.__widgetTree.get_widget('deliveryReportCheck')
+        self.__storeMessageCheck    = self.__widgetTree.get_widget('storeMessageCheck')
         
         self.__sms = sms.Sms()
         
@@ -119,6 +120,8 @@ class MainWindow:
             phone = mobilephonefactory.createPhone(self.__prefs)
             phone.connect()
             phone.sendSMS(self.__sms, self.__deliveryReportCheck.get_active())
+            if self.__storeMessageCheck.get_active():
+                phone.storeSMS(self.__sms)
             gobject.idle_add(self.__pushStatusText, _('Message succesfully sent'))
         except Exception, e:
             gobject.idle_add(self.__pushStatusText, _('Failed to send message: ') + str(e))
