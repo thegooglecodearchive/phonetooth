@@ -177,6 +177,7 @@ class MobilePhone:
             
         self.__sendATCommand('AT+CPMS=%s,%s,%s' % (currentStorageInfo[0], location, currentStorageInfo[4]));
     
+    
     def getSupportedStorage(self):
         supportedStorage = self.__sendATCommand('AT+CPMS=?')
         
