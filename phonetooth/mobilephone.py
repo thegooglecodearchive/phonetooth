@@ -21,15 +21,10 @@ import bit7alphabet
 from phonetooth import contacts
 from gettext import gettext as _
 
-try:
-    import obexftp
-except ImportError:
-    print 'Obexftp not found: File transfer will not be possible'
 
 class MobilePhone:
-    def __init__(self, connection, obexPort = 0):
+    def __init__(self, connection):
         self.__connection = connection
-        self.__obexPort = obexPort
         
     
     def __del__(self):
@@ -227,16 +222,6 @@ class MobilePhone:
         return readStorage, storage
     
 
-    def sendFile(self, filename):
-        if self.__obexPort == 0:
-            raise Exception('Current device does not support sending files')
-        client = obexftp.client(obexftp.BLUETOOTH)
-        client.connect(self.__connection.address, self.__obexPort)
-        client.put_file(filename)
-        client.disconnect()
-        client.delete
-        
-        
     def __sendATCommand(self, atCommand, lineBreak = True):
         command = atCommand
         if lineBreak:

@@ -21,6 +21,7 @@ import locale
 import gettext
 import os
 import sys
+import dbus
 
 from phonetooth import mainwindow
 
@@ -29,6 +30,8 @@ APP_NAME = 'phonetooth'
 def main():
     setLocale()
     mainWindow = mainwindow.MainWindow()
+
+    dbus.glib.init_threads()
     gtk.main()
     
 def setLocale():
