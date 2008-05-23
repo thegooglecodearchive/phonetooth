@@ -28,6 +28,7 @@ from phonetooth import contactsdialog
 from phonetooth import preferences
 from phonetooth import preferencesdialog
 from phonetooth import sms
+from phonetooth import filetransfer
 
 from gettext import gettext as _
 
@@ -53,10 +54,13 @@ class MainWindow:
         self.__sendMenuItem         = self.__widgetTree.get_widget('sendMenuitem')
         self.__deliveryReportCheck  = self.__widgetTree.get_widget('deliveryReportCheck')
         self.__storeMessageCheck    = self.__widgetTree.get_widget('storeMessageCheck')
+        self.__sendFileDialog       = self.__widgetTree.get_widget('sendFileDialog')
+        self.__transferProgressBar  = self.__widgetTree.get_widget('transferProgress')
         
         self.__sms = sms.Sms()
         
         self.__aboutDialog.set_name('PhoneTooth')
+        self.__sendFileDialog.set_transient_for(self.__mainWindow)
         self.__sendButton.set_sensitive(False)
                 
         self.__prefs = preferences.Preferences()
@@ -65,6 +69,11 @@ class MainWindow:
         
         self.__contactsDialog = contactsdialog.ContactsDialog(self.__widgetTree, self.__prefs)
         self.__recipientBox.set_model(self.__contactsDialog.contactlistStore)
+        
+        self.__fileTransfer = filetransfer.FileTransfer()
+        self.__fileTransfer.connect("progress", self.transferProgressCb)
+        self.__fileTransfer.connect("completed", self.transferCompletedCb)
+        self.__fileTransfer.connect("error", self.transferErrorCb)
         
         cell = gtk.CellRendererText()
         self.__recipientBox.pack_start (cell, False)
@@ -96,12 +105,48 @@ class MainWindow:
         
     
     def __sendFile(self, widget):
-        chooser = gtk.FileChooserDialog(title = None, action = gtk.FILE_CHOOSER_ACTION_OPEN,
+        self.__setSensitive(False)
+        chooser = gtk.FileChooserDialog(title = None, parent = self.__mainWindow, action = gtk.FILE_CHOOSER_ACTION_OPEN,
                     buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
         response = chooser.run()
         if response == gtk.RESPONSE_OK:
-            threading.Thread(target = self.__sendFileThread, args = (chooser.get_filename(),)).start()
-        chooser.destroy()
+            filename = chooser.get_filename()
+            chooser.destroy()
+            
+            try:
+                self.__transferProgressBar.set_fraction(0.0)
+                self.__pushStatusText(_('Sending file...'))
+                threading.Thread(target = self.__sendFileThread, args = (filename,)).start()
+                if self.__sendFileDialog.run() == gtk.RESPONSE_CANCEL:
+                    self.__fileTransfer.cancelTransfer()
+                    self.__pushStatusText(_('File transfer cancelled.'))
+                else:
+                    self.__pushStatusText(_('File succesfully sent.'))
+            except Exception, e:
+                gobject.idle_add(self.__pushStatusText, _('Failed to send file: ') + str(e))
+            self.__sendFileDialog.hide()
+        else:
+            chooser.destroy()
+            
+        self.__setSensitive(True)
+        
+
+    def __sendFileThread(self, filename):
+        self.__fileTransfer.transferFile(self.__prefs.btDevice.address, filename)
+        
+    
+    def transferProgressCb(self, sender, progress):
+        gobject.idle_add(self.__transferProgressBar.set_fraction, progress)
+        
+    
+    def transferCompletedCb(self, data = None):
+        print 'transfer complete recieved'
+        gobject.idle_add(self.__sendFileDialog.response, gtk.RESPONSE_CLOSE)
+        
+    
+    def transferErrorCb(self, data = None):
+        print 'transfer error recieved'
+        gobject.idle_add(self.__sendFileDialog.response, gtk.RESPONSE_CLOSE)
 
     
     def __sendSMSThread(self):
@@ -129,20 +174,6 @@ class MainWindow:
         gobject.idle_add(self.__setSensitive, True)
         
         
-    def __sendFileThread(self, filename):
-        gobject.idle_add(self.__setSensitive, False)
-        
-        try:
-            self.__pushStatusText(_('Sending file...'))
-            phone = mobilephonefactory.createPhone(self.__prefs)
-            phone.sendFile(filename)
-            self.__pushStatusText(_('File succesfully sent.'))
-        except Exception, e:
-            gobject.idle_add(self.__pushStatusText, _('Failed to send file: ') + str(e))
-            
-        gobject.idle_add(self.__setSensitive, True)
-
-    
     def __onKeyPressed(self, widget, event):
         if event.type == gtk.gdk.KEY_RELEASE:
             self.__updateInfo()
