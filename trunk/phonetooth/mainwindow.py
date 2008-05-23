@@ -56,6 +56,8 @@ class MainWindow:
         self.__storeMessageCheck    = self.__widgetTree.get_widget('storeMessageCheck')
         self.__sendFileDialog       = self.__widgetTree.get_widget('sendFileDialog')
         self.__transferProgressBar  = self.__widgetTree.get_widget('transferProgress')
+        self.__transferFileLabel    = self.__widgetTree.get_widget('transferFileLabel')
+        self.__transferFileLabelText = self.__transferFileLabel.get_text()
         
         self.__sms = sms.Sms()
         
@@ -115,6 +117,8 @@ class MainWindow:
             
             try:
                 self.__transferProgressBar.set_fraction(0.0)
+                self.__transferProgressBar.set_text('0 %')
+                self.__transferFileLabel.set_text(self.__transferFileLabelText + os.path.basename(filename) + ':')
                 self.__pushStatusText(_('Sending file...'))
                 threading.Thread(target = self.__sendFileThread, args = (filename,)).start()
                 if self.__sendFileDialog.run() == gtk.RESPONSE_CANCEL:
@@ -137,6 +141,7 @@ class MainWindow:
     
     def transferProgressCb(self, sender, progress):
         gobject.idle_add(self.__transferProgressBar.set_fraction, progress)
+        gobject.idle_add(self.__transferProgressBar.set_text, str(int(progress * 100)) + ' %')
         
     
     def transferCompletedCb(self, data = None):
