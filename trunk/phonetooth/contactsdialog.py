@@ -23,12 +23,14 @@ from phonetooth import contacts
 from phonetooth import mobilephone
 from phonetooth import mobilephonegammu
 from phonetooth import mobilephonefactory
+from phonetooth import mergecontactsdialog
 
 from gettext import gettext as _
 
 class ContactsDialog:
-    def __init__(self, widgetTree, prefs):
-        self.contactList = contacts.ContactList()
+    contactList = contacts.ContactList()
+    
+    def __init__(self, widgetTree, prefs, parent = None):
         self.contactList.load()
         
         self.contactlistStore = gtk.ListStore(str, str)
@@ -39,11 +41,16 @@ class ContactsDialog:
         self.__contactsDialog       = widgetTree.get_widget('manageContactsDialog')
         self.__contactsView         = widgetTree.get_widget('contactsView')
         
+        self.__contactsDialog.set_transient_for(parent)
+        
+        self.__mergeContactsDialog = mergecontactsdialog.MergeContactsDialog(widgetTree, parent = self.__contactsDialog)
+        
         dic = { 'onImportFromPhoneClicked'       : self.__importPhoneContacts,
                 'onImportFromSimClicked'         : self.__importSimContacts,
                 'onContactsViewKeyReleased'      : self.__contacsViewKeyReleased,
                 'onNewClicked'                   : self.__addContactRow,
-                'onExportContacts'               : self.__exportContacts
+                'onExportContacts'               : self.__exportContacts,
+                'onImportContacts'               : self.__importContacts
         }
                
         widgetTree.signal_autoconnect(dic)
@@ -98,7 +105,7 @@ class ContactsDialog:
     
     def __importPhoneContacts(self, widget):
         self.__setSensitive(False)
-        threading.Thread(target = self.__importContactsThread, args = ('PHONE',)).start()
+        threading.Thread(target = self.__importContactsFromPhoneThread, args = ('PHONE',)).start()
         
     
     def __importSimContacts(self, widget):
@@ -106,7 +113,7 @@ class ContactsDialog:
         threading.Thread(target = self.__importContactsThread, args = ('SIM',)).start()
 
     
-    def __importContactsThread(self, location):
+    def __importContactsFromPhoneThread(self, location):
         try:
             phone = mobilephonefactory.createPhone(self.__prefs)
             phone.connect()
@@ -132,7 +139,37 @@ class ContactsDialog:
         
         response = chooser.run()
         if response == gtk.RESPONSE_OK:
-            self.contactList.save(chooser.get_filename())
+            filename = chooser.get_filename()
+            if not filename.endswith('.csv'):
+                filename += '.csv'
+            self.contactList.save(filename)
+        chooser.hide()
+        
+        
+    def __importContacts(self, widget):
+        chooser = gtk.FileChooserDialog(title = None, action = gtk.FILE_CHOOSER_ACTION_OPEN,
+                    buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+                    
+        filter = gtk.FileFilter()
+        filter.add_pattern("*.csv")
+        chooser.set_filter(filter)
+        
+        response = chooser.run()
+        if response == gtk.RESPONSE_OK:
+            chooser.hide()
+            importedList = contacts.ContactList()
+            importedList.load(chooser.get_filename())
+            
+            collisions = self.contactList.findCollisions(importedList)
+            if len(collisions) > 0:
+                resolvedCollisions = self.__mergeContactsDialog.run(collisions)
+
+                if resolvedCollisions != None:
+                    self.contactList.mergeContacts(importedList, resolvedCollisions)
+            else:
+                self.contactList.mergeContacts(importedList)
+            
+        self.__updateStoreFromContactList()
         chooser.destroy()
         
 

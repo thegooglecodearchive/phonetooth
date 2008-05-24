@@ -25,6 +25,14 @@ class Contact:
 
     def __str__(self):
         return self.name + " - " + self.phoneNumber
+        
+        
+class ContactCollision:
+    def __init__(self, name, phoneNumber1, phoneNumber2):
+        self.name = name
+        self.phoneNumber1 = phoneNumber1
+        self.phoneNumber2 = phoneNumber2
+        
 
 class ContactList:
     def __init__(self):
@@ -34,7 +42,27 @@ class ContactList:
     def addContact(self, contact):
         self.contacts[contact.name] = contact.phoneNumber
         
+    
+    def findCollisions(self, otherContacts):
+        collisions = []
+        
+        for contact in self.contacts:
+            if otherContacts.contacts.has_key(contact) and self.contacts[contact] != otherContacts.contacts[contact]:
+                collisions.append(ContactCollision(contact, self.contacts[contact], otherContacts.contacts[contact]))
+                
+        return collisions
 
+
+    def mergeContacts(self, otherContacts, resolvedCollisions = None):
+        for contact in otherContacts.contacts:
+            if not self.contacts.has_key(contact):
+                self.contacts[contact] = otherContacts.contacts[contact]
+
+        if resolvedCollisions != None:
+            for contact in resolvedCollisions.contacts:
+                self.contacts[contact] = resolvedCollisions.contacts[contact]
+
+        
     def load(self, filename = None):
         if filename == None:
             filename = self.__getContactsLocation()

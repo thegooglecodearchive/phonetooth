@@ -66,9 +66,9 @@ class MainWindow:
                 
         self.__prefs = preferences.Preferences()
         self.__prefs.load()
-        self.__preferencesDialog = preferencesdialog.PreferencesDialog(self.__widgetTree, self.__prefs)        
+        self.__preferencesDialog = preferencesdialog.PreferencesDialog(self.__widgetTree, self.__prefs, parent = self.__mainWindow)
         
-        self.__contactsDialog = contactsdialog.ContactsDialog(self.__widgetTree, self.__prefs)
+        self.__contactsDialog = contactsdialog.ContactsDialog(self.__widgetTree, self.__prefs, parent = self.__mainWindow)
         self.__recipientBox.set_model(self.__contactsDialog.contactlistStore)
         
         self.__fileTransfer = filetransfer.FileTransfer()
