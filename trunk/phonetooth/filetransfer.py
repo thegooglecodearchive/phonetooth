@@ -7,6 +7,10 @@ import gtk
 
 class FileTransfer(gobject.GObject):
     __fileSizeInBytes = -1
+    __bytesTransferred = 0
+    __time = 0.0
+    __speedHistory = []
+    __mainLoop = None
     
     __gsignals__ =  { 
         "completed": (
@@ -14,11 +18,17 @@ class FileTransfer(gobject.GObject):
         "error": (
             gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, []),
         "progress": (
-            gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [gobject.TYPE_FLOAT])
+            gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [gobject.TYPE_FLOAT, gobject.TYPE_INT, gobject.TYPE_INT])
     }
+    
     
     def __init__(self):
         gobject.GObject.__init__(self)
+        
+    
+    def __del__(self):
+        if self.__mainLoop != None and self.__mainLoop.is_running:
+            self.__mainLoop.quit()
         
   
     def transferFile(self, btAddress, filename):
@@ -32,28 +42,35 @@ class FileTransfer(gobject.GObject):
         sessionObject = bus.get_object('org.openobex', sessionPath)
         self.__dbusSession = dbus.Interface(sessionObject, 'org.openobex.Session')
         
-        self.__dbusSession.connect_to_signal('Connected', self.connectedCb)
-        self.__dbusSession.connect_to_signal('Disconnected', self.disconnectedCb)
-        self.__dbusSession.connect_to_signal('ErrorOccurred', self.errorOccurredCb)
-        self.__dbusSession.connect_to_signal('TransferProgress', self.transferProgressCb)
-        self.__dbusSession.connect_to_signal('TransferStarted', self.transferStartedCb)
-        self.__dbusSession.connect_to_signal('TransferCompleted', self.transferCompletedCb)
+        self.__dbusSession.connect_to_signal('Connected', self.__connectedCb)
+        self.__dbusSession.connect_to_signal('Disconnected', self.__disconnectedCb)
+        self.__dbusSession.connect_to_signal('Closed', self.__closedCb)
+        self.__dbusSession.connect_to_signal('ErrorOccurred', self.__errorOccurredCb)
+        self.__dbusSession.connect_to_signal('TransferProgress', self.__transferProgressCb)
+        self.__dbusSession.connect_to_signal('TransferStarted', self.__transferStartedCb)
+        self.__dbusSession.connect_to_signal('TransferCompleted', self.__transferCompletedCb)
         
-        self.__main_loop = gobject.MainLoop()
-        self.__main_loop.run()
+        self.__mainLoop = gobject.MainLoop()
+        self.__mainLoop.run()
+        
+    
+    def cancelTransfer(self):
+        self.__disconnect()
         
 
-    def connectedCb(self):
+    def __connectedCb(self):
         self.__dbusSession.SendFile(self.__filename)
         
     
-    def disconnectedCb(self):
-        print 'Disconnected'
+    def __disconnectedCb(self):
         self.__dbusSession.Close()
-        self.__main_loop.quit()
         
     
-    def disconnect(self):
+    def __closedCb(self):
+        self.__mainLoop.quit()
+        
+    
+    def __disconnect(self):
         if self.__dbusSession.IsBusy():
             self.__dbusSession.Cancel()
         
@@ -61,26 +78,57 @@ class FileTransfer(gobject.GObject):
             self.__dbusSession.Disconnect()
         
         
-    def errorOccurredCb(self, errorName, errorMessage):
+    def __errorOccurredCb(self, errorName, errorMessage):
         print 'Error occurred: %s: %s' % (errorName, errorMessage)
         self.emit("error")
         self.disconnect()
 
         
-    def transferStartedCb(self, filename, localPath, fileSizeInBytes):
+    def __transferStartedCb(self, filename, localPath, fileSizeInBytes):
         self.__fileSizeInBytes = fileSizeInBytes
+        self.__transferHistory = []
         
     
-    def transferProgressCb(self, bytesTransferred):
-        if self.__fileSizeInBytes > 0:
-            self.emit("progress", bytesTransferred / float(self.__fileSizeInBytes))
+    def __transferProgressCb(self, bytesTransferred):
+        curTime = time.time()
+
+        if self.__fileSizeInBytes <= 0:
+            self.__time = curTime
+            return
+
+        timeDelta = curTime - self.__time
+        if timeDelta > 0.0:
+            bytesPersecond = ((bytesTransferred - self.__bytesTransferred) / timeDelta)
+            
+            if len(self.__speedHistory) == 20:
+                self.__speedHistory.pop(0)
+            self.__speedHistory.append(int(bytesPersecond))
+        
+        kbPersecond = self.__getAverageSpeed() / 1024.0
+        kbLeft = (self.__fileSizeInBytes - bytesTransferred) / 1024.0
+        if kbPersecond > 0:
+            timeRemaining = int(kbLeft / kbPersecond)
+        else:
+            timeRemaining = -1
+
+        self.emit("progress", bytesTransferred / float(self.__fileSizeInBytes), int(kbPersecond), timeRemaining)
+        self.__bytesTransferred = bytesTransferred
+        self.__time = curTime
+        
     
+    def __getAverageSpeed(self):
+        historyLength = len(self.__speedHistory)
+        
+        if historyLength == 0:
+            return 0
+        
+        totalTransfer = 0
+        for transfer in self.__speedHistory:
+            totalTransfer += transfer
+            
+        return totalTransfer / historyLength
     
-    def transferCompletedCb(self):
+    def __transferCompletedCb(self):
         self.emit("completed")
-        self.disconnect()
+        self.__disconnect()
     
-    
-    def cancelTransfer(self):
-        self.disconnect()
-        
