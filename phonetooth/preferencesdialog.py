@@ -26,7 +26,7 @@ from phonetooth import bluetoothdiscovery
 from gettext import gettext as _
 
 class PreferencesDialog:
-    def __init__(self, widgetTree, prefs):
+    def __init__(self, widgetTree, prefs, parent = None):
         self.__preferencesDialog    = widgetTree.get_widget('preferencesDialog')
         self.__deviceSelecterBox    = widgetTree.get_widget('deviceSelecter')
         self.__customDeviceEntry    = widgetTree.get_widget('customDeviceEntry')
@@ -34,6 +34,8 @@ class PreferencesDialog:
         self.__btRadio              = widgetTree.get_widget('bluetoothRadio')
         self.__customDeviceRadio    = widgetTree.get_widget('customDeviceRadio')
         self.__gammuRadio           = widgetTree.get_widget('gammuRadio')
+        
+        self.__preferencesDialog.set_transient_for(parent)
         
         self.__deviceListStore = gtk.ListStore(str, str, str)
         self.__deviceSelecterBox.set_model(self.__deviceListStore)
