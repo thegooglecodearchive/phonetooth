@@ -56,8 +56,7 @@ class MainWindow:
         self.__storeMessageCheck    = self.__widgetTree.get_widget('storeMessageCheck')
         self.__sendFileDialog       = self.__widgetTree.get_widget('sendFileDialog')
         self.__transferProgressBar  = self.__widgetTree.get_widget('transferProgress')
-        self.__transferFileLabel    = self.__widgetTree.get_widget('transferFileLabel')
-        self.__transferFileLabelText = self.__transferFileLabel.get_text()
+        self.__filenameLabel        = self.__widgetTree.get_widget('filenameLabel')
         
         self.__sms = sms.Sms()
         
@@ -117,17 +116,20 @@ class MainWindow:
             
             try:
                 self.__transferProgressBar.set_fraction(0.0)
-                self.__transferProgressBar.set_text('0 %')
-                self.__transferFileLabel.set_text(self.__transferFileLabelText + os.path.basename(filename) + ':')
+                self.__transferProgressBar.set_text('')
+                self.__filenameLabel.set_text(os.path.basename(filename))
                 self.__pushStatusText(_('Sending file...'))
                 threading.Thread(target = self.__sendFileThread, args = (filename,)).start()
-                if self.__sendFileDialog.run() == gtk.RESPONSE_CANCEL:
+                response = self.__sendFileDialog.run()
+                if response == gtk.RESPONSE_CANCEL:
                     self.__fileTransfer.cancelTransfer()
                     self.__pushStatusText(_('File transfer cancelled.'))
+                elif response == 1:
+                    self.__pushStatusText(_('File transfer failed.'))
                 else:
                     self.__pushStatusText(_('File succesfully sent.'))
             except Exception, e:
-                gobject.idle_add(self.__pushStatusText, _('Failed to send file: ') + str(e))
+                gobject.idle_add(self.__pushStatusText, _('File transfer failed: ') + str(e))
             self.__sendFileDialog.hide()
         else:
             chooser.destroy()
@@ -136,22 +138,32 @@ class MainWindow:
         
 
     def __sendFileThread(self, filename):
-        self.__fileTransfer.transferFile(self.__prefs.btDevice.address, filename)
+        try:
+            self.__fileTransfer.transferFile(self.__prefs.btDevice.address, filename)
+        except exception, e:
+            self.transferErrorCb()
         
     
-    def transferProgressCb(self, sender, progress):
+    def transferProgressCb(self, sender, progress, speed, timeRemaining):
         gobject.idle_add(self.__transferProgressBar.set_fraction, progress)
-        gobject.idle_add(self.__transferProgressBar.set_text, str(int(progress * 100)) + ' %')
+        
+        statusString = str(speed) + ' kb/s  '
+        if timeRemaining != -1:
+            if timeRemaining >= 60:
+                statusString += '(' + str(timeRemaining / 60 + 1) + _(' minutes remaining') + ')'
+            else:
+                statusString += '(' + str(timeRemaining / 10 * 10 + 10) + _(' seconds remaining') + ')'
+        
+        gobject.idle_add(self.__transferProgressBar.set_text, statusString)
         
     
     def transferCompletedCb(self, data = None):
-        print 'transfer complete recieved'
         gobject.idle_add(self.__sendFileDialog.response, gtk.RESPONSE_CLOSE)
         
     
     def transferErrorCb(self, data = None):
         print 'transfer error recieved'
-        gobject.idle_add(self.__sendFileDialog.response, gtk.RESPONSE_CLOSE)
+        gobject.idle_add(self.__sendFileDialog.response, 1)
 
     
     def __sendSMSThread(self):
