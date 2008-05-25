@@ -17,10 +17,9 @@
 import bluetooth
 
 class BluetoothDevice:
-    def __init__(self, address, port, deviceName, serviceName, obexPort=0):
+    def __init__(self, address, port, deviceName, serviceName):
         self.address = address
         self.port = port
-        self.obexPort = obexPort
         self.deviceName = deviceName
         self.serviceName = serviceName
         
@@ -35,13 +34,8 @@ class BluetoothDiscovery:
         for address in devices:
             services = bluetooth.find_service(uuid = bluetooth.SERIAL_PORT_CLASS, address = address)
             services.extend(bluetooth.find_service(uuid = bluetooth.DIALUP_NET_CLASS))
-            obexServices = bluetooth.find_service(uuid = bluetooth.OBEX_FILETRANS_CLASS, address = address)
             
             for service in services:
-                obexPort = 0
-                if len(obexServices) > 0:
-                    obexPort = obexServices[0]['port']
-                    
-                serialDevices.append(BluetoothDevice(service['host'], service['port'], bluetooth.lookup_name(service['host']), service['name'], obexPort))
+                serialDevices.append(BluetoothDevice(service['host'], service['port'], bluetooth.lookup_name(service['host']), service['name']))
         
         return serialDevices
