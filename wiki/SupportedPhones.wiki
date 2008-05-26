@@ -6,13 +6,19 @@
 
 = Sony Ericsson =
   * W610i
+  * K770i
+  * K610i
   * K800i
 
 = Siemens =
- * S55
+  * S55
 
 = Nokia =
- * N70
+  * N70
 
+= Sagem =
+  * my411V (send sms only, no contact import)
+
+ 
 
 Please let me know if you have other phones that are working, so I can add them to the list.
