@@ -235,3 +235,22 @@ class MobilePhoneTest(unittest.TestCase):
         self.assertEqual(0, len(self.connection.recieves))
         self.assertEqual(0, len(self.connection.replies))
         
+    def testStoreContactRegularNumber(self):
+        self.connection.replies.append('\r\nOK\r\n')
+        
+        self.mobilePhone.storeContact('name', '1234')
+        
+        self.assertSent('AT+CPBW=,"1234",129,"name"\r')
+        self.assertEqual(0, len(self.connection.recieves))
+        self.assertEqual(0, len(self.connection.replies))
+        
+    def testStoreContactInternationalNumber(self):
+        self.connection.replies.append('\r\nOK\r\n')
+        
+        self.mobilePhone.storeContact('name', '+1234')
+        
+        self.assertSent('AT+CPBW=,"+1234",145,"name"\r')
+        self.assertEqual(0, len(self.connection.recieves))
+        self.assertEqual(0, len(self.connection.replies))
+        
+        

@@ -141,6 +141,14 @@ class MobilePhone:
             contactList.append(contacts.Contact(fields[3][1:-1], fields[1][1:-1]))
         
         return contactList
+    
+    def storeContact(self, name, phoneNr):
+        if phoneNr[0] == '+':
+            type = '",145,"'
+        else:
+            type = '",129,"'
+        
+        self.__sendATCommand('AT+CPBW=,"' + phoneNr + type + name + '"')
         
 
     def selectReadStorage(self, location):
