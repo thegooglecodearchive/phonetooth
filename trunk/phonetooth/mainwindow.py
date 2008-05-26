@@ -29,6 +29,8 @@ from phonetooth import preferences
 from phonetooth import preferencesdialog
 from phonetooth import sms
 from phonetooth import filetransfer
+from phonetooth import selectcontactsdialog
+from phonetooth import sendmessagedialog
 
 from gettext import gettext as _
 
@@ -51,7 +53,8 @@ class MainWindow:
         self.__sendButton           = self.__widgetTree.get_widget('sendButton')
         self.__aboutDialog          = self.__widgetTree.get_widget('aboutDialog')
         self.__statusBar            = self.__widgetTree.get_widget('statusBar')
-        self.__sendMenuItem         = self.__widgetTree.get_widget('sendMenuitem')
+        self.__sendFileMenuItem     = self.__widgetTree.get_widget('sendFileMenuitem')
+        self.__sendMessageMenuitem  = self.__widgetTree.get_widget('sendMessageMenuitem')
         self.__deliveryReportCheck  = self.__widgetTree.get_widget('deliveryReportCheck')
         self.__storeMessageCheck    = self.__widgetTree.get_widget('storeMessageCheck')
         self.__sendFileDialog       = self.__widgetTree.get_widget('sendFileDialog')
@@ -71,10 +74,14 @@ class MainWindow:
         self.__contactsDialog = contactsdialog.ContactsDialog(self.__widgetTree, self.__prefs, parent = self.__mainWindow)
         self.__recipientBox.set_model(self.__contactsDialog.contactlistStore)
         
+        self.__contactSelectionDialog = selectcontactsdialog.SelectContactsDialog(self.__widgetTree, self.__mainWindow)
+        self.__sendMessageDialog = sendmessagedialog.SendMessageDialog(self.__widgetTree, self.__mainWindow)
+        
         self.__fileTransfer = filetransfer.FileTransfer()
         self.__fileTransfer.connect("progress", self.transferProgressCb)
         self.__fileTransfer.connect("completed", self.transferCompletedCb)
         self.__fileTransfer.connect("error", self.transferErrorCb)
+        
         
         cell = gtk.CellRendererText()
         self.__recipientBox.pack_start (cell, False)
@@ -91,7 +98,8 @@ class MainWindow:
                'onPaste'                        : self.__onPaste,
                'onDrop'                         : self.__onDrop,
                'onAboutButtonClicked'           : self.__showAboutDialog,
-               'onPreferencesChanged'           : self.__preferencesChanged
+               'onPreferencesChanged'           : self.__preferencesChanged,
+               'onSendToMultiple'               : self.__sendToMultiple
         }
         self.__widgetTree.signal_autoconnect(dic)
         
@@ -104,6 +112,16 @@ class MainWindow:
     def __sendSMS(self, widget):
         threading.Thread(target = self.__sendSMSThread).start()
         
+    
+    def __sendToMultiple(self, widget):
+        selectedContacts = self.__contactSelectionDialog.run()
+        
+        if selectedContacts != None:
+            print str(selectedContacts)
+            self.__generateSMSFromInput()
+            phone = mobilephonefactory.createPhone(self.__prefs)
+            self.__sendMessageDialog.run(phone, selectedContacts, self.__sms, self.__deliveryReportCheck.get_active())
+         
     
     def __sendFile(self, widget):
         self.__setSensitive(False)
@@ -135,6 +153,14 @@ class MainWindow:
             chooser.destroy()
             
         self.__setSensitive(True)
+        
+        
+    def __generateSMSFromInput(self):
+        textBuffer = self.__inputField.get_buffer()
+        listStore = self.__recipientBox.get_model()
+        
+        self.__sms.setMessage(textBuffer.get_text(textBuffer.get_start_iter(), textBuffer.get_end_iter()))
+        self.__sms.recipient = listStore[self.__recipientBox.get_active()][1]
         
 
     def __sendFileThread(self, filename):
@@ -172,11 +198,7 @@ class MainWindow:
             return
         
         gobject.idle_add(self.__setSensitive, False)
-        textBuffer = self.__inputField.get_buffer()
-        listStore = self.__recipientBox.get_model()
-        
-        self.__sms.setMessage(textBuffer.get_text(textBuffer.get_start_iter(), textBuffer.get_end_iter()))
-        self.__sms.recipient = listStore[self.__recipientBox.get_active()][1]
+        self.__generateSMSFromInput()
 
         try:
             phone = mobilephonefactory.createPhone(self.__prefs)
@@ -211,6 +233,7 @@ class MainWindow:
         nrCharacters = self.__inputField.get_buffer().get_char_count() + dropSize
         self.__charactersLabel.set_text(_('Characters: ') + str(nrCharacters))
         self.__sendButton.set_sensitive(nrCharacters != 0)
+        self.__sendMessageMenuitem.set_sensitive(nrCharacters != 0)
         
         
         self.__messageCountLabel.set_text(_('Messages: ') + str(smsMsg.getNumMessages()))
@@ -240,9 +263,9 @@ class MainWindow:
             
     def __checkSendFileButtonSensitivity(self):
         if self.__prefs.connectionMethod == 'bluetooth' and self.__prefs.btDevice != None:
-            self.__sendMenuItem.set_sensitive(True)
+            self.__sendFileMenuItem.set_sensitive(True)
         else:
-            self.__sendMenuItem.set_sensitive(False)
+            self.__sendFileMenuItem.set_sensitive(False)
     
     def __preferencesChanged(self, widget):
         self.__checkSendFileButtonSensitivity()
