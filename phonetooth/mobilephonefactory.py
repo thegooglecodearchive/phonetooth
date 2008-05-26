@@ -27,7 +27,7 @@ def createPhone(prefs):
     elif prefs.connectionMethod == 'bluetooth':
         if prefs.btDevice == None:
             raise Exception, _('No device configured in the preferences')
-        return mobilephone.MobilePhone(bluetoothconnection.BluetoothConnection(prefs.btDevice.address, prefs.btDevice.port), prefs.btDevice.obexPort)
+        return mobilephone.MobilePhone(bluetoothconnection.BluetoothConnection(prefs.btDevice.address, prefs.btDevice.port))
     elif prefs.connectionMethod == 'customDevice':
         return mobilephone.MobilePhone(serialconnection.SerialConnection(prefs.customDevice))
     else:
