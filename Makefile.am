@@ -2,6 +2,7 @@ bin_SCRIPTS = phonetoothui
 
 pkgpython_PYTHON =  phonetooth/contacts.py \
                     phonetooth/contactsdialog.py \
+                    phonetooth/selectcontactsdialog.py \
                     phonetooth/mergecontactsdialog.py \
                     phonetooth/mainwindow.py \
                     phonetooth/filetransfer.py \
