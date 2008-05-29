@@ -1,6 +1,6 @@
 Phonetooth
 
-version 0.4.0 ()
+version 0.4.0 (30-05-2008)
 - Improved device discovery, takes less time
 - Improved file transfer with obex-data-server
 - Import contacts from file
