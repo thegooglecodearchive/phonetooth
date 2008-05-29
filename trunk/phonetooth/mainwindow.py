@@ -206,7 +206,7 @@ class MainWindow:
             phone.sendSMS(self.__sms, self.__deliveryReportCheck.get_active())
             if self.__storeMessageCheck.get_active():
                 phone.storeSMS(self.__sms)
-            gobject.idle_add(self.__pushStatusText, _('Message succesfully sent'))
+            gobject.idle_add(self.__pushStatusText, _('Message successfully sent'))
         except Exception, e:
             gobject.idle_add(self.__pushStatusText, _('Failed to send message: ') + str(e))
             
