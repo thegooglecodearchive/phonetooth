@@ -16,6 +16,7 @@
 
 import gtk
 import gtk.glade
+import gobject
 import threading
 
 from phonetooth import mobilephone
@@ -89,16 +90,28 @@ class PreferencesDialog:
     
     
     def __scanForDevices(self, widget):
-        self.__preferencesDialog.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
-
-        self.__deviceListStore.clear()
-        self.__enableButtons(False)
+        self.__setWaiting(True)
         threading.Thread(target = self.__discoverThread).start()
         
     
     def __discoverThread(self):
-        discoverer = bluetoothdiscovery.BluetoothDiscovery()
-        self.__setDevices(discoverer.findSerialDevices())
+        try:
+            discoverer = bluetoothdiscovery.BluetoothDiscovery()
+            devices = discoverer.findSerialDevices()
+            gtk.gdk.threads_enter()
+            self.__setDevices(devices)
+            gtk.gdk.threads_leave()
+        except Exception, e:
+            gtk.gdk.threads_enter()
+            errorDlg = gtk.MessageDialog(parent=self.__preferencesDialog, type=gtk.MESSAGE_ERROR, message_format=str(e), buttons=gtk.BUTTONS_OK)
+            errorDlg.set_title(_('Error'))
+            errorDlg.run()
+            errorDlg.destroy()
+            gtk.gdk.threads_leave()
+        finally:
+            gtk.gdk.threads_enter()
+            self.__setWaiting(False)
+            gtk.gdk.threads_leave()
         
     
     def __applyPreferences(self):
@@ -121,6 +134,8 @@ class PreferencesDialog:
             
 
     def __setDevices(self, devices):
+        self.__deviceListStore.clear()
+        
         self.__deviceList = devices
         for device in self.__deviceList:
             self.__deviceListStore.append((device.deviceName, device.serviceName, device.address))
@@ -128,7 +143,6 @@ class PreferencesDialog:
         self.__deviceSelecterBox.set_active(0)
         if self.__preferencesDialog.window != None:
             self.__preferencesDialog.window.set_cursor(None)
-        self.__enableButtons(True)
         
     
     def __getDevice(self, deviceAddress, serviceName):
@@ -139,5 +153,9 @@ class PreferencesDialog:
         raise Exception, _('Device not found')
         
     
-    def __enableButtons(self, enable):
-        self.__preferencesDialog.set_sensitive(enable)
+    def __setWaiting(self, waiting):
+        if waiting == True:
+            self.__preferencesDialog.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+        else:
+            self.__preferencesDialog.window.set_cursor(None)
+        self.__preferencesDialog.set_sensitive(not waiting)

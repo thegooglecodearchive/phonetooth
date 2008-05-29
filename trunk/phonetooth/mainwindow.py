@@ -103,7 +103,6 @@ class MainWindow:
         }
         self.__widgetTree.signal_autoconnect(dic)
         
-        gobject.threads_init()
         gtk.window_set_default_icon_from_file(os.path.join(datadir, 'phonetooth-small.svg'))
         
         self.__mainWindow.show()
@@ -261,11 +260,13 @@ class MainWindow:
             self.__mainWindow.set_sensitive(False)
             self.__mainWindow.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
             
+    
     def __checkSendFileButtonSensitivity(self):
         if self.__prefs.connectionMethod == 'bluetooth' and self.__prefs.btDevice != None:
             self.__sendFileMenuItem.set_sensitive(True)
         else:
             self.__sendFileMenuItem.set_sensitive(False)
+    
     
     def __preferencesChanged(self, widget):
         self.__checkSendFileButtonSensitivity()
