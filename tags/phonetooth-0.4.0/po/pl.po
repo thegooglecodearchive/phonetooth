@@ -1,0 +1,375 @@
+# Polish translation of phonetooth.
+# Copyright (C) 2008 Tomasz Dominikowski
+# This file is distributed under the same license as the phonetooth package.
+# Tomasz Dominikowski, 2008, dominikowski@gmail.com
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: phonetooth\n"
+"Report-Msgid-Bugs-To: dirk.vdb@gmail.com\n"
+"POT-Creation-Date: 2008-05-29 19:05+0200\n"
+"PO-Revision-Date: 2008-03-31 20:49+0100\n"
+"Last-Translator: Tomasz Dominikowski <dominikowski@gmail.com>\n"
+"Language-Team: Tomasz Dominikowski (Aviary.pl) <dominikowski@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
+"X-Poedit-Language: Polish\n"
+"X-Poedit-Country: Poland\n"
+
+#: phonetooth/contactsdialog.py:66 phonetooth/mergecontactsdialog.py:43
+#: phonetooth/selectcontactsdialog.py:44
+msgid "Name"
+msgstr "Kontakt"
+
+#: phonetooth/contactsdialog.py:67 phonetooth/selectcontactsdialog.py:45
+msgid "Phone number"
+msgstr "Numer telefonu"
+
+#: phonetooth/mergecontactsdialog.py:44
+msgid "Existing number"
+msgstr ""
+
+#: phonetooth/mergecontactsdialog.py:45
+#, fuzzy
+msgid "Imported number"
+msgstr "Numer telefonu"
+
+#: phonetooth/mainwindow.py:139
+msgid "Sending file..."
+msgstr "Wysyłanie pliku..."
+
+#: phonetooth/mainwindow.py:144
+msgid "File transfer cancelled."
+msgstr ""
+
+#: phonetooth/mainwindow.py:146
+#, fuzzy
+msgid "File transfer failed."
+msgstr "Wysłanie pliku nie powiodło się:"
+
+#: phonetooth/mainwindow.py:148
+msgid "File succesfully sent."
+msgstr "Plik wysłano z powodzeniem."
+
+#: phonetooth/mainwindow.py:150
+#, fuzzy
+msgid "File transfer failed: "
+msgstr "Wysłanie pliku nie powiodło się:"
+
+#: phonetooth/mainwindow.py:179
+msgid " minutes remaining"
+msgstr ""
+
+#: phonetooth/mainwindow.py:181
+msgid " seconds remaining"
+msgstr ""
+
+#: phonetooth/mainwindow.py:197
+msgid "No recipient selected"
+msgstr "Nie wybrano odbiorcy"
+
+#: phonetooth/mainwindow.py:209
+#, fuzzy
+msgid "Message successfully sent"
+msgstr "Wiadomość wysłano z powodzeniem"
+
+#: phonetooth/mainwindow.py:211
+msgid "Failed to send message: "
+msgstr "Wysłanie wiadomości nie powiodło się:"
+
+#: phonetooth/mainwindow.py:234
+msgid "Characters: "
+msgstr "Znaków:"
+
+#: phonetooth/mainwindow.py:239
+msgid "Messages: "
+msgstr "Wiadomości:"
+
+#: phonetooth/mainwindow.py:242 phonetooth/mainwindow.py:244
+msgid "Encoding: "
+msgstr "Kodowanie:"
+
+#: phonetooth/mobilephone.py:79
+msgid "Failed to store message"
+msgstr "Zapis wiadomości nieudany"
+
+#: phonetooth/mobilephone.py:91
+msgid "Sending SMS not supported by phone"
+msgstr "Wysyłanie wiadomości SMS nieobsługiwane przez telefon"
+
+#: phonetooth/mobilephone.py:106 phonetooth/mobilephone.py:122
+msgid "Failed to send message"
+msgstr "Wysłanie wiadomości nie powiodło się"
+
+#: phonetooth/mobilephone.py:247
+msgid "AT Command not supported by phone: "
+msgstr "Polecenie AT nieobsługiwane przez telefon:"
+
+#: phonetooth/mobilephonefactory.py:29
+msgid "No device configured in the preferences"
+msgstr "Brak skonfigurowanego urządzenia w preferencjach"
+
+#: phonetooth/preferencesdialog.py:139
+msgid "Device not found"
+msgstr "Urządzenie nieodnalezione"
+
+#: phonetooth/bluetoothconnection.py:27
+msgid "Failed to connect to device: "
+msgstr "Połączenie z urządzeniem nie powiodło się:"
+
+#: phonetooth/serialconnection.py:24
+#, fuzzy
+msgid "Failed to connect to serial port: "
+msgstr "Połączenie z urządzeniem nie powiodło się:"
+
+#: ui/phonetooth.glade:7
+msgid "Manage contacts"
+msgstr "Zarządzaj kontaktami"
+
+#: ui/phonetooth.glade:28 ui/phonetooth.glade:209
+msgid "_File"
+msgstr "_Plik"
+
+#: ui/phonetooth.glade:38
+msgid "Export your contacts to csv file"
+msgstr ""
+
+#: ui/phonetooth.glade:39
+msgid "_Export contacts..."
+msgstr "E_ksportowanie kontaktów..."
+
+#: ui/phonetooth.glade:49
+msgid "Import your contacts from a csv file"
+msgstr ""
+
+#: ui/phonetooth.glade:50
+#, fuzzy
+msgid "_Import contacts..."
+msgstr "E_ksportowanie kontaktów..."
+
+#: ui/phonetooth.glade:106
+msgid "Import from SIM"
+msgstr "Zaimportuj z SIM"
+
+#: ui/phonetooth.glade:117
+msgid "Import from phone"
+msgstr "Zaimportuj z telefonu"
+
+#: ui/phonetooth.glade:131
+msgid "gtk-new"
+msgstr "Nowy"
+
+#: ui/phonetooth.glade:162 ui/phonetooth.glade:763 ui/phonetooth.glade:930
+#: ui/phonetooth.glade:1048 ui/phonetooth.glade:1120 ui/phonetooth.glade:1233
+msgid "gtk-cancel"
+msgstr "Anuluj"
+
+#: ui/phonetooth.glade:173 ui/phonetooth.glade:774 ui/phonetooth.glade:1058
+#: ui/phonetooth.glade:1131
+msgid "gtk-ok"
+msgstr "OK"
+
+#: ui/phonetooth.glade:195
+msgid "Phonetooth"
+msgstr "Phonetooth"
+
+#: ui/phonetooth.glade:220
+msgid "Send the current message to multiple contacts"
+msgstr ""
+
+#: ui/phonetooth.glade:221
+#, fuzzy
+msgid "_Send to multiple..."
+msgstr "Wysyłanie pliku..."
+
+#: ui/phonetooth.glade:231
+msgid ""
+"Send a file to your mobile phone (only available for bluetooth connections)"
+msgstr ""
+"Wysłanie pliku do telefonu komórkowego (dostępne wyłącznie dla połączeń "
+"Bluetooth)"
+
+#: ui/phonetooth.glade:232
+#, fuzzy
+msgid "Send _file..."
+msgstr "Wysyłanie pliku..."
+
+#: ui/phonetooth.glade:242
+msgid "Close the application"
+msgstr "Zakończenie aplikacji"
+
+#: ui/phonetooth.glade:243
+#, fuzzy
+msgid "gtk-quit"
+msgstr "O programie"
+
+#: ui/phonetooth.glade:257
+msgid "_Edit"
+msgstr "_Edycja"
+
+#: ui/phonetooth.glade:267
+msgid "Manage your contacts"
+msgstr "Zarządzanie kontaktami"
+
+#: ui/phonetooth.glade:268
+msgid "_Manage contacts"
+msgstr "_Zarządzaj kontaktami"
+
+#: ui/phonetooth.glade:282
+msgid "Open the preferences"
+msgstr "Otwarcie preferencji"
+
+#: ui/phonetooth.glade:283
+msgid "gtk-preferences"
+msgstr "Preferencje"
+
+#: ui/phonetooth.glade:297
+msgid "_Help"
+msgstr "Pomo_c"
+
+#: ui/phonetooth.glade:307
+msgid "gtk-about"
+msgstr "O programie"
+
+#: ui/phonetooth.glade:337
+msgid "Recipient:"
+msgstr "Odbiorca:"
+
+#: ui/phonetooth.glade:401
+msgid "Characters: 0"
+msgstr "Znaków: 0"
+
+#: ui/phonetooth.glade:411
+msgid "Messages: 0"
+msgstr "Wiadomości: 0"
+
+#: ui/phonetooth.glade:423
+msgid "Encoding: GSM 7-bit"
+msgstr "Kodowanie: GSM 7-bit"
+
+#: ui/phonetooth.glade:454
+msgid "Delivery report"
+msgstr "Raport o dostarczeniu"
+
+#: ui/phonetooth.glade:466
+#, fuzzy
+msgid "Store message"
+msgstr "Wyślij wiadomość"
+
+#: ui/phonetooth.glade:481
+msgid "Send message"
+msgstr "Wyślij wiadomość"
+
+#: ui/phonetooth.glade:518
+msgid "Preferences"
+msgstr "Preferencje"
+
+#: ui/phonetooth.glade:588
+msgid " Scan "
+msgstr " Skanuj"
+
+#: ui/phonetooth.glade:617
+msgid "<b>Custom serial device</b>"
+msgstr "<b>Własne urządzenie szeregowe</b>"
+
+#: ui/phonetooth.glade:644
+msgid "Device location:"
+msgstr "Położenie urządzenia:"
+
+#: ui/phonetooth.glade:706
+msgid "Gammu configuration index:"
+msgstr "Indeks konfiguracji Gammu:"
+
+#: ui/phonetooth.glade:735
+msgid "<b>Phone connection method</b>"
+msgstr "<b>Rodzaj połączenia z telefonem</b>"
+
+#: ui/phonetooth.glade:794
+msgid "About PhoneTooth"
+msgstr "O PhoneTooth"
+
+#: ui/phonetooth.glade:803
+msgid "Copyright © 2008 Dirk Vanden Boer"
+msgstr "Copyright © 2008 Dirk Vanden Boer"
+
+#: ui/phonetooth.glade:805
+msgid ""
+"This program is free software; you can redistribute it and/or modify it\n"
+"under the terms of the GNU General Public License as published by the Free\n"
+"Software Foundation; either version 2 of the License, or (at your option)\n"
+"any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful, but WITHOUT\n"
+"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or\n"
+"FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for\n"
+"more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License along "
+"with\n"
+"this program; if not, write to the Free Software Foundation, Inc., 59 "
+"Temple\n"
+"Place, Suite 330, Boston, MA  02111-1307  USA."
+msgstr ""
+"This program is free software; you can redistribute it and/or modify it\n"
+"under the terms of the GNU General Public License as published by the Free\n"
+"Software Foundation; either version 2 of the License, or (at your option)\n"
+"any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful, but WITHOUT\n"
+"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or\n"
+"FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for\n"
+"more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License along "
+"with\n"
+"this program; if not, write to the Free Software Foundation, Inc., 59 "
+"Temple\n"
+"Place, Suite 330, Boston, MA  02111-1307  USA."
+
+#: ui/phonetooth.glade:819
+msgid "Polish: dominikowski"
+msgstr ""
+
+#: ui/phonetooth.glade:849 ui/phonetooth.glade:882
+#, fuzzy
+msgid "Transferring file..."
+msgstr "Wysyłanie pliku..."
+
+#: ui/phonetooth.glade:951
+msgid "Resolve collisions"
+msgstr ""
+
+#: ui/phonetooth.glade:975
+msgid "Skip existing contacts"
+msgstr ""
+
+#: ui/phonetooth.glade:989
+msgid "Overwrite existing contacts"
+msgstr ""
+
+#: ui/phonetooth.glade:1007
+#, fuzzy
+msgid "<b>Collision resolving method </b>"
+msgstr "<b>Rodzaj połączenia z telefonem</b>"
+
+#: ui/phonetooth.glade:1080
+#, fuzzy
+msgid "Select contacts"
+msgstr "Zarządzaj kontaktami"
+
+#: ui/phonetooth.glade:1152 ui/phonetooth.glade:1185
+#, fuzzy
+msgid "Sending message..."
+msgstr "Wyślij wiadomość"
+
+#~ msgid "Send a file to your mobile phone"
+#~ msgstr "Wyślij plik do telefonu komórkowego"
+
+#~ msgid "_Send file"
+#~ msgstr "_Wyślij plik"
+
+#~ msgid "gtk-close"
+#~ msgstr "Zamknij"
