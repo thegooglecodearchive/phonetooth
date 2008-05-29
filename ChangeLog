@@ -1,9 +1,11 @@
 Phonetooth
 
+version 0.4.0 ()
 - Improved device discovery, takes less time
 - Improved file transfer with obex-data-server
 - Import contacts from file
 - Send message to multiple contacts
+- Scanning for devices no longer hangs when no bluetooth device is present
 
 version 0.3.1 (30-03-2008)
 - Made phonetooth compatible with python 2.4

@@ -1,4 +1,4 @@
-AC_INIT([phonetooth],[0.3.1])
+AC_INIT([phonetooth],[0.4.0])
 AC_CONFIG_SRCDIR([phonetooth])
 AM_INIT_AUTOMAKE
 

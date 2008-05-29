@@ -17,6 +17,7 @@
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import gtk
+import gobject
 import locale
 import gettext
 import os
@@ -29,9 +30,12 @@ APP_NAME = 'phonetooth'
 
 def main():
     setLocale()
-    mainWindow = mainwindow.MainWindow()
-
+    
+    gobject.threads_init()
+    gtk.gdk.threads_init()
     dbus.glib.init_threads()
+
+    mainWindow = mainwindow.MainWindow()
     gtk.main()
     
 def setLocale():
