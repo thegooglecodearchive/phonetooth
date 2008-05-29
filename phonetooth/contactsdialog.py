@@ -122,11 +122,15 @@ class ContactsDialog:
             for contact in phoneContacts:
                 self.contactList.contacts[contact.name] = contact.phoneNumber
             
+            gtk.gdk.threads_enter()
             self.__updateStoreFromContactList()
+            gtk.gdk.threads_leave()
         except Exception, e:
-            gobject.idle_add(self.__error, str(e))
-       
-        gobject.idle_add(self.__setSensitive, True)
+            gtk.gdk.threads_enter()
+            self.__error(str(e))
+            gtk.gdk.threads_leave()
+        finally:
+            gobject.idle_add(self.__setSensitive, True)
         
         
     def __exportContacts(self, widget):
@@ -208,6 +212,7 @@ class ContactsDialog:
 
     def __error(self, message):
         errorDlg = gtk.MessageDialog(parent=self.__contactsDialog, type=gtk.MESSAGE_ERROR, message_format=message, buttons=gtk.BUTTONS_OK)
+        errorDlg.set_title(_('Error'))
         errorDlg.run()
         errorDlg.destroy()
         self.__contactsDialog.set_sensitive(True)
