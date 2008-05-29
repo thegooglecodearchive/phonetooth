@@ -17,8 +17,6 @@
 import bit7alphabet
 import math
 
-from gettext import gettext as _
-
 class Sms:
     __msgLength = 0
     __is7Bit = True

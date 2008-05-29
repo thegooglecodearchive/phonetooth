@@ -1,8 +1,11 @@
 # coding: UTF-8
 phonetooth/contactsdialog.py
+phonetooth/mergecontactsdialog.py
+phonetooth/selectcontactsdialog.py
 phonetooth/mainwindow.py
 phonetooth/mobilephone.py
 phonetooth/mobilephonefactory.py
 phonetooth/preferencesdialog.py
 phonetooth/bluetoothconnection.py
+phonetooth/serialconnection.py
 ui/phonetooth.glade
