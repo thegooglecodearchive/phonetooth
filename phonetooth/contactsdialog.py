@@ -110,7 +110,7 @@ class ContactsDialog:
     
     def __importSimContacts(self, widget):
         self.__setSensitive(False)
-        threading.Thread(target = self.__importContactsThread, args = ('SIM',)).start()
+        threading.Thread(target = self.__importContactsFromPhoneThread, args = ('SIM',)).start()
 
     
     def __importContactsFromPhoneThread(self, location):
