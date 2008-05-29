@@ -18,8 +18,6 @@ import os
 import bluetoothdiscovery
 import ConfigParser
 
-from gettext import gettext as _
-
 class Preferences:
     def __init__(self, preferenceFile = None):
         self.__preferenceFile = preferenceFile
