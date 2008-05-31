@@ -6,6 +6,7 @@ pkgpython_PYTHON =  phonetooth/contacts.py \
                     phonetooth/mergecontactsdialog.py \
                     phonetooth/mainwindow.py \
                     phonetooth/filetransfer.py \
+                    phonetooth/filetransferdialog.py \
                     phonetooth/mobilephone.py \
                     phonetooth/mobilephonegammu.py \
                     phonetooth/mobilephonefactory.py \
