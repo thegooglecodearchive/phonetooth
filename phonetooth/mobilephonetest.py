@@ -136,7 +136,8 @@ class MobilePhoneTest(unittest.TestCase):
         self.connection.replies.append('\r\nOK\r\n')
         
         smsMsg = sms.Sms('hellohello', '46708251358')
-        self.mobilePhone.sendSMS(smsMsg, statusReport=True)
+        smsMsg.statusReport = True
+        self.mobilePhone.sendSMS(smsMsg)
         
         self.assertSent('AT+CMGF=?\r')
         self.assertSent('ATZ\r')

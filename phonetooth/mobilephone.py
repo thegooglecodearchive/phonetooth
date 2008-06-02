@@ -81,10 +81,10 @@ class MobilePhone:
             location = response[response.find(':') + 1:]
     
 
-    def sendSMS(self, sms, statusReport = False):
+    def sendSMS(self, sms):
         supportedModes = self.__getSupportedSMSModes()
         if '0' in supportedModes:
-            self.__sendSMSPDUMode(sms, statusReport)
+            self.__sendSMSPDUMode(sms)
         elif '1' in supportedModes:
             self.__sendSMSTextMode(sms)
         else:
@@ -106,11 +106,11 @@ class MobilePhone:
             raise Exception, _('Failed to send message')
 
  
-    def __sendSMSPDUMode(self, sms, statusReport):
+    def __sendSMSPDUMode(self, sms):
         self.__sendATCommand('ATZ')
         self.__sendATCommand('AT+CMGF=0') # PDU mode
         
-        for pduMsg in sms.getPDU(statusReport):
+        for pduMsg in sms.getPDU():
             # send message information and wait for prompt
             messageCommand = 'AT+CMGS=' + str(len(pduMsg) / 2 - 1) + '\r'
             self.__connection.send(messageCommand)

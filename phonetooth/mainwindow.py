@@ -31,6 +31,7 @@ from phonetooth import sms
 from phonetooth import filetransferdialog
 from phonetooth import selectcontactsdialog
 from phonetooth import sendmessagedialog
+from phonetooth import messageinput
 
 from gettext import gettext as _
 
@@ -45,20 +46,12 @@ class MainWindow:
         
         self.__widgetTree           = gtk.glade.XML(os.path.join(datadir, 'phonetooth.glade'))
         self.__mainWindow           = self.__widgetTree.get_widget('mainWindow')
-        self.__recipientBox         = self.__widgetTree.get_widget('recipientBox')
-        self.__inputField           = self.__widgetTree.get_widget('textView')
-        self.__charactersLabel      = self.__widgetTree.get_widget('charactersLabel')
-        self.__messageCountLabel    = self.__widgetTree.get_widget('messageCountLabel')
-        self.__encodingLabel        = self.__widgetTree.get_widget('encodingLabel')
         self.__sendButton           = self.__widgetTree.get_widget('sendButton')
         self.__aboutDialog          = self.__widgetTree.get_widget('aboutDialog')
         self.__statusBar            = self.__widgetTree.get_widget('statusBar')
         self.__sendFileMenuItem     = self.__widgetTree.get_widget('sendFileMenuitem')
         self.__sendMessageMenuitem  = self.__widgetTree.get_widget('sendMessageMenuitem')
-        self.__deliveryReportCheck  = self.__widgetTree.get_widget('deliveryReportCheck')
         self.__storeMessageCheck    = self.__widgetTree.get_widget('storeMessageCheck')
-        
-        self.__sms = sms.Sms()
         
         self.__aboutDialog.set_name('PhoneTooth')
         self.__sendButton.set_sensitive(False)
@@ -68,16 +61,15 @@ class MainWindow:
         self.__preferencesDialog = preferencesdialog.PreferencesDialog(self.__widgetTree, self.__prefs, parent = self.__mainWindow)
         
         self.__contactsDialog = contactsdialog.ContactsDialog(self.__widgetTree, self.__prefs, parent = self.__mainWindow)
-        self.__recipientBox.set_model(self.__contactsDialog.contactlistStore)
+        
+        self.__messageInput = messageinput.MessageInput(self.__widgetTree)
+        self.__messageInput.setDataModel(self.__contactsDialog.contactlistStore)
+        self.__messageInput.connect('sendpossible', self.__sendPossibleCb)
         
         self.__contactSelectionDialog = selectcontactsdialog.SelectContactsDialog(self.__widgetTree, self.__mainWindow)
         self.__sendMessageDialog = sendmessagedialog.SendMessageDialog(self.__widgetTree, self.__mainWindow)
         
         self.__fileTransferDialog = filetransferdialog.FileTransferDialog(self.__widgetTree, self.__mainWindow)
-        
-        cell = gtk.CellRendererText()
-        self.__recipientBox.pack_start (cell, False)
-        self.__recipientBox.add_attribute (cell, 'text', 1)
         
         self.__checkSendFileButtonSensitivity()
         
@@ -86,9 +78,6 @@ class MainWindow:
                'onManageContactsActivated'      : self.__contactsDialog.run,
                'onPreferencesActivated'         : self.__preferencesDialog.run,
                'onSendButtonClicked'            : self.__sendSMS,
-               'onKeyreleased'                  : self.__onKeyPressed,
-               'onPaste'                        : self.__onPaste,
-               'onDrop'                         : self.__onDrop,
                'onAboutButtonClicked'           : self.__showAboutDialog,
                'onPreferencesChanged'           : self.__preferencesChanged,
                'onSendToMultiple'               : self.__sendToMultiple
@@ -108,10 +97,9 @@ class MainWindow:
         selectedContacts = self.__contactSelectionDialog.run()
         
         if selectedContacts != None:
-            print str(selectedContacts)
-            self.__generateSMSFromInput()
+            smsMsg = self.__messageInput.getMessage()
             phone = mobilephonefactory.createPhone(self.__prefs)
-            self.__sendMessageDialog.run(phone, selectedContacts, self.__sms, self.__deliveryReportCheck.get_active())
+            self.__sendMessageDialog.run(phone, selectedContacts, smsMsg)
          
     
     def __sendFile(self, widget):
@@ -119,29 +107,22 @@ class MainWindow:
         self.__fileTransferDialog.run(self.__prefs.btDevice)
         self.__setSensitive(True)
         
-        
-    def __generateSMSFromInput(self):
-        textBuffer = self.__inputField.get_buffer()
-        listStore = self.__recipientBox.get_model()
-        
-        self.__sms.setMessage(textBuffer.get_text(textBuffer.get_start_iter(), textBuffer.get_end_iter()))
-        self.__sms.recipient = listStore[self.__recipientBox.get_active()][1]
-        
 
     def __sendSMSThread(self):
-        if self.__recipientBox.get_active() == -1:
+        smsMsg = self.__messageInput.generateSMS()
+        
+        if len(smsMsg.recipient) == 0:
             gobject.idle_add(self.__pushStatusText, _('No recipient selected'))
             return
         
         gobject.idle_add(self.__setSensitive, False)
-        self.__generateSMSFromInput()
 
         try:
             phone = mobilephonefactory.createPhone(self.__prefs)
             phone.connect()
-            phone.sendSMS(self.__sms, self.__deliveryReportCheck.get_active())
+            phone.sendSMS(smsMsg)
             if self.__storeMessageCheck.get_active():
-                phone.storeSMS(self.__sms)
+                phone.storeSMS(sms)
             gobject.idle_add(self.__pushStatusText, _('Message successfully sent'))
         except Exception, e:
             gobject.idle_add(self.__pushStatusText, _('Failed to send message: ') + str(e))
@@ -149,37 +130,6 @@ class MainWindow:
         gobject.idle_add(self.__setSensitive, True)
         
         
-    def __onKeyPressed(self, widget, event):
-        if event.type == gtk.gdk.KEY_RELEASE:
-            self.__updateInfo()
-
-
-    def __onPaste(self, widget):
-        self.__updateInfo()
-        
-        
-    def __onDrop(self, widget, drag_context, x, y, selection_data, info, timestamp):
-        self.__updateInfo(len(selection_data.get_text()))
-        
-    
-    def __updateInfo(self, dropSize = 0):
-        textBuffer = self.__inputField.get_buffer()
-        smsMsg = sms.Sms(textBuffer.get_text(textBuffer.get_start_iter(), textBuffer.get_end_iter()))
-        
-        nrCharacters = self.__inputField.get_buffer().get_char_count() + dropSize
-        self.__charactersLabel.set_text(_('Characters: ') + str(nrCharacters))
-        self.__sendButton.set_sensitive(nrCharacters != 0)
-        self.__sendMessageMenuitem.set_sensitive(nrCharacters != 0)
-        
-        
-        self.__messageCountLabel.set_text(_('Messages: ') + str(smsMsg.getNumMessages()))
-        
-        if smsMsg.is7Bit():
-            self.__encodingLabel.set_text(_('Encoding: ') + 'GSM 7-bit')
-        else:
-            self.__encodingLabel.set_text(_('Encoding: ') + 'UCS2')
-
-
     def __showAboutDialog(self, widget):
         self.__aboutDialog.run()
         self.__aboutDialog.hide()
@@ -207,3 +157,7 @@ class MainWindow:
     
     def __preferencesChanged(self, widget):
         self.__checkSendFileButtonSensitivity()
+        
+    
+    def __sendPossibleCb(self, sender, sendPossible):
+        self.__sendMessageMenuitem.set_sensitive(sendPossible)

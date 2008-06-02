@@ -3,7 +3,6 @@ import dbus
 import dbus.glib
 import gobject
 import time
-import gtk
 
 class FileTransfer(gobject.GObject):
     __fileSizeInBytes = -1

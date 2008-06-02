@@ -22,6 +22,7 @@ class Sms:
     __is7Bit = True
     __characters7BitPart = 153
     __charactersUnicodePart = 67
+    statusReport = False
     
     def __init__(self, message = '', recipient = ''):
         self.setMessage(message)
@@ -38,8 +39,12 @@ class Sms:
         
     def getMessage(self):
         return self.__message
-             
-        
+    
+    
+    def getMessageLength(self):
+        return self.__msgLength
+    
+    
     def setMessage(self, message):
         self.__message = unicode(message, 'utf-8')
         self.__checkIs7Bit()
@@ -59,17 +64,17 @@ class Sms:
                 return int(math.ceil(self.__msgLength / float(self.__charactersUnicodePart)))
             
     
-    def getPDU(self, statusReport):
+    def getPDU(self):
         if (self.__is7Bit and self.__msgLength <= 160) or (not self.__is7Bit and self.__msgLength <= 70):
-            return [self.__createSinglePartPDU(statusReport)]
+            return [self.__createSinglePartPDU()]
         elif self.__is7Bit:
-            return self.__createMultiPartPDU7Bit(statusReport)
+            return self.__createMultiPartPDU7Bit()
         else:
-            return self.__createMultiPartPDUUnicode(statusReport)
+            return self.__createMultiPartPDUUnicode()
             
-    def __createSinglePartPDU(self, statusReport):
+    def __createSinglePartPDU(self):
         pduMsg = []
-        pduMsg.append(self.__createPDUHeader(statusReport))
+        pduMsg.append(self.__createPDUHeader())
         
         if self.__is7Bit:
             msg7Bit = bit7alphabet.convert7BitToOctet(self.__message)
@@ -82,7 +87,7 @@ class Sms:
         return ''.join(pduMsg)
             
             
-    def __createMultiPartPDU7Bit(self, statusReport):
+    def __createMultiPartPDU7Bit(self):
         charactersPerPart   = self.__characters7BitPart
         charactersLeft      = self.__msgLength
         parts               = self.getNumMessages()
@@ -106,7 +111,7 @@ class Sms:
             for index in range(0, len(udh)):
                 data[index] = udh[index]
 
-            pduMsg.append(self.__createPDUHeader(statusReport, i + 1))
+            pduMsg.append(self.__createPDUHeader(i + 1))
             pduMsg.append(self.__byteToString((endIndex - startIndex) + 7)) #dataLength in septets
             pduMsg.append(self.__bytesToString(data))
 
@@ -115,7 +120,7 @@ class Sms:
             
         return pduMessages
             
-    def __createMultiPartPDUUnicode(self, statusReport):
+    def __createMultiPartPDUUnicode(self):
         data = self.__message
         parts = self.getNumMessages()
         partLength = self.__charactersUnicodePart
@@ -124,7 +129,7 @@ class Sms:
         pduMessages = []
         for i in range(0, parts):
             pduMsg = []
-            pduMsg.append(self.__createPDUHeader(statusReport, i + 1))
+            pduMsg.append(self.__createPDUHeader(i + 1))
             
             udh = self.__createUDHHeader(i+1, parts)
             
@@ -143,7 +148,7 @@ class Sms:
         return pduMessages
 
 
-    def __createPDUHeader(self, statusReport, partNr = 0):
+    def __createPDUHeader(self, partNr = 0):
         #PDU Message Header
         #01         SMS-Submit
         #00         Message reference (Set by phone)
@@ -159,7 +164,7 @@ class Sms:
             smsSubmit = smsSubmit | 0x40
         if not self.__is7Bit and self.__msgLength > 70:
             smsSubmit = smsSubmit | 0x40
-        if statusReport and partNr == 0:
+        if self.statusReport and partNr == 0:
             smsSubmit = smsSubmit | 0x20
             
         recipient = self.recipient

@@ -34,9 +34,9 @@ class SendMessageDialog:
         self.__sendMessageLabelText = self.__sendMessageLabel.get_text()
         self.__sendmessageDialog.set_transient_for(parent)
         
-    def run(self, phone, contacts, sms, deliveryReport):
+    def run(self, phone, contacts, sms):
         self.__stopSending = False
-        sendThread = threading.Thread(target = self.__sendMessagesThread, args=(phone, contacts, sms, deliveryReport))
+        sendThread = threading.Thread(target = self.__sendMessagesThread, args=(phone, contacts, sms))
         sendThread.start()
 
         self.__sendMessageLabel.set_text(self.__sendMessageLabelText)
@@ -49,7 +49,7 @@ class SendMessageDialog:
         self.__sendmessageDialog.hide()
         
 
-    def __sendMessagesThread(self, phone, contacts, sms, deliveryReport):
+    def __sendMessagesThread(self, phone, contacts, sms):
         gobject.idle_add(self.__transferMessageProgress.set_fraction, 0.0)
         gobject.idle_add(self.__recipientLabel.set_text, '')
         gobject.idle_add(self.__sendImage.set_from_stock, gtk.STOCK_CONNECT, 4)
@@ -68,7 +68,7 @@ class SendMessageDialog:
             
             gobject.idle_add(self.__recipientLabel.set_text, contact)
             sms.recipient = phoneNumber
-            phone.sendSMS(sms, deliveryReport)
+            phone.sendSMS(sms)
             messagesSent += 1.0
             gobject.idle_add(self.__transferMessageProgress.set_fraction, messagesSent / numContacts)
             
