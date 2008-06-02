@@ -18,6 +18,7 @@ pkgpython_PYTHON =  phonetooth/contacts.py \
                     phonetooth/constants.py \
                     phonetooth/sms.py \
                     phonetooth/sendmessagedialog.py \
+                    phonetooth/messageinput.py \
                     phonetooth/bit7alphabet.py \
                     phonetooth/__init__.py
 
