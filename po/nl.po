@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: phonetooth 0.1.2\n"
 "Report-Msgid-Bugs-To: dirk.vdb@gmail.com\n"
 "POT-Creation-Date: 2008-05-29 19:05+0200\n"
-"PO-Revision-Date: 2008-05-29 19:16+0100\n"
+"PO-Revision-Date: 2008-06-03 21:30+0100\n"
 "Last-Translator: Dirk Vanden Boer <dirk.vdb@gmail.com>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -323,7 +323,7 @@ msgstr ""
 
 #: ui/phonetooth.glade:819
 msgid "Polish: dominikowski"
-msgstr ""
+msgstr "Pools: dominikowski"
 
 #: ui/phonetooth.glade:849
 #: ui/phonetooth.glade:882
