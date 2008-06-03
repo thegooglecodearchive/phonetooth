@@ -100,6 +100,7 @@ class PreferencesDialog:
             devices = discoverer.findSerialDevices()
             gtk.gdk.threads_enter()
             self.__setDevices(devices)
+            self.__setWaiting(False)
             gtk.gdk.threads_leave()
         except Exception, e:
             gtk.gdk.threads_enter()
@@ -107,9 +108,6 @@ class PreferencesDialog:
             errorDlg.set_title(_('Error'))
             errorDlg.run()
             errorDlg.destroy()
-            gtk.gdk.threads_leave()
-        finally:
-            gtk.gdk.threads_enter()
             self.__setWaiting(False)
             gtk.gdk.threads_leave()
         

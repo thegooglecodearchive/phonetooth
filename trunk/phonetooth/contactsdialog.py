@@ -124,13 +124,13 @@ class ContactsDialog:
             
             gtk.gdk.threads_enter()
             self.__updateStoreFromContactList()
+            self.__setSensitive(True)
             gtk.gdk.threads_leave()
         except Exception, e:
             gtk.gdk.threads_enter()
             self.__error(str(e))
+            self.__setSensitive(True)
             gtk.gdk.threads_leave()
-        finally:
-            gobject.idle_add(self.__setSensitive, True)
         
         
     def __exportContacts(self, widget):
