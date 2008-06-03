@@ -1,0 +1,46 @@
+Phonetooth
+
+version 0.4.1 (03-06-2008)
+- restored compatiblity with python 2.4
+
+version 0.4.0 (30-05-2008)
+- Improved device discovery, takes less time
+- Improved file transfer with obex-data-server
+- Import contacts from file
+- Send message to multiple contacts
+- Scanning for devices no longer hangs when no bluetooth device is present
+
+version 0.3.1 (30-03-2008)
+- Made phonetooth compatible with python 2.4
+
+version 0.3.0 (29-03-2008)
+- Allow connection through serial device
+- Contacts can be exported to csv
+- Support for unicode text messages
+- Support for multi-part messages
+- Delivery report option added
+- Autodetect port for file transfer
+
+version 0.2.2 (20-03-2008)
+- Fixed bug in UTF-8 detection
+
+version 0.2.1 (19-03-2008)
+- gettext support
+- Dutch translations
+- Set UTF-8 character set on phone if available
+- Character count updates on paste and drag
+
+version 0.2.0 (15-03-2008)
+- Support for sending messages in PDU mode (some devices don't support text mode)
+- Added python gammu as backend (should increase number of supported devices)
+- New config file layout
+
+version 0.1.2 (09-03-2008)
+- Fixed bug in device selection dialog, bottom device was always selected
+  
+version 0.1.1 (09-03-2008)
+- Device discovery is less strict, should find more devices
+  (~/.phonetooth directory must be deleted or application will crash)
+
+version 0.1.0 (05-03-2008)
+- Initial release of the Phonetooth
