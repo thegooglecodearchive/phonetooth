@@ -9,6 +9,8 @@
   * K770i
   * K610i
   * K800i
+  * W950i
+  * Z520i
 
 = Siemens =
   * S55
