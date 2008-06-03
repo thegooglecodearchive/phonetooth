@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.4 on Mon Jun  2 23:00:15 2008 -->
+<!--Generated with glade3 3.4.4 on Tue Jun  3 21:25:42 2008 -->
 <glade-interface>
   <widget class="GtkDialog" id="manageContactsDialog">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -801,7 +801,7 @@
     <property name="has_separator">False</property>
     <property name="program_name">Phonetooth</property>
     <property name="version">0.4.1</property>
-    <property name="copyright" translatable="yes">Copyright © 2008 Dirk Vanden Boer</property>
+    <property name="copyright">Copyright © 2008 Dirk Vanden Boer</property>
     <property name="website">http://code.google.com/p/phonetooth/</property>
     <property name="license" translatable="yes">This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
