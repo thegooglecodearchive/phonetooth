@@ -3,6 +3,7 @@
 
 = Samsung =
   * SGH-D800
+  * E-720
 
 = Sony Ericsson =
   * W610i
