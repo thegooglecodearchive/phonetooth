@@ -6,6 +6,7 @@ pkgpython_PYTHON =  phonetooth/contacts.py \
                     phonetooth/mergecontactsdialog.py \
                     phonetooth/mainwindow.py \
                     phonetooth/filetransfer.py \
+                    phonetooth/transferinfo.py \
                     phonetooth/filetransferdialog.py \
                     phonetooth/mobilephone.py \
                     phonetooth/mobilephonegammu.py \
@@ -20,6 +21,8 @@ pkgpython_PYTHON =  phonetooth/contacts.py \
                     phonetooth/sendmessagedialog.py \
                     phonetooth/messageinput.py \
                     phonetooth/bit7alphabet.py \
+                    phonetooth/phonebrowser.py \
+                    phonetooth/phonebrowserhandler.py \
                     phonetooth/__init__.py
 
 uidir = $(datadir)/phonetooth

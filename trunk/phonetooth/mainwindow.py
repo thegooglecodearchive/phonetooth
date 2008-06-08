@@ -32,10 +32,13 @@ from phonetooth import filetransferdialog
 from phonetooth import selectcontactsdialog
 from phonetooth import sendmessagedialog
 from phonetooth import messageinput
+from phonetooth import phonebrowserhandler
 
 from gettext import gettext as _
 
 class MainWindow:
+    __waitingForQuit = False
+    
     def __init__(self):
         try:
             from phonetooth import constants
@@ -66,6 +69,9 @@ class MainWindow:
         self.__messageInput.setDataModel(self.__contactsDialog.contactlistStore)
         self.__messageInput.connect('sendpossible', self.__sendPossibleCb)
         
+        self.__phoneBrowser = phonebrowserhandler.PhoneBrowserHandler(self.__widgetTree, parent = self.__mainWindow)
+        self.__phoneBrowser.connect('disconnected', self.__phoneDisconnectedCb)
+        
         self.__contactSelectionDialog = selectcontactsdialog.SelectContactsDialog(self.__widgetTree, self.__mainWindow)
         self.__sendMessageDialog = sendmessagedialog.SendMessageDialog(self.__widgetTree, self.__mainWindow)
         
@@ -73,14 +79,15 @@ class MainWindow:
         
         self.__checkSendFileButtonSensitivity()
         
-        dic = {'onMainWindowDestroy'            : gtk.main_quit,
+        dic = {'onMainWindowDestroy'            : self.__quit,
                'onSendFile'                     : self.__sendFile,
                'onManageContactsActivated'      : self.__contactsDialog.run,
                'onPreferencesActivated'         : self.__preferencesDialog.run,
                'onSendButtonClicked'            : self.__sendSMS,
                'onAboutButtonClicked'           : self.__showAboutDialog,
                'onPreferencesChanged'           : self.__preferencesChanged,
-               'onSendToMultiple'               : self.__sendToMultiple
+               'onSendToMultiple'               : self.__sendToMultiple,
+               'onSwitchPage'                   : self.__switchPage
         }
         self.__widgetTree.signal_autoconnect(dic)
         
@@ -89,6 +96,16 @@ class MainWindow:
         self.__mainWindow.show()
         
    
+    def __switchPage(self, widget, page, index):
+        if index == 1:
+            if self.__prefs.btDevice == None:
+                self.__pushStatusText(_('No bluetooth device configured in preferences'))
+            else:
+                self.__phoneBrowser.connectToPhone(self.__prefs.btDevice.address)
+        else:
+            self.__phoneBrowser.disconnectFromPhone()
+    
+    
     def __sendSMS(self, widget):
         threading.Thread(target = self.__sendSMSThread).start()
         
@@ -161,3 +178,17 @@ class MainWindow:
     
     def __sendPossibleCb(self, sender, sendPossible):
         self.__sendMessageMenuitem.set_sensitive(sendPossible)
+        
+    
+    def __phoneDisconnectedCb(self, data = None):         
+        if self.__waitingForQuit == True:
+            gtk.main_quit()
+        
+    
+    def __quit(self, widget):
+        if self.__phoneBrowser.isConnected():
+            self.__phoneBrowser.disconnectFromPhone()
+            self.__waitingForQuit = True
+        else:
+            gtk.main_quit()
+  
