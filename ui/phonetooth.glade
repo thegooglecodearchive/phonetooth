@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.4 on Sun Jun  8 14:38:27 2008 -->
+<!--Generated with glade3 3.4.4 on Sun Jun  8 14:51:13 2008 -->
 <glade-interface>
   <widget class="GtkDialog" id="manageContactsDialog">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -536,7 +536,7 @@
                         <property name="has_tooltip">True</property>
                         <property name="tooltip_text">Create directory</property>
                         <property name="label" translatable="yes">Create directory</property>
-                        <property name="stock_id">gtk-directory</property>
+                        <property name="icon_name">folder-new</property>
                         <signal name="clicked" handler="onCreateDir"/>
                       </widget>
                       <packing>
