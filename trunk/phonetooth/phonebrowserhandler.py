@@ -134,7 +134,7 @@ class PhoneBrowserHandler(gobject.GObject):
                 elif response == 1:
                     self.__statusBar.push(0, _('File transfer failed') + '.')
                 else:
-                    self.__statusBar.push(0, _('File succesfully sent.'))
+                    self.__statusBar.push(0, _('File succesfully recieved.'))
                 self.__sendFileDialog.hide()
             else:
                 chooser.destroy()
