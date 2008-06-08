@@ -49,8 +49,9 @@ class PhoneBrowserHandler(gobject.GObject):
         
         self.__treeModel = gtk.ListStore(str, gtk.gdk.Pixbuf, bool, int)
         
-        self.__dirPixbuf = self.__iconView.render_icon(gtk.STOCK_DIRECTORY, gtk.ICON_SIZE_MENU)
-        self.__filePixbuf = self.__iconView.render_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_MENU)
+        iconTheme = gtk.icon_theme_get_default()
+        self.__dirImage = iconTheme.load_icon('folder', 36, gtk.ICON_LOOKUP_FORCE_SVG)
+        self.__fileImage = iconTheme.load_icon('misc', 36, gtk.ICON_LOOKUP_FORCE_SVG)
 
         self.__phoneBrowser = phonebrowser.PhoneBrowser()
         self.__phoneBrowser.connect('connected', self.__connectedCb)
@@ -72,7 +73,7 @@ class PhoneBrowserHandler(gobject.GObject):
         
 
     def __del__(self):
-        self.disconnect()
+        self.disconnectFromPhone()
         
 
     def connectToPhone(self, btAddress):
@@ -161,9 +162,9 @@ class PhoneBrowserHandler(gobject.GObject):
         files.sort()
         
         for dir in dirs:
-            self.__treeModel.append((dir, self.__dirPixbuf, True, 0))
+            self.__treeModel.append((dir, self.__dirImage, True, 0))
         for file in files:
-            self.__treeModel.append((file.name, self.__filePixbuf, False, file.size))
+            self.__treeModel.append((file.name, self.__fileImage, False, file.size))
             
         self.__iconView.grab_focus()    
         
