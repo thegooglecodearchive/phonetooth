@@ -1,8 +1,25 @@
+#    Copyright (C) 2008 Dirk Vanden Boer <dirk.vdb@gmail.com>
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
 import sys
 import dbus
 import dbus.glib
 import gobject
-import time
+
+import transferinfo
 
 class FileTransfer(gobject.GObject):
     __fileSizeInBytes = -1
@@ -10,6 +27,7 @@ class FileTransfer(gobject.GObject):
     __time = 0.0
     __speedHistory = []
     __mainLoop = None
+    __transferInfo = transferinfo.TransferInfo()
     
     __gsignals__ =  { 
         "completed": (
@@ -80,52 +98,17 @@ class FileTransfer(gobject.GObject):
     def __errorOccurredCb(self, errorName, errorMessage):
         print 'Error occurred: %s: %s' % (errorName, errorMessage)
         self.emit("error")
-        self.disconnect()
+        self.__disconnect()
 
         
     def __transferStartedCb(self, filename, localPath, fileSizeInBytes):
-        self.__fileSizeInBytes = fileSizeInBytes
-        self.__transferHistory = []
+        self.__transferInfo.start(fileSizeInBytes)
         
     
     def __transferProgressCb(self, bytesTransferred):
-        curTime = time.time()
-
-        if self.__fileSizeInBytes <= 0:
-            self.__time = curTime
-            return
-
-        timeDelta = curTime - self.__time
-        if timeDelta > 0.0:
-            bytesPersecond = ((bytesTransferred - self.__bytesTransferred) / timeDelta)
-            
-            if len(self.__speedHistory) == 20:
-                self.__speedHistory.pop(0)
-            self.__speedHistory.append(int(bytesPersecond))
+        self.__transferInfo.update(bytesTransferred)
+        self.emit("progress", self.__transferInfo.progress, self.__transferInfo.kbPersecond, self.__transferInfo.timeRemaining)
         
-        kbPersecond = self.__getAverageSpeed() / 1024.0
-        kbLeft = (self.__fileSizeInBytes - bytesTransferred) / 1024.0
-        if kbPersecond > 0:
-            timeRemaining = int(kbLeft / kbPersecond)
-        else:
-            timeRemaining = -1
-
-        self.emit("progress", bytesTransferred / float(self.__fileSizeInBytes), int(kbPersecond), timeRemaining)
-        self.__bytesTransferred = bytesTransferred
-        self.__time = curTime
-        
-    
-    def __getAverageSpeed(self):
-        historyLength = len(self.__speedHistory)
-        
-        if historyLength == 0:
-            return 0
-        
-        totalTransfer = 0
-        for transfer in self.__speedHistory:
-            totalTransfer += transfer
-            
-        return totalTransfer / historyLength
     
     def __transferCompletedCb(self):
         self.emit("completed")

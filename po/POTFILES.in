@@ -10,4 +10,5 @@ phonetooth/bluetoothconnection.py
 phonetooth/serialconnection.py
 phonetooth/messageinput.py
 phonetooth/filetransferdialog.py
+phonetooth/phonebrowserhandler.py
 ui/phonetooth.glade
