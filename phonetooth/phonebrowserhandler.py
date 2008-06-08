@@ -18,6 +18,7 @@ import os
 import gtk
 import threading
 import gobject
+import mimetypes
 
 import phonebrowser
 
@@ -49,9 +50,9 @@ class PhoneBrowserHandler(gobject.GObject):
         
         self.__treeModel = gtk.ListStore(str, gtk.gdk.Pixbuf, bool, int)
         
-        iconTheme = gtk.icon_theme_get_default()
-        self.__dirImage = iconTheme.load_icon('folder', 36, gtk.ICON_LOOKUP_FORCE_SVG)
-        self.__fileImage = iconTheme.load_icon('misc', 36, gtk.ICON_LOOKUP_FORCE_SVG)
+        self.__iconTheme    = gtk.icon_theme_get_default()
+        self.__dirImage     = self.__iconTheme.load_icon('folder', 36, gtk.ICON_LOOKUP_FORCE_SVG)
+        self.__fileImage    = self.__iconTheme.load_icon('misc', 36, gtk.ICON_LOOKUP_FORCE_SVG)
 
         self.__phoneBrowser = phonebrowser.PhoneBrowser()
         self.__phoneBrowser.connect('connected', self.__connectedCb)
@@ -70,7 +71,7 @@ class PhoneBrowserHandler(gobject.GObject):
                'onCreateDir'                : self.__createDir
         }
         widgetTree.signal_autoconnect(dic)
-        
+        mimetypes.init()
 
     def __del__(self):
         self.disconnectFromPhone()
@@ -164,7 +165,20 @@ class PhoneBrowserHandler(gobject.GObject):
         for dir in dirs:
             self.__treeModel.append((dir, self.__dirImage, True, 0))
         for file in files:
-            self.__treeModel.append((file.name, self.__fileImage, False, file.size))
+            mime = mimetypes.guess_type(file.name)[0]
+            mime = mime.replace('/', '-')
+            try:
+                pixbuf = self.__iconTheme.load_icon(mime, 36, gtk.ICON_LOOKUP_FORCE_SVG)
+            except:
+                try:
+                    pos = mime.find('-')
+                    if pos > 0:
+                        pixbuf = self.__iconTheme.load_icon(mime[:pos], 36, gtk.ICON_LOOKUP_FORCE_SVG)
+                    else:
+                        pixbuf = self.__fileImage
+                except:
+                    pixbuf = self.__fileImage
+            self.__treeModel.append((file.name, pixbuf, False, file.size))
             
         self.__iconView.grab_focus()    
         
