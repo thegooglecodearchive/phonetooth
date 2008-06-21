@@ -66,6 +66,8 @@ class PhoneBrowserHandler(gobject.GObject):
         
         self.__iconView.set_model(self.__treeModel)
         self.__iconView.enable_model_drag_source(gtk.gdk.BUTTON1_MASK, [('XdndDirectSave0', gtk.TARGET_OTHER_APP, 0)], gtk.gdk.ACTION_COPY)
+        self.__iconView.drag_dest_set(gtk.DEST_DEFAULT_ALL, [('text/uri-list', 0, 100)], gtk.gdk.ACTION_COPY)
+        
         
         dic = {'onIconActivated'            : self.__iconActivated,
                'onDeleteFileClicked'        : self.__deleteFile,
@@ -80,11 +82,13 @@ class PhoneBrowserHandler(gobject.GObject):
         widgetTree.signal_autoconnect(dic)
         mimetypes.init()
 
+
     def __del__(self):
         self.disconnectFromPhone()
         
 
     def connectToPhone(self, btAddress):
+        self.__resetNavigationBar()
         self.__phoneBrowser.connectToPhone(btAddress)
         
     
@@ -133,13 +137,21 @@ class PhoneBrowserHandler(gobject.GObject):
                 
                 
     def __transferFileToLocal(self, remotePath, destinationPath, fileSize):
-        self.__transferProgressBar.set_fraction(0.0)
-        self.__transferProgressBar.set_text('')
-        self.__filenameLabel.set_text(os.path.basename(destinationPath))
         self.__phoneBrowser.copyToLocal(remotePath, destinationPath)
-        
         #workaround, transferstart signal gives 0 as file size
         self.__phoneBrowser.transferInfo.overwriteSize(fileSize)
+        self.__showTransferDialog(os.path.basename(destinationPath))
+        
+    
+    def __transferFileToRemote(self, localPath):
+        self.__phoneBrowser.copyToRemote(localPath)
+        self.__showTransferDialog(os.path.basename(localPath))
+        
+        
+    def __showTransferDialog(self, filename):
+        self.__transferProgressBar.set_fraction(0.0)
+        self.__transferProgressBar.set_text('')
+        self.__filenameLabel.set_text(filename)
         
         response = self.__sendFileDialog.run()
         if response == gtk.RESPONSE_CANCEL:
@@ -150,8 +162,8 @@ class PhoneBrowserHandler(gobject.GObject):
         else:
             self.__statusBar.push(0, _('File succesfully recieved.'))
         self.__sendFileDialog.hide()
+
             
-    
     def __deleteFile(self, widget):
         items = self.__iconView.get_selected_items()
         if len(items) == 1:
@@ -225,7 +237,13 @@ class PhoneBrowserHandler(gobject.GObject):
                 self.__showCurrentDir()
             except Exception, e:
                 self.__statusBar.push(0, _('Create directory not allowed'))
-        
+                
+                
+    def __resetNavigationBar(self):
+        self.__activeNavButton = self.__navigationBox.get_children()[0]
+        self.__cleanNavigationBar()
+        self.__activeNavButton.set_active(True)
+                
     
     def __cleanNavigationBar(self):
         curDir = self.__activeNavButton.get_label()
@@ -296,11 +314,13 @@ class PhoneBrowserHandler(gobject.GObject):
         self.__statusBar.push(0, _('Error occured: ') + message)
         gobject.idle_add(self.__sendFileDialog.response, 1)
         
+    
     def __onDragBegin(self, widget, dragContext):
         iter = self.__treeModel.get_iter(self.__iconView.get_selected_items()[0])
         filename = self.__treeModel.get_value(iter, 0)
         dragContext.source_window.property_change(gtk.gdk.atom_intern('XdndDirectSave0'), 'text/plain', 8, gtk.gdk.PROP_MODE_REPLACE, filename)
         
+    
     def __dragDataGet(self, widget, dragContext, selectionData, info, timestamp):
         property = dragContext.source_window.property_get(gtk.gdk.atom_intern('XdndDirectSave0'), 'text/plain', pdelete = False)
         if property[0] != 'text/plain' or property[1] != 8:
@@ -316,11 +336,23 @@ class PhoneBrowserHandler(gobject.GObject):
             self.__transferFileToLocal(fileName, destinationPath, fileSize)
         else:
             selectionData.set('text/plain', 8, 'F')
-            print 'Can\'t cop dirs yet'  
+            print 'Can\'t cop dirs yet'
             
-        
+        dragContext.source_window.property_delete(gtk.gdk.atom_intern('XdndDirectSave0'))
+          
+    
     def __dragDataReceived(self, widget, dragContext, x, y, selectionData, info, timestamp):
-        print 'drag data received'
+        files = []
+        for url in selectionData.data.split('\r\n'):
+            if len(url) > 0:
+                files.append(urllib.unquote(urlparse.urlparse(url).path))
+                
+        dragContext.drop_finish(True, 0L)
+        
+        for file in files:
+            #print file
+            self.__transferFileToRemote(file)            
+        
     
     def __onDrop(self, widget, dragContext, x, y, timestamp):
-        print 'drop'
+        dragContext.drop_reply(True, 0L)
