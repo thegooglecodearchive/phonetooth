@@ -134,31 +134,45 @@ class PhoneBrowser(gobject.GObject):
         
     
     def getDirectoryListing(self):
-        return self.parseDirectoryListing(self.__dbusSession.RetrieveFolderListing())
+        if self.__dbusSession != None:
+            return self.parseDirectoryListing(self.__dbusSession.RetrieveFolderListing())
+        else:
+            return []
     
     
     def changeDirectory(self, dir):
-        self.__dbusSession.ChangeCurrentFolder(dir)
+        if self.__dbusSession != None:
+            self.__dbusSession.ChangeCurrentFolder(dir)
         
         
     def createDirectory(self, dir):
-        self.__dbusSession.CreateFolder(dir)
+        if self.__dbusSession != None:
+            self.__dbusSession.CreateFolder(dir)
         
     
     def gotoRoot(self):
-        self.__dbusSession.ChangeCurrentFolderToRoot()
+        if self.__dbusSession != None:
+            self.__dbusSession.ChangeCurrentFolderToRoot()
         
     
     def directoryUp(self):
-        self.__dbusSession.ChangeCurrentFolderBackward()
+        if self.__dbusSession != None:
+            self.__dbusSession.ChangeCurrentFolderBackward()
         
     
     def copyToLocal(self, remotePath, localPath):
-        self.__dbusSession.CopyRemoteFile(remotePath, localPath)
+        if self.__dbusSession != None:
+            self.__dbusSession.CopyRemoteFile(remotePath, localPath)
+        
+    
+    def copyToRemote(self, localPath):
+        if self.__dbusSession != None:
+            self.__dbusSession.SendFile(localPath)
 
     
     def deleteFile(self, remotePath):
-        self.__dbusSession.DeleteRemoteFile(remotePath)
+        if self.__dbusSession != None:
+            self.__dbusSession.DeleteRemoteFile(remotePath)
         
     
     def cancel(self):
@@ -181,6 +195,7 @@ class PhoneBrowser(gobject.GObject):
 
         dom.unlink()
         return dirs, files
+    
     
     def __transferStartedCb(self, filename, localPath, fileSizeInBytes):
         self.transferInfo.start(fileSizeInBytes)
