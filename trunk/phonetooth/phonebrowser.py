@@ -130,6 +130,7 @@ class PhoneBrowser(gobject.GObject):
     def __errorOccurredCb(self, errorName, errorMessage):
         print 'Error occurred: %s: %s' % (errorName, errorMessage)
         self.disconnectFromPhone()
+        self.emit('error', errorMessage)
         
     
     def getDirectoryListing(self):
@@ -161,7 +162,8 @@ class PhoneBrowser(gobject.GObject):
         
     
     def cancel(self):
-        self.__dbusSession.Cancel()
+        if self.__dbusSession != None:
+            self.__dbusSession.Cancel()
 
     
     def parseDirectoryListing(self, obexListing):
