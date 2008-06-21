@@ -129,7 +129,7 @@ class PhoneBrowser(gobject.GObject):
     
     def __errorOccurredCb(self, errorName, errorMessage):
         print 'Error occurred: %s: %s' % (errorName, errorMessage)
-        self.__disconnect()
+        self.disconnectFromPhone()
         
     
     def getDirectoryListing(self):

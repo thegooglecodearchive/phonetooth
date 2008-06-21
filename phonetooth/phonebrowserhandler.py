@@ -20,6 +20,7 @@ import threading
 import gobject
 import mimetypes
 import urlparse
+import urllib
 
 import phonebrowser
 
@@ -304,7 +305,7 @@ class PhoneBrowserHandler(gobject.GObject):
         if property[0] != 'text/plain' or property[1] != 8:
             return
         
-        destinationPath = urlparse.urlparse(property[2]).path
+        destinationPath = urllib.unquote(urlparse.urlparse(property[2]).path)
         iter = self.__treeModel.get_iter(self.__iconView.get_selected_items()[0])
         fileName = self.__treeModel.get_value(iter, 0)
         isDir = self.__treeModel.get_value(iter, 2)
