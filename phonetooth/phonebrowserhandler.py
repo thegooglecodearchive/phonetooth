@@ -294,6 +294,7 @@ class PhoneBrowserHandler(gobject.GObject):
     
     def __errorCb(self, sender, message):
         self.__statusBar.push(0, _('Error occured: ') + message)
+        gobject.idle_add(self.__sendFileDialog.response, 1)
         
     def __onDragBegin(self, widget, dragContext):
         iter = self.__treeModel.get_iter(self.__iconView.get_selected_items()[0])
