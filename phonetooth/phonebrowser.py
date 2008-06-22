@@ -19,6 +19,7 @@ import dbus.glib
 import threading
 import gobject
 import transferinfo
+import os
 
 from xml.dom.minidom import parseString
 
@@ -38,6 +39,9 @@ class File:
 class PhoneBrowser(gobject.GObject):
     __dbusSession = None
     __mainLoop = None
+    __copyFromPhoneToLocal = True
+    __localDirectory = None
+    __transferQueue = []
     transferInfo = transferinfo.TransferInfo()
     
     __gsignals__ =  {
@@ -46,7 +50,7 @@ class PhoneBrowser(gobject.GObject):
         "disconnected": (
             gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, []),
         "started": (
-            gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, []),
+            gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [gobject.TYPE_STRING]),
         "completed": (
             gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, []),
         "error": (
@@ -160,14 +164,34 @@ class PhoneBrowser(gobject.GObject):
             self.__dbusSession.ChangeCurrentFolderBackward()
         
     
-    def copyToLocal(self, remotePath, localPath):
-        if self.__dbusSession != None:
-            self.__dbusSession.CopyRemoteFile(remotePath, localPath)
+    def copyToLocal(self, remoteFileInfos, localDirectory):
+        self.__copyFromPhoneToLocal = True
+        self.__localDirectory = localDirectory
+        self.__transferQueue = remoteFileInfos
         
+        self.transferInfo.start(self.__getTransferQueueSizeInBytes())
+        self.__transferNextFileInQueue()
+                
     
-    def copyToRemote(self, localPath):
-        if self.__dbusSession != None:
-            self.__dbusSession.SendFile(localPath)
+    def copyToRemote(self, localFileInfos):
+        self.__copyFromPhoneToLocal = False
+        self.__transferQueue = localFileInfos
+        
+        self.transferInfo.start(self.__getTransferQueueSizeInBytes())
+        self.__transferNextFileInQueue()
+        
+        
+    def __transferNextFileInQueue(self):
+        if len(self.__transferQueue) == 0:
+            self.emit('completed')
+        else:
+            fileInfo = self.__transferQueue.pop(0)
+            if self.__dbusSession != None:
+                self.transferInfo.startNextFile(fileInfo[1])
+                if self.__copyFromPhoneToLocal == True:
+                    self.__dbusSession.CopyRemoteFile(fileInfo[0], self.__localDirectory)
+                else:
+                    self.__dbusSession.SendFile(fileInfo[0])
 
     
     def deleteFile(self, remotePath):
@@ -198,8 +222,7 @@ class PhoneBrowser(gobject.GObject):
     
     
     def __transferStartedCb(self, filename, localPath, fileSizeInBytes):
-        self.transferInfo.start(fileSizeInBytes)
-        self.emit('started')
+        self.emit('started', localPath)
         
     
     def __transferProgressCb(self, bytesTransferred):
@@ -208,5 +231,16 @@ class PhoneBrowser(gobject.GObject):
         
     
     def __transferCompletedCb(self):
-        self.emit('completed')
+        self.__transferNextFileInQueue()
+        
+        
+    def __getTransferQueueSizeInBytes(self):
+        totalSize = 0
+        
+        for fileInfo in self.__transferQueue:
+            totalSize += fileInfo[1]
+            
+        print str(totalSize)
+        
+        return totalSize
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.4 on Tue Jun 10 21:06:44 2008 -->
+<!--Generated with glade3 3.4.4 on Sun Jun 22 15:49:35 2008 -->
 <glade-interface>
   <widget class="GtkDialog" id="manageContactsDialog">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -596,6 +596,7 @@
                         <signal name="drag_data_get" handler="onDragDataGet"/>
                         <signal name="drag_begin" handler="onDragBegin"/>
                         <signal name="item_activated" handler="onIconActivated"/>
+                        <signal name="key_release_event" handler="onIconViewKeyReleased"/>
                         <signal name="selection_changed" handler="onSelectionChanged"/>
                         <signal name="drag_drop" handler="onIconViewDragDrop"/>
                         <signal name="drag_data_received" handler="onDragDataReceived"/>

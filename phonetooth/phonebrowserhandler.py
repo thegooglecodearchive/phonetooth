@@ -77,7 +77,8 @@ class PhoneBrowserHandler(gobject.GObject):
                'onDragBegin'                : self.__onDragBegin,
                'onDragDataGet'              : self.__dragDataGet,
                'onDragDataReceived'         : self.__dragDataReceived,
-               'onIconViewDragDrop'         : self.__onDrop
+               'onIconViewDragDrop'         : self.__onDrop,
+               'onIconViewKeyReleased'      : self.__iconViewKeyReleased
         }
         widgetTree.signal_autoconnect(dic)
         mimetypes.init()
@@ -137,21 +138,19 @@ class PhoneBrowserHandler(gobject.GObject):
                 
                 
     def __transferFileToLocal(self, remotePath, destinationPath, fileSize):
-        self.__phoneBrowser.copyToLocal(remotePath, destinationPath)
-        #workaround, transferstart signal gives 0 as file size
-        self.__phoneBrowser.transferInfo.overwriteSize(fileSize)
-        self.__showTransferDialog(os.path.basename(destinationPath))
+        self.__phoneBrowser.copyToLocal([(remotePath, fileSize)], destinationPath)
+        self.__showTransferDialog()
         
     
-    def __transferFileToRemote(self, localPath):
+    def __transferFilesToRemote(self, localPath):
         self.__phoneBrowser.copyToRemote(localPath)
-        self.__showTransferDialog(os.path.basename(localPath))
+        self.__showTransferDialog()
         
         
-    def __showTransferDialog(self, filename):
+    def __showTransferDialog(self):
         self.__transferProgressBar.set_fraction(0.0)
         self.__transferProgressBar.set_text('')
-        self.__filenameLabel.set_text(filename)
+        self.__filenameLabel.set_text('')
         
         response = self.__sendFileDialog.run()
         if response == gtk.RESPONSE_CANCEL:
@@ -164,7 +163,7 @@ class PhoneBrowserHandler(gobject.GObject):
         self.__sendFileDialog.hide()
 
             
-    def __deleteFile(self, widget):
+    def __deleteFile(self, widget = None):
         items = self.__iconView.get_selected_items()
         if len(items) == 1:
             iter = self.__treeModel.iter_nth_child(None, int(items[0][0]))
@@ -289,8 +288,8 @@ class PhoneBrowserHandler(gobject.GObject):
         return dir
     
     
-    def __transferStartedCb(self, sender = None):
-        gobject.idle_add(self.__transferProgressBar.set_fraction, 0.0)
+    def __transferStartedCb(self, sender, filename):
+        gobject.idle_add(self.__filenameLabel.set_text, os.path.basename(filename))
         
     
     def __transferProgressCb(self, sender = None):
@@ -342,17 +341,20 @@ class PhoneBrowserHandler(gobject.GObject):
           
     
     def __dragDataReceived(self, widget, dragContext, x, y, selectionData, info, timestamp):
-        files = []
+        fileInfos = []
         for url in selectionData.data.split('\r\n'):
             if len(url) > 0:
-                files.append(urllib.unquote(urlparse.urlparse(url).path))
+                filePath = urllib.unquote(urlparse.urlparse(url).path)
+                fileInfos.append((filePath, os.path.getsize(filePath)))
                 
         dragContext.drop_finish(True, 0L)
-        
-        for file in files:
-            #print file
-            self.__transferFileToRemote(file)            
+        self.__transferFilesToRemote(fileInfos)            
         
     
     def __onDrop(self, widget, dragContext, x, y, timestamp):
         dragContext.drop_reply(True, 0L)
+        
+        
+    def __iconViewKeyReleased(self, widget, event):
+        if event.type == gtk.gdk.KEY_RELEASE and event.keyval == gtk.keysyms.Delete:
+            self.__deleteFile()
