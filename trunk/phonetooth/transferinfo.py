@@ -17,8 +17,10 @@
 import time
 
 class TransferInfo:
-    __fileSizeInBytes = -1
-    __bytesTransferred = 0
+    __totalSizeInBytes = -1
+    __currentFileSizeInBytes = -1
+    __bytesTransferredTotal = 0
+    __bytesTransferredCurrentFile = 0
     __time = 0.0
     __speedHistory = []
     
@@ -26,42 +28,47 @@ class TransferInfo:
     kbPersecond = 0
     timeRemaining = 0
     
-    def overwriteSize(self, size):
-        self.__fileSizeInBytes = size
     
-    
-    def start(self, fileSizeInBytes):
-        if fileSizeInBytes != 0:
-            self.__fileSizeInBytes = fileSizeInBytes
+    def start(self, totalSizeInBytes):
+        if totalSizeInBytes != 0:
+            self.__totalSizeInBytes = totalSizeInBytes
         self.__transferHistory = []
+        
+        
+    def startNextFile(self, fileSize):
+        if self.__currentFileSizeInBytes != -1:
+            self.__bytesTransferredTotal += self.__currentFileSizeInBytes
+        self.__bytesTransferredCurrentFile = 0 
+        self.__currentFileSizeInBytes = fileSize
         
     
     def update(self, bytesTransferred):
         curTime = time.time()
 
-        if self.__fileSizeInBytes <= 0:
+        if self.__totalSizeInBytes <= 0:
             self.__time = curTime
             return
 
         timeDelta = curTime - self.__time
-        if timeDelta > 0.0:
-            bytesPersecond = ((bytesTransferred - self.__bytesTransferred) / timeDelta)
+        if timeDelta > 0.0 and self.__bytesTransferredCurrentFile > 0:
+            bytesPersecond = ((bytesTransferred - self.__bytesTransferredCurrentFile) / timeDelta)
             
             if len(self.__speedHistory) == 20:
                 self.__speedHistory.pop(0)
             self.__speedHistory.append(int(bytesPersecond))
         
         kbPersecond = self.__getAverageSpeed() / 1024.0
-        kbLeft = (self.__fileSizeInBytes - bytesTransferred) / 1024.0
+        kbLeft = (self.__totalSizeInBytes - bytesTransferred) / 1024.0
         if kbPersecond > 0:
             self.timeRemaining = int(kbLeft / kbPersecond)
         else:
             self.timeRemaining = -1
 
-        self.progress = bytesTransferred / float(self.__fileSizeInBytes)
+        self.progress = (self.__bytesTransferredTotal + bytesTransferred) / float(self.__totalSizeInBytes)
+        self.progress = min(1.0, self.progress)
         self.kbPersecond = int(kbPersecond)
         
-        self.__bytesTransferred = bytesTransferred
+        self.__bytesTransferredCurrentFile = bytesTransferred
         self.__time = curTime
 
     
