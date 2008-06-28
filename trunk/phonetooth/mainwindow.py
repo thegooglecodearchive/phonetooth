@@ -37,8 +37,6 @@ from phonetooth import phonebrowserhandler
 from gettext import gettext as _
 
 class MainWindow:
-    __waitingForQuit = False
-    
     def __init__(self):
         try:
             from phonetooth import constants
@@ -46,6 +44,8 @@ class MainWindow:
         except:
             #fallback when running from repository
             datadir = 'ui'
+            
+        self.__waitingForQuit = False
         
         self.__widgetTree           = gtk.glade.XML(os.path.join(datadir, 'phonetooth.glade'))
         self.__mainWindow           = self.__widgetTree.get_widget('mainWindow')
@@ -55,6 +55,7 @@ class MainWindow:
         self.__sendFileMenuItem     = self.__widgetTree.get_widget('sendFileMenuitem')
         self.__sendMessageMenuitem  = self.__widgetTree.get_widget('sendMessageMenuitem')
         self.__storeMessageCheck    = self.__widgetTree.get_widget('storeMessageCheck')
+        self.__notebook             = self.__widgetTree.get_widget('mainNotebook')
         
         self.__aboutDialog.set_name('PhoneTooth')
         self.__sendButton.set_sensitive(False)
@@ -87,7 +88,8 @@ class MainWindow:
                'onAboutButtonClicked'           : self.__showAboutDialog,
                'onPreferencesChanged'           : self.__preferencesChanged,
                'onSendToMultiple'               : self.__sendToMultiple,
-               'onSwitchPage'                   : self.__switchPage
+               'onSwitchPage'                   : self.__switchPage,
+               'keyPressed'                     : self.__keyPressed
         }
         self.__widgetTree.signal_autoconnect(dic)
         
@@ -191,4 +193,18 @@ class MainWindow:
             self.__waitingForQuit = True
         else:
             gtk.main_quit()
-  
+            
+            
+    def __keyPressed(self, widget, event):
+        if event.type == gtk.gdk.KEY_PRESS and event.keyval == gtk.keysyms.Tab and event.state & gtk.gdk.CONTROL_MASK:
+            self.__nextTab()
+            
+    
+    def __nextTab(self):
+        if self.__notebook.get_current_page() == self.__notebook.get_n_pages() - 1:
+            self.__notebook.set_current_page(0)
+        else:
+            self.__notebook.next_page()        
+        
+        self.__mainWindow.set_focus_child(self.__notebook)
+ 

@@ -18,32 +18,13 @@ import dbus
 import dbus.glib
 import threading
 import gobject
-import transferinfo
 import os
 
+from filecollection import File
+from filecollection import Directory
 from xml.dom.minidom import parseString
 
-class File:
-    name = None
-    size = None
-    
-    def __init__(self, name, size):
-        self.name = name
-        self.size = size
-        
-    
-    def  __lt__(self, other):
-        return self.name < other.name
-
-
 class PhoneBrowser(gobject.GObject):
-    __dbusSession = None
-    __mainLoop = None
-    __copyFromPhoneToLocal = True
-    __localDirectory = None
-    __transferQueue = []
-    transferInfo = transferinfo.TransferInfo()
-    
     __gsignals__ =  {
         "connected": (
             gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, []), 
@@ -56,12 +37,15 @@ class PhoneBrowser(gobject.GObject):
         "error": (
             gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [gobject.TYPE_STRING]),
         "progress": (
-            gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
+            gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [gobject.TYPE_INT])
     }
     
     
     def __init__(self):
         gobject.GObject.__init__(self)
+        
+        self.__dbusSession = None
+        self.__mainLoop = None
     
     
     def __del__(self):
@@ -114,8 +98,8 @@ class PhoneBrowser(gobject.GObject):
             self.__mainLoop.run()
         except Exception, e:
             self.emit('error', e.message)
-        
-    
+            
+            
     def __connectedCb(self):
         self.emit('connected')
         
@@ -146,6 +130,7 @@ class PhoneBrowser(gobject.GObject):
     
     def changeDirectory(self, dir):
         if self.__dbusSession != None:
+            print 'change dir: ' + dir
             self.__dbusSession.ChangeCurrentFolder(dir)
         
         
@@ -164,36 +149,16 @@ class PhoneBrowser(gobject.GObject):
             self.__dbusSession.ChangeCurrentFolderBackward()
         
     
-    def copyToLocal(self, remoteFileInfos, localDirectory):
-        self.__copyFromPhoneToLocal = True
-        self.__localDirectory = localDirectory
-        self.__transferQueue = remoteFileInfos
-        
-        self.transferInfo.start(self.__getTransferQueueSizeInBytes())
-        self.__transferNextFileInQueue()
+    def copyToLocal(self, remoteFilename, localDirectory):
+        if self.__dbusSession != None:
+            self.__dbusSession.CopyRemoteFile(remoteFilename, os.path.join(localDirectory, remoteFilename))
                 
     
-    def copyToRemote(self, localFileInfos):
-        self.__copyFromPhoneToLocal = False
-        self.__transferQueue = localFileInfos
-        
-        self.transferInfo.start(self.__getTransferQueueSizeInBytes())
-        self.__transferNextFileInQueue()
+    def copyToRemote(self, localFile):
+        if self.__dbusSession != None:
+            self.__dbusSession.SendFile(localFile)
         
         
-    def __transferNextFileInQueue(self):
-        if len(self.__transferQueue) == 0:
-            self.emit('completed')
-        else:
-            fileInfo = self.__transferQueue.pop(0)
-            if self.__dbusSession != None:
-                self.transferInfo.startNextFile(fileInfo[1])
-                if self.__copyFromPhoneToLocal == True:
-                    self.__dbusSession.CopyRemoteFile(fileInfo[0], self.__localDirectory)
-                else:
-                    self.__dbusSession.SendFile(fileInfo[0])
-
-    
     def deleteFile(self, remotePath):
         if self.__dbusSession != None:
             self.__dbusSession.DeleteRemoteFile(remotePath)
@@ -226,21 +191,9 @@ class PhoneBrowser(gobject.GObject):
         
     
     def __transferProgressCb(self, bytesTransferred):
-        self.transferInfo.update(bytesTransferred)
-        self.emit('progress')
+        self.emit('progress', bytesTransferred)
         
     
     def __transferCompletedCb(self):
-        self.__transferNextFileInQueue()
+        self.emit('completed')
         
-        
-    def __getTransferQueueSizeInBytes(self):
-        totalSize = 0
-        
-        for fileInfo in self.__transferQueue:
-            totalSize += fileInfo[1]
-            
-        print str(totalSize)
-        
-        return totalSize
-

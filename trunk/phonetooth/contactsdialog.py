@@ -28,9 +28,8 @@ from phonetooth import mergecontactsdialog
 from gettext import gettext as _
 
 class ContactsDialog:
-    contactList = contacts.ContactList()
-    
     def __init__(self, widgetTree, prefs, parent = None):
+        self.contactList = contacts.ContactList()
         self.contactList.load()
         
         self.contactlistStore = gtk.ListStore(str, str)

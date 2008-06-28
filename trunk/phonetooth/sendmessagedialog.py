@@ -21,9 +21,6 @@ import gobject
 from gettext import gettext as _
 
 class SendMessageDialog:
-    __stopSending = False
-    __sendMessageLabelText = None
-    
     def __init__(self, widgetTree, parent = None):
         self.__sendmessageDialog        = widgetTree.get_widget('sendMessageDialog')
         self.__transferMessageProgress  = widgetTree.get_widget('transferMessageProgress')
@@ -33,6 +30,9 @@ class SendMessageDialog:
         
         self.__sendMessageLabelText = self.__sendMessageLabel.get_text()
         self.__sendmessageDialog.set_transient_for(parent)
+        
+        self.__stopSending = False
+        self.__sendMessageLabelText = None
         
     def run(self, phone, contacts, sms):
         self.__stopSending = False
