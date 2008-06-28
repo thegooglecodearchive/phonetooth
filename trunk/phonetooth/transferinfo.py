@@ -50,9 +50,13 @@ class TransferInfo:
             self.__time = curTime
             return
 
+        bytesPersecond = 0
         timeDelta = curTime - self.__time
         if timeDelta > 0.0 and self.__bytesTransferredCurrentFile > 0:
             bytesPersecond = ((bytesTransferred - self.__bytesTransferredCurrentFile) / timeDelta)
+            
+            if bytesPersecond < 0:
+                return
             
             if len(self.__speedHistory) == 20:
                 self.__speedHistory.pop(0)
@@ -64,7 +68,7 @@ class TransferInfo:
             self.timeRemaining = int(kbLeft / kbPersecond)
         else:
             self.timeRemaining = -1
-
+            
         self.__bytesTransferredCurrentFile = bytesTransferred
         self.progress = (self.__bytesTransferredTotal + bytesTransferred) / float(self.__totalSizeInBytes)
         self.progress = min(1.0, self.progress)
