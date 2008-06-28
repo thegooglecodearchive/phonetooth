@@ -17,16 +17,17 @@
 import time
 
 class TransferInfo:
-    __totalSizeInBytes = -1
-    __currentFileSizeInBytes = -1
-    __bytesTransferredTotal = 0
-    __bytesTransferredCurrentFile = 0
-    __time = 0.0
-    __speedHistory = []
-    
-    progress = 0.0
-    kbPersecond = 0
-    timeRemaining = 0
+    def __init__(self):
+        self.__totalSizeInBytes = -1
+        self.__currentFileSizeInBytes = -1
+        self.__bytesTransferredTotal = 0
+        self.__bytesTransferredCurrentFile = 0
+        self.__time = 0.0
+        self.__speedHistory = []
+        
+        self.progress = 0.0
+        self.kbPersecond = 0
+        self.timeRemaining = -1
     
     
     def start(self, totalSizeInBytes):
@@ -64,11 +65,10 @@ class TransferInfo:
         else:
             self.timeRemaining = -1
 
+        self.__bytesTransferredCurrentFile = bytesTransferred
         self.progress = (self.__bytesTransferredTotal + bytesTransferred) / float(self.__totalSizeInBytes)
         self.progress = min(1.0, self.progress)
         self.kbPersecond = int(kbPersecond)
-        
-        self.__bytesTransferredCurrentFile = bytesTransferred
         self.__time = curTime
 
     

@@ -21,14 +21,17 @@ import gobject
 import mimetypes
 import urlparse
 import urllib
+import time
 
 import phonebrowser
+import transfermanager
+
+from filecollection import File
+from filecollection import Directory
 
 from gettext import gettext as _
 
 class PhoneBrowserHandler(gobject.GObject):
-    __ignoreEvents = False
-    
     __gsignals__ =  {
         "disconnected": (
             gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
@@ -36,6 +39,8 @@ class PhoneBrowserHandler(gobject.GObject):
     
     def __init__(self, widgetTree, parent):
         gobject.GObject.__init__(self)
+        
+        self.__ignoreEvents = False
         
         self.__iconView             = widgetTree.get_widget('iconView')
         self.__deleteButton         = widgetTree.get_widget('deleteToolButton')
@@ -60,9 +65,11 @@ class PhoneBrowserHandler(gobject.GObject):
         self.__phoneBrowser.connect('connected', self.__connectedCb)
         self.__phoneBrowser.connect('disconnected', self.__disconnectedCb)
         self.__phoneBrowser.connect('started', self.__transferStartedCb)
-        self.__phoneBrowser.connect('progress', self.__transferProgressCb)
-        self.__phoneBrowser.connect('completed', self.__transferCompletedCb)
         self.__phoneBrowser.connect('error', self.__errorCb)
+        
+        self.__transferManager = transfermanager.TransferManager(self.__phoneBrowser)
+        self.__transferManager.connect('transferscompleted', self.__transferCompletedCb)
+        self.__transferManager.connect('progress', self.__transferProgressCb)
         
         self.__iconView.set_model(self.__treeModel)
         self.__iconView.enable_model_drag_source(gtk.gdk.BUTTON1_MASK, [('XdndDirectSave0', gtk.TARGET_OTHER_APP, 0)], gtk.gdk.ACTION_COPY)
@@ -132,18 +139,20 @@ class PhoneBrowserHandler(gobject.GObject):
             if chooser.run() == gtk.RESPONSE_OK:
                 dir = chooser.get_filename()
                 chooser.destroy()
-                self.__transferFileToLocal(item, os.path.join(dir, item), self.__treeModel.get_value(iter, 3))
+                fileCollection = Directory()
+                fileCollection.addFile(File(item, self.__treeModel.get_value(iter, 3)))
+                self.__transferFilesToLocal(fileCollection, dir)
             else:
                 chooser.destroy()
                 
                 
-    def __transferFileToLocal(self, remotePath, destinationPath, fileSize):
-        self.__phoneBrowser.copyToLocal([(remotePath, fileSize)], destinationPath)
+    def __transferFilesToLocal(self, directory, destinationPath):
+        self.__transferManager.copyToLocal(directory, destinationPath)
         self.__showTransferDialog()
         
     
-    def __transferFilesToRemote(self, localPath):
-        self.__phoneBrowser.copyToRemote(localPath)
+    def __transferFilesToRemote(self, directory):
+        self.__transferManager.copyToRemote(directory)
         self.__showTransferDialog()
         
         
@@ -165,16 +174,16 @@ class PhoneBrowserHandler(gobject.GObject):
             
     def __deleteFile(self, widget = None):
         items = self.__iconView.get_selected_items()
-        if len(items) == 1:
-            iter = self.__treeModel.iter_nth_child(None, int(items[0][0]))
+        for item in items:
+            iter = self.__treeModel.get_iter(item)
             path = self.__treeModel.get_value(iter, 0)
-             
+            
             try:
                 self.__phoneBrowser.deleteFile(path)
                 self.__showCurrentDir()
             except:
-                self.__statusBar.push(0, _('Failed to delete item'))
-    
+                self.__statusBar.push(0, _('Failed to delete item' + ': ' + path))
+        
     
     def __showCurrentDir(self):
         self.__treeModel.clear()
@@ -230,12 +239,14 @@ class PhoneBrowserHandler(gobject.GObject):
     
     def __createDir(self, widget):
         dir = self.__askDirectoryName()
-        if dir != None:
-            try:
-                self.__phoneBrowser.createDirectory(dir)
-                self.__showCurrentDir()
-            except Exception, e:
-                self.__statusBar.push(0, _('Create directory not allowed'))
+        if dir == None:
+            return
+        
+        try:
+            self.__phoneBrowser.createDirectory(dir)
+            self.__showCurrentDir()
+        except Exception, e:
+            self.__statusBar.push(0, _('Create directory not allowed'))
                 
                 
     def __resetNavigationBar(self):
@@ -293,20 +304,22 @@ class PhoneBrowserHandler(gobject.GObject):
         
     
     def __transferProgressCb(self, sender = None):
-        gobject.idle_add(self.__transferProgressBar.set_fraction, self.__phoneBrowser.transferInfo.progress)
-        statusString = str(self.__phoneBrowser.transferInfo.kbPersecond) + ' kb/s  '
-        timeRemaining = self.__phoneBrowser.transferInfo.timeRemaining
-        if timeRemaining != -1:
-            if timeRemaining >= 60:
-                statusString += '(' + str(timeRemaining / 60 + 1) + _(' minutes remaining') + ')'
+        transferInfo = self.__transferManager.transferInfo
+        gobject.idle_add(self.__transferProgressBar.set_fraction, transferInfo.progress)
+        statusString = str(transferInfo.kbPersecond) + ' kb/s  '
+
+        if transferInfo.timeRemaining != -1:
+            if transferInfo.timeRemaining >= 60:
+                statusString += '(' + str(transferInfo.timeRemaining / 60 + 1) + _(' minutes remaining') + ')'
             else:
-                statusString += '(' + str(timeRemaining / 10 * 10 + 10) + _(' seconds remaining') + ')'
+                statusString += '(' + str(transferInfo.timeRemaining / 10 * 10 + 10) + _(' seconds remaining') + ')'
         
         gobject.idle_add(self.__transferProgressBar.set_text, statusString)
         
     
     def __transferCompletedCb(self, sender = None):
         gobject.idle_add(self.__sendFileDialog.response, gtk.RESPONSE_CLOSE)
+        self.__showCurrentDir()
         
     
     def __errorCb(self, sender, message):
@@ -326,29 +339,44 @@ class PhoneBrowserHandler(gobject.GObject):
             return
         
         destinationPath = urllib.unquote(urlparse.urlparse(property[2]).path)
-        iter = self.__treeModel.get_iter(self.__iconView.get_selected_items()[0])
-        fileName = self.__treeModel.get_value(iter, 0)
-        isDir = self.__treeModel.get_value(iter, 2)
-        fileSize = self.__treeModel.get_value(iter, 3)
-        if not isDir:
-            selectionData.set('text/plain', 8, 'S')
-            self.__transferFileToLocal(fileName, destinationPath, fileSize)
-        else:
-            selectionData.set('text/plain', 8, 'F')
-            print 'Can\'t cop dirs yet'
+        fileCollection = Directory()
+
+        items = self.__iconView.get_selected_items()
+        for item in items:
+            iter = self.__treeModel.get_iter(item)
+            name = self.__treeModel.get_value(iter, 0)
+            isDir = self.__treeModel.get_value(iter, 2)
             
+            directory = Directory()
+            if not isDir:
+                fileSize = self.__treeModel.get_value(iter, 3)
+                fileCollection.addFile(File(name, fileSize))
+            else:
+                dir = self.__transferManager.buildDirectoryStructure(name)
+                dir.parent = fileCollection
+                fileCollection.addDirectory(dir)
+                
+        print 'dest: ' + os.path.dirname(destinationPath)
+        selectionData.set('text/plain', 8, 'S')
+        self.__transferFilesToLocal(fileCollection, os.path.dirname(destinationPath))
         dragContext.source_window.property_delete(gtk.gdk.atom_intern('XdndDirectSave0'))
           
     
     def __dragDataReceived(self, widget, dragContext, x, y, selectionData, info, timestamp):
-        fileInfos = []
+        directory = Directory()
         for url in selectionData.data.split('\r\n'):
             if len(url) > 0:
                 filePath = urllib.unquote(urlparse.urlparse(url).path)
-                fileInfos.append((filePath, os.path.getsize(filePath)))
+                if os.path.isdir(filePath):
+                    for root, dirs, files in os.walk(filePath):
+                        for file in files:
+                            filePath = os.path.join(root, file)
+                            directory.addFile(File(filePath, os.path.getsize(filePath)))
+                else:
+                    directory.addFile(File(filePath, os.path.getsize(filePath)))
                 
         dragContext.drop_finish(True, 0L)
-        self.__transferFilesToRemote(fileInfos)            
+        self.__transferFilesToRemote(directory)            
         
     
     def __onDrop(self, widget, dragContext, x, y, timestamp):

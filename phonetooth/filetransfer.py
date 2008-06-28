@@ -22,13 +22,6 @@ import gobject
 import transferinfo
 
 class FileTransfer(gobject.GObject):
-    __fileSizeInBytes = -1
-    __bytesTransferred = 0
-    __time = 0.0
-    __speedHistory = []
-    __mainLoop = None
-    __transferInfo = transferinfo.TransferInfo()
-    
     __gsignals__ =  { 
         "completed": (
             gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, []),
@@ -41,6 +34,13 @@ class FileTransfer(gobject.GObject):
     
     def __init__(self):
         gobject.GObject.__init__(self)
+        
+        self.__fileSizeInBytes = -1
+        self.__bytesTransferred = 0
+        self.__time = 0.0
+        self.__speedHistory = []
+        self.__mainLoop = None
+        self.__transferInfo = transferinfo.TransferInfo()
         
     
     def __del__(self):

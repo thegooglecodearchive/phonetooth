@@ -18,15 +18,16 @@ import bit7alphabet
 import math
 
 class Sms:
-    __msgLength = 0
-    __is7Bit = True
-    __characters7BitPart = 153
-    __charactersUnicodePart = 67
-    statusReport = False
-    
     def __init__(self, message = '', recipient = ''):
-        self.setMessage(message)
         self.recipient = recipient
+        self.statusReport = False
+        
+        self.__msgLength = 0
+        self.__is7Bit = True
+        self.__characters7BitPart = 153
+        self.__charactersUnicodePart = 67
+        
+        self.setMessage(message)
 
     
     def is7Bit(self):
