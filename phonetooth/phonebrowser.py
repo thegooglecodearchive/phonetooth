@@ -130,7 +130,6 @@ class PhoneBrowser(gobject.GObject):
     
     def changeDirectory(self, dir):
         if self.__dbusSession != None:
-            print 'change dir: ' + dir
             self.__dbusSession.ChangeCurrentFolder(dir)
         
         

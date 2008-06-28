@@ -102,7 +102,6 @@ class TransferManager(gobject.GObject):
         else:
             if (len(self.__currentTransferDir.files) > 0):
                 fileInfo = self.__currentTransferDir.files.pop(0)
-                print 'transfer file ' + fileInfo.name
                 
                 self.transferInfo.startNextFile(fileInfo.size)
                 if self.__copyFromPhoneToLocal == True:

@@ -216,6 +216,17 @@ class PhoneBrowserHandler(gobject.GObject):
     def __selectionChanged(self, widget):
         self.__deleteButton.set_sensitive(len(widget.get_selected_items()) != 0)
         
+        totalSize = 0
+        items = self.__iconView.get_selected_items()
+        for item in items:
+            iter = self.__treeModel.get_iter(item)
+            isDir = self.__treeModel.get_value(iter, 2)
+            
+            if not isDir:
+                totalSize += self.__treeModel.get_value(iter, 3)
+        
+        self.__statusBar.push(0, '%d %s (%d kb)' % (len(items), _('items selected'), totalSize / 1024))
+        
         
     def __disableAllNavigation(self):
         for child in self.__navigationBox.get_children():
