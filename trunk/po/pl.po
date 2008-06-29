@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phonetooth\n"
 "Report-Msgid-Bugs-To: dirk.vdb@gmail.com\n"
-"POT-Creation-Date: 2008-06-03 21:36+0200\n"
+"POT-Creation-Date: 2008-06-28 20:43+0200\n"
 "PO-Revision-Date: 2008-03-31 20:49+0100\n"
 "Last-Translator: Tomasz Dominikowski <dominikowski@gmail.com>\n"
 "Language-Team: Tomasz Dominikowski (Aviary.pl) <dominikowski@gmail.com>\n"
@@ -19,16 +19,16 @@ msgstr ""
 "X-Poedit-Language: Polish\n"
 "X-Poedit-Country: Poland\n"
 
-#: phonetooth/contactsdialog.py:66 phonetooth/mergecontactsdialog.py:43
+#: phonetooth/contactsdialog.py:65 phonetooth/mergecontactsdialog.py:43
 #: phonetooth/selectcontactsdialog.py:44
 msgid "Name"
 msgstr "Kontakt"
 
-#: phonetooth/contactsdialog.py:67 phonetooth/selectcontactsdialog.py:45
+#: phonetooth/contactsdialog.py:66 phonetooth/selectcontactsdialog.py:45
 msgid "Phone number"
 msgstr "Numer telefonu"
 
-#: phonetooth/contactsdialog.py:215 phonetooth/preferencesdialog.py:108
+#: phonetooth/contactsdialog.py:214 phonetooth/preferencesdialog.py:108
 msgid "Error"
 msgstr ""
 
@@ -41,16 +41,21 @@ msgstr ""
 msgid "Imported number"
 msgstr "Numer telefonu"
 
-#: phonetooth/mainwindow.py:115
+#: phonetooth/mainwindow.py:104
+#, fuzzy
+msgid "No bluetooth device configured in preferences"
+msgstr "Brak skonfigurowanego urządzenia w preferencjach"
+
+#: phonetooth/mainwindow.py:134
 msgid "No recipient selected"
 msgstr "Nie wybrano odbiorcy"
 
-#: phonetooth/mainwindow.py:126
+#: phonetooth/mainwindow.py:145
 #, fuzzy
 msgid "Message successfully sent"
 msgstr "Wiadomość wysłano z powodzeniem"
 
-#: phonetooth/mainwindow.py:128
+#: phonetooth/mainwindow.py:147
 msgid "Failed to send message: "
 msgstr "Wysłanie wiadomości nie powiodło się:"
 
@@ -103,11 +108,12 @@ msgstr "Kodowanie:"
 msgid "Sending file..."
 msgstr "Wysyłanie pliku..."
 
-#: phonetooth/filetransferdialog.py:58
+#: phonetooth/filetransferdialog.py:58 phonetooth/phonebrowserhandler.py:167
 msgid "File transfer cancelled."
 msgstr ""
 
 #: phonetooth/filetransferdialog.py:60 phonetooth/filetransferdialog.py:64
+#: phonetooth/phonebrowserhandler.py:169
 #, fuzzy
 msgid "File transfer failed"
 msgstr "Wysłanie pliku nie powiodło się:"
@@ -116,19 +122,46 @@ msgstr "Wysłanie pliku nie powiodło się:"
 msgid "File succesfully sent."
 msgstr "Plik wysłano z powodzeniem."
 
-#: phonetooth/filetransferdialog.py:83
+#: phonetooth/filetransferdialog.py:83 phonetooth/phonebrowserhandler.py:324
 msgid " minutes remaining"
 msgstr ""
 
-#: phonetooth/filetransferdialog.py:85
+#: phonetooth/filetransferdialog.py:85 phonetooth/phonebrowserhandler.py:326
 msgid " seconds remaining"
+msgstr ""
+
+#: phonetooth/phonebrowserhandler.py:171
+#, fuzzy
+msgid "File succesfully recieved."
+msgstr "Plik wysłano z powodzeniem."
+
+#: phonetooth/phonebrowserhandler.py:185
+#, fuzzy
+msgid "Failed to delete item"
+msgstr "Zapis wiadomości nieudany"
+
+#: phonetooth/phonebrowserhandler.py:228
+#, fuzzy
+msgid "items selected"
+msgstr "Nie wybrano odbiorcy"
+
+#: phonetooth/phonebrowserhandler.py:260
+msgid "Create directory not allowed"
+msgstr ""
+
+#: phonetooth/phonebrowserhandler.py:299
+msgid "Enter directory name"
+msgstr ""
+
+#: phonetooth/phonebrowserhandler.py:337
+msgid "Error occured: "
 msgstr ""
 
 #: ui/phonetooth.glade:7
 msgid "Manage contacts"
 msgstr "Zarządzaj kontaktami"
 
-#: ui/phonetooth.glade:28 ui/phonetooth.glade:209
+#: ui/phonetooth.glade:28 ui/phonetooth.glade:210
 msgid "_File"
 msgstr "_Plik"
 
@@ -161,13 +194,14 @@ msgstr "Zaimportuj z telefonu"
 msgid "gtk-new"
 msgstr "Nowy"
 
-#: ui/phonetooth.glade:162 ui/phonetooth.glade:764 ui/phonetooth.glade:931
-#: ui/phonetooth.glade:1049 ui/phonetooth.glade:1121 ui/phonetooth.glade:1234
+#: ui/phonetooth.glade:162 ui/phonetooth.glade:910 ui/phonetooth.glade:1077
+#: ui/phonetooth.glade:1195 ui/phonetooth.glade:1267 ui/phonetooth.glade:1380
+#: ui/phonetooth.glade:1445
 msgid "gtk-cancel"
 msgstr "Anuluj"
 
-#: ui/phonetooth.glade:173 ui/phonetooth.glade:775 ui/phonetooth.glade:1059
-#: ui/phonetooth.glade:1132
+#: ui/phonetooth.glade:173 ui/phonetooth.glade:921 ui/phonetooth.glade:1205
+#: ui/phonetooth.glade:1278 ui/phonetooth.glade:1455
 msgid "gtk-ok"
 msgstr "OK"
 
@@ -175,122 +209,142 @@ msgstr "OK"
 msgid "Phonetooth"
 msgstr "Phonetooth"
 
-#: ui/phonetooth.glade:220
+#: ui/phonetooth.glade:221
 msgid "Send the current message to multiple contacts"
 msgstr ""
 
-#: ui/phonetooth.glade:221
+#: ui/phonetooth.glade:222
 #, fuzzy
 msgid "_Send to multiple..."
 msgstr "Wysyłanie pliku..."
 
-#: ui/phonetooth.glade:231
+#: ui/phonetooth.glade:232
 msgid ""
 "Send a file to your mobile phone (only available for bluetooth connections)"
 msgstr ""
 "Wysłanie pliku do telefonu komórkowego (dostępne wyłącznie dla połączeń "
 "Bluetooth)"
 
-#: ui/phonetooth.glade:232
+#: ui/phonetooth.glade:233
 #, fuzzy
 msgid "Send _file..."
 msgstr "Wysyłanie pliku..."
 
-#: ui/phonetooth.glade:242
+#: ui/phonetooth.glade:243
 msgid "Close the application"
 msgstr "Zakończenie aplikacji"
 
-#: ui/phonetooth.glade:243
+#: ui/phonetooth.glade:244
 #, fuzzy
 msgid "gtk-quit"
 msgstr "O programie"
 
-#: ui/phonetooth.glade:257
+#: ui/phonetooth.glade:258
 msgid "_Edit"
 msgstr "_Edycja"
 
-#: ui/phonetooth.glade:267
+#: ui/phonetooth.glade:268
 msgid "Manage your contacts"
 msgstr "Zarządzanie kontaktami"
 
-#: ui/phonetooth.glade:268
+#: ui/phonetooth.glade:269
 msgid "_Manage contacts"
 msgstr "_Zarządzaj kontaktami"
 
-#: ui/phonetooth.glade:282
+#: ui/phonetooth.glade:283
 msgid "Open the preferences"
 msgstr "Otwarcie preferencji"
 
-#: ui/phonetooth.glade:283
+#: ui/phonetooth.glade:284
 msgid "gtk-preferences"
 msgstr "Preferencje"
 
-#: ui/phonetooth.glade:297
+#: ui/phonetooth.glade:298
 msgid "_Help"
 msgstr "Pomo_c"
 
-#: ui/phonetooth.glade:307
+#: ui/phonetooth.glade:308
 msgid "gtk-about"
 msgstr "O programie"
 
-#: ui/phonetooth.glade:337
+#: ui/phonetooth.glade:343
 msgid "Recipient:"
 msgstr "Odbiorca:"
 
-#: ui/phonetooth.glade:401
+#: ui/phonetooth.glade:407
 msgid "Characters: 0"
 msgstr "Znaków: 0"
 
-#: ui/phonetooth.glade:411
+#: ui/phonetooth.glade:417
 msgid "Messages: 0"
 msgstr "Wiadomości: 0"
 
-#: ui/phonetooth.glade:423
+#: ui/phonetooth.glade:429
 msgid "Encoding: GSM 7-bit"
 msgstr "Kodowanie: GSM 7-bit"
 
-#: ui/phonetooth.glade:454
+#: ui/phonetooth.glade:460
 msgid "Delivery report"
 msgstr "Raport o dostarczeniu"
 
-#: ui/phonetooth.glade:466
+#: ui/phonetooth.glade:472
 #, fuzzy
 msgid "Store message"
 msgstr "Wyślij wiadomość"
 
-#: ui/phonetooth.glade:481
+#: ui/phonetooth.glade:487 ui/phonetooth.glade:507
 msgid "Send message"
 msgstr "Wyślij wiadomość"
 
-#: ui/phonetooth.glade:519
+#: ui/phonetooth.glade:526
+msgid "Delete"
+msgstr ""
+
+#: ui/phonetooth.glade:539
+msgid "Create directory"
+msgstr ""
+
+#: ui/phonetooth.glade:561
+msgid "/"
+msgstr ""
+
+#: ui/phonetooth.glade:620
+msgid "page 2"
+msgstr ""
+
+#: ui/phonetooth.glade:634
+msgid "Browse phone"
+msgstr ""
+
+#: ui/phonetooth.glade:665
 msgid "Preferences"
 msgstr "Preferencje"
 
-#: ui/phonetooth.glade:589
+#: ui/phonetooth.glade:735
 msgid " Scan "
 msgstr " Skanuj"
 
-#: ui/phonetooth.glade:618
+#: ui/phonetooth.glade:764
 msgid "<b>Custom serial device</b>"
 msgstr "<b>Własne urządzenie szeregowe</b>"
 
-#: ui/phonetooth.glade:645
+#: ui/phonetooth.glade:791
 msgid "Device location:"
 msgstr "Położenie urządzenia:"
 
-#: ui/phonetooth.glade:707
+#: ui/phonetooth.glade:853
 msgid "Gammu configuration index:"
 msgstr "Indeks konfiguracji Gammu:"
 
-#: ui/phonetooth.glade:736
+#: ui/phonetooth.glade:882
 msgid "<b>Phone connection method</b>"
 msgstr "<b>Rodzaj połączenia z telefonem</b>"
 
-#: ui/phonetooth.glade:795
+#: ui/phonetooth.glade:941
 msgid "About PhoneTooth"
 msgstr "O PhoneTooth"
 
-#: ui/phonetooth.glade:806
+#: ui/phonetooth.glade:952
 msgid ""
 "This program is free software; you can redistribute it and/or modify it\n"
 "under the terms of the GNU General Public License as published by the Free\n"
@@ -324,34 +378,34 @@ msgstr ""
 "Temple\n"
 "Place, Suite 330, Boston, MA  02111-1307  USA."
 
-#: ui/phonetooth.glade:850 ui/phonetooth.glade:883
+#: ui/phonetooth.glade:996 ui/phonetooth.glade:1029
 #, fuzzy
 msgid "Transferring file..."
 msgstr "Wysyłanie pliku..."
 
-#: ui/phonetooth.glade:952
+#: ui/phonetooth.glade:1098
 msgid "Resolve collisions"
 msgstr ""
 
-#: ui/phonetooth.glade:976
+#: ui/phonetooth.glade:1122
 msgid "Skip existing contacts"
 msgstr ""
 
-#: ui/phonetooth.glade:990
+#: ui/phonetooth.glade:1136
 msgid "Overwrite existing contacts"
 msgstr ""
 
-#: ui/phonetooth.glade:1008
+#: ui/phonetooth.glade:1154
 #, fuzzy
 msgid "<b>Collision resolving method </b>"
 msgstr "<b>Rodzaj połączenia z telefonem</b>"
 
-#: ui/phonetooth.glade:1081
+#: ui/phonetooth.glade:1227
 #, fuzzy
 msgid "Select contacts"
 msgstr "Zarządzaj kontaktami"
 
-#: ui/phonetooth.glade:1153 ui/phonetooth.glade:1186
+#: ui/phonetooth.glade:1299 ui/phonetooth.glade:1332
 #, fuzzy
 msgid "Sending message..."
 msgstr "Wyślij wiadomość"

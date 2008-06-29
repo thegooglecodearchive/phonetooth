@@ -31,8 +31,14 @@ class TransferInfo:
     
     
     def start(self, totalSizeInBytes):
-        if totalSizeInBytes != 0:
-            self.__totalSizeInBytes = totalSizeInBytes
+        self.__totalSizeInBytes = totalSizeInBytes
+        self.__currentFileSizeInBytes = -1
+        self.__bytesTransferredTotal = 0
+        self.__bytesTransferredCurrentFile = 0
+        self.__time = 0.0
+        self.progress = 0.0
+        self.kbPersecond = 0
+        self.timeRemaining = -1
         self.__transferHistory = []
         
         
@@ -50,7 +56,6 @@ class TransferInfo:
             self.__time = curTime
             return
 
-        bytesPersecond = 0
         timeDelta = curTime - self.__time
         if timeDelta > 0.0 and self.__bytesTransferredCurrentFile > 0:
             bytesPersecond = ((bytesTransferred - self.__bytesTransferredCurrentFile) / timeDelta)
@@ -63,7 +68,7 @@ class TransferInfo:
             self.__speedHistory.append(int(bytesPersecond))
         
         kbPersecond = self.__getAverageSpeed() / 1024.0
-        kbLeft = (self.__totalSizeInBytes - bytesTransferred) / 1024.0
+        kbLeft = (self.__totalSizeInBytes - (bytesTransferred + self.__bytesTransferredTotal)) / 1024.0
         if kbPersecond > 0:
             self.timeRemaining = int(kbLeft / kbPersecond)
         else:
@@ -74,7 +79,7 @@ class TransferInfo:
         self.progress = min(1.0, self.progress)
         self.kbPersecond = int(kbPersecond)
         self.__time = curTime
-
+        
     
     def __getAverageSpeed(self):
         historyLength = len(self.__speedHistory)

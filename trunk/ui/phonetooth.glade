@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.4 on Sat Jun 28 13:47:48 2008 -->
+<!--Generated with glade3 3.4.4 on Sun Jun 29 19:04:42 2008 -->
 <glade-interface>
   <widget class="GtkDialog" id="manageContactsDialog">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -558,7 +558,7 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="border_width">3</property>
-                        <property name="label" translatable="yes">/</property>
+                        <property name="label">/</property>
                         <property name="response_id">0</property>
                         <property name="active">True</property>
                         <signal name="clicked" handler="onRootButtonClicked"/>
@@ -617,7 +617,7 @@
             <child>
               <widget class="GtkLabel" id="label2">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">page 2</property>
+                <property name="label">page 2</property>
               </widget>
               <packing>
                 <property name="type">tab</property>
@@ -946,7 +946,7 @@
     <property name="skip_taskbar_hint">True</property>
     <property name="has_separator">False</property>
     <property name="program_name">Phonetooth</property>
-    <property name="version">0.4.1</property>
+    <property name="version">0.5.0</property>
     <property name="copyright">Copyright © 2008 Dirk Vanden Boer</property>
     <property name="website">http://code.google.com/p/phonetooth/</property>
     <property name="license" translatable="yes">This program is free software; you can redistribute it and/or modify it

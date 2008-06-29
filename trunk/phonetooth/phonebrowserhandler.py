@@ -225,7 +225,7 @@ class PhoneBrowserHandler(gobject.GObject):
             if not isDir:
                 totalSize += self.__treeModel.get_value(iter, 3)
         
-        self.__statusBar.push(0, '%d %s (%d kb)' % (len(items), _('items selected'), totalSize / 1024))
+        self.__statusBar.push(0, '%d %s (%d kB)' % (len(items), _('items selected'), totalSize / 1024))
         
         
     def __disableAllNavigation(self):

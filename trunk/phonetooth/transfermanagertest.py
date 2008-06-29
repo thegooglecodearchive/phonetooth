@@ -14,7 +14,13 @@ class TransferManagerTest(unittest.TestCase):
         
     def setup(self):
         self.transfersCompleted = False
-    
+        
+    def tearDown(self):
+        if os.path.exists('subdir1'):
+            os.removedirs('subdir1')
+        if os.path.exists('subdir2'):
+            os.removedirs('subdir2')
+       
     
     def testTransferToRemote(self):
         phoneBrowser = PhoneBrowserStub()
@@ -101,6 +107,8 @@ class TransferManagerTest(unittest.TestCase):
         self.assertEqual('subdir1', phoneBrowser.curDir)
         self.assertEqual('sub1file1.tst', phoneBrowser.lastFileCopied)
         self.assertFalse(self.transfersCompleted)
+        self.assertTrue(os.path.exists('subdir1'))
+        self.assertTrue(os.path.isdir('subdir1'))
         
         phoneBrowser.emit('completed')
         self.assertEqual('subdir1', phoneBrowser.curDir)
@@ -111,6 +119,8 @@ class TransferManagerTest(unittest.TestCase):
         self.assertTrue(phoneBrowser.dirUp)
         self.assertEqual('subdir2', phoneBrowser.curDir)
         self.assertEqual('sub2file1.tst', phoneBrowser.lastFileCopied)
+        self.assertTrue(os.path.exists('subdir2'))
+        self.assertTrue(os.path.isdir('subdir2'))
         
         phoneBrowser.emit('completed')
         self.assertEqual('subdir2', phoneBrowser.curDir)
