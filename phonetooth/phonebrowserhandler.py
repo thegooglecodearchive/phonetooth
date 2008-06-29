@@ -196,8 +196,8 @@ class PhoneBrowserHandler(gobject.GObject):
             self.__treeModel.append((dir, self.__dirImage, True, 0))
         for file in files:
             mime = mimetypes.guess_type(file.name)[0]
-            mime = mime.replace('/', '-')
             try:
+                mime = mime.replace('/', '-')
                 pixbuf = self.__iconTheme.load_icon(mime, 36, gtk.ICON_LOOKUP_FORCE_SVG)
             except:
                 try:
@@ -214,7 +214,12 @@ class PhoneBrowserHandler(gobject.GObject):
         
     
     def __selectionChanged(self, widget):
-        self.__deleteButton.set_sensitive(len(widget.get_selected_items()) != 0)
+        numItems = len(widget.get_selected_items())
+        self.__deleteButton.set_sensitive(numItems != 0)
+        
+        if numItems == 0:
+            self.__statusBar.push(0, '')
+            return
         
         totalSize = 0
         items = self.__iconView.get_selected_items()
@@ -225,8 +230,18 @@ class PhoneBrowserHandler(gobject.GObject):
             if not isDir:
                 totalSize += self.__treeModel.get_value(iter, 3)
         
-        self.__statusBar.push(0, '%d %s (%d kB)' % (len(items), _('items selected'), totalSize / 1024))
+        if totalSize == 0:
+            sizeInfo = ''
+        elif totalSize > 1048576: #1024 * 1024
+            sizeInfo = '(%.1f MB)' % (totalSize / float(1048576))
+        else:
+            sizeInfo = '(%d kB)' % (totalSize / 1024)
         
+        if numItems > 1:
+            self.__statusBar.push(0, '%d %s %s' % (numItems, _('items selected'), sizeInfo))
+        else:
+            item = self.__treeModel.get_iter(self.__iconView.get_selected_items()[0])
+            self.__statusBar.push(0, '"%s" %s ' % (self.__treeModel.get_value(iter, 0), sizeInfo))
         
     def __disableAllNavigation(self):
         for child in self.__navigationBox.get_children():
