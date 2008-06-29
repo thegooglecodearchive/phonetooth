@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phonetooth 0.1.2\n"
 "Report-Msgid-Bugs-To: dirk.vdb@gmail.com\n"
-"POT-Creation-Date: 2008-06-03 21:36+0200\n"
-"PO-Revision-Date: 2008-06-03 21:30+0100\n"
+"POT-Creation-Date: 2008-06-28 20:43+0200\n"
+"PO-Revision-Date: 2008-06-29 19:06+0100\n"
 "Last-Translator: Dirk Vanden Boer <dirk.vdb@gmail.com>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
@@ -16,18 +16,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: phonetooth/contactsdialog.py:66 phonetooth/mergecontactsdialog.py:43
+#: phonetooth/contactsdialog.py:65
+#: phonetooth/mergecontactsdialog.py:43
 #: phonetooth/selectcontactsdialog.py:44
 msgid "Name"
 msgstr "Naam"
 
-#: phonetooth/contactsdialog.py:67 phonetooth/selectcontactsdialog.py:45
+#: phonetooth/contactsdialog.py:66
+#: phonetooth/selectcontactsdialog.py:45
 msgid "Phone number"
 msgstr "Telefoon nummer"
 
-#: phonetooth/contactsdialog.py:215 phonetooth/preferencesdialog.py:108
+#: phonetooth/contactsdialog.py:214
+#: phonetooth/preferencesdialog.py:108
 msgid "Error"
-msgstr ""
+msgstr "Fout"
 
 #: phonetooth/mergecontactsdialog.py:44
 msgid "Existing number"
@@ -37,15 +40,19 @@ msgstr "Bestaand nummer"
 msgid "Imported number"
 msgstr "Geïmporteerd nummer"
 
-#: phonetooth/mainwindow.py:115
+#: phonetooth/mainwindow.py:104
+msgid "No bluetooth device configured in preferences"
+msgstr "Geen bluetooth apparaat geconfigureerd in de instellingen"
+
+#: phonetooth/mainwindow.py:134
 msgid "No recipient selected"
 msgstr "Geen ontvanger geslecteerd"
 
-#: phonetooth/mainwindow.py:126
+#: phonetooth/mainwindow.py:145
 msgid "Message successfully sent"
 msgstr "Bericht succesvol verzonden"
 
-#: phonetooth/mainwindow.py:128
+#: phonetooth/mainwindow.py:147
 msgid "Failed to send message: "
 msgstr "Bericht verzenden is mislukt: "
 
@@ -57,7 +64,8 @@ msgstr "Bericht opslaan is mislukt"
 msgid "Sending SMS not supported by phone"
 msgstr "SMS versturen wordt niet ondersteund door de telefoon"
 
-#: phonetooth/mobilephone.py:106 phonetooth/mobilephone.py:122
+#: phonetooth/mobilephone.py:106
+#: phonetooth/mobilephone.py:122
 msgid "Failed to send message"
 msgstr "Bericht verzenden is mislukt"
 
@@ -89,7 +97,8 @@ msgstr "Karakters: "
 msgid "Messages: "
 msgstr "Berichten: "
 
-#: phonetooth/messageinput.py:60 phonetooth/messageinput.py:62
+#: phonetooth/messageinput.py:60
+#: phonetooth/messageinput.py:62
 msgid "Encoding: "
 msgstr "Encodering: "
 
@@ -98,31 +107,60 @@ msgid "Sending file..."
 msgstr "Bezig met verzenden..."
 
 #: phonetooth/filetransferdialog.py:58
+#: phonetooth/phonebrowserhandler.py:167
 msgid "File transfer cancelled."
 msgstr "Bestandsoverdracht geannuleerd"
 
-#: phonetooth/filetransferdialog.py:60 phonetooth/filetransferdialog.py:64
-#, fuzzy
+#: phonetooth/filetransferdialog.py:60
+#: phonetooth/filetransferdialog.py:64
+#: phonetooth/phonebrowserhandler.py:169
 msgid "File transfer failed"
-msgstr "Bestand verzenden is mislukt."
+msgstr "Bestand verzenden is mislukt"
 
 #: phonetooth/filetransferdialog.py:62
 msgid "File succesfully sent."
 msgstr "Bestand succesvol verzonden"
 
 #: phonetooth/filetransferdialog.py:83
+#: phonetooth/phonebrowserhandler.py:324
 msgid " minutes remaining"
 msgstr "minuten resterend"
 
 #: phonetooth/filetransferdialog.py:85
+#: phonetooth/phonebrowserhandler.py:326
 msgid " seconds remaining"
 msgstr "seconden resterend"
+
+#: phonetooth/phonebrowserhandler.py:171
+msgid "File succesfully recieved."
+msgstr "Bestand succesvol ontvangen"
+
+#: phonetooth/phonebrowserhandler.py:185
+msgid "Failed to delete item"
+msgstr "Item verwijderen is mislukt"
+
+#: phonetooth/phonebrowserhandler.py:228
+msgid "items selected"
+msgstr "items geselecteerd"
+
+#: phonetooth/phonebrowserhandler.py:260
+msgid "Create directory not allowed"
+msgstr "Map aanmaken niet toegestaan"
+
+#: phonetooth/phonebrowserhandler.py:299
+msgid "Enter directory name"
+msgstr "Voer mapnaam in"
+
+#: phonetooth/phonebrowserhandler.py:337
+msgid "Error occured: "
+msgstr "Fout opgetreden:"
 
 #: ui/phonetooth.glade:7
 msgid "Manage contacts"
 msgstr "Beheer contacten"
 
-#: ui/phonetooth.glade:28 ui/phonetooth.glade:209
+#: ui/phonetooth.glade:28
+#: ui/phonetooth.glade:210
 msgid "_File"
 msgstr "_Bestand"
 
@@ -154,13 +192,21 @@ msgstr "Importeren van telefoon"
 msgid "gtk-new"
 msgstr "gtk-new"
 
-#: ui/phonetooth.glade:162 ui/phonetooth.glade:764 ui/phonetooth.glade:931
-#: ui/phonetooth.glade:1049 ui/phonetooth.glade:1121 ui/phonetooth.glade:1234
+#: ui/phonetooth.glade:162
+#: ui/phonetooth.glade:910
+#: ui/phonetooth.glade:1077
+#: ui/phonetooth.glade:1195
+#: ui/phonetooth.glade:1267
+#: ui/phonetooth.glade:1380
+#: ui/phonetooth.glade:1445
 msgid "gtk-cancel"
 msgstr "gtk-cancel"
 
-#: ui/phonetooth.glade:173 ui/phonetooth.glade:775 ui/phonetooth.glade:1059
-#: ui/phonetooth.glade:1132
+#: ui/phonetooth.glade:173
+#: ui/phonetooth.glade:921
+#: ui/phonetooth.glade:1205
+#: ui/phonetooth.glade:1278
+#: ui/phonetooth.glade:1455
 msgid "gtk-ok"
 msgstr "gtk-ok"
 
@@ -168,118 +214,136 @@ msgstr "gtk-ok"
 msgid "Phonetooth"
 msgstr "Phonetooth"
 
-#: ui/phonetooth.glade:220
+#: ui/phonetooth.glade:221
 msgid "Send the current message to multiple contacts"
 msgstr "Verzend het huidige bericht naar meerdere contacten"
 
-#: ui/phonetooth.glade:221
+#: ui/phonetooth.glade:222
 msgid "_Send to multiple..."
 msgstr "_Verzend naar meerdere..."
 
-#: ui/phonetooth.glade:231
-msgid ""
-"Send a file to your mobile phone (only available for bluetooth connections)"
-msgstr ""
-"Verzend een bestand naar je telefoon (allen beschikbaar voor bluetooth "
-"verbindingen)"
-
 #: ui/phonetooth.glade:232
+msgid "Send a file to your mobile phone (only available for bluetooth connections)"
+msgstr "Verzend een bestand naar je telefoon (allen beschikbaar voor bluetooth verbindingen)"
+
+#: ui/phonetooth.glade:233
 msgid "Send _file..."
 msgstr "Verzend _bestand"
 
-#: ui/phonetooth.glade:242
+#: ui/phonetooth.glade:243
 msgid "Close the application"
 msgstr "Sluit de applicatie"
 
-#: ui/phonetooth.glade:243
+#: ui/phonetooth.glade:244
 msgid "gtk-quit"
 msgstr "gtk-quit"
 
-#: ui/phonetooth.glade:257
+#: ui/phonetooth.glade:258
 msgid "_Edit"
 msgstr "_Bewerken"
 
-#: ui/phonetooth.glade:267
+#: ui/phonetooth.glade:268
 msgid "Manage your contacts"
 msgstr "Beheer je contacten"
 
-#: ui/phonetooth.glade:268
+#: ui/phonetooth.glade:269
 msgid "_Manage contacts"
 msgstr "_Beheer contacten"
 
-#: ui/phonetooth.glade:282
+#: ui/phonetooth.glade:283
 msgid "Open the preferences"
 msgstr "Open de instellingen"
 
-#: ui/phonetooth.glade:283
+#: ui/phonetooth.glade:284
 msgid "gtk-preferences"
 msgstr "gtk-preferences"
 
-#: ui/phonetooth.glade:297
+#: ui/phonetooth.glade:298
 msgid "_Help"
 msgstr "_Help"
 
-#: ui/phonetooth.glade:307
+#: ui/phonetooth.glade:308
 msgid "gtk-about"
 msgstr "gtk-about"
 
-#: ui/phonetooth.glade:337
+#: ui/phonetooth.glade:343
 msgid "Recipient:"
 msgstr "Ontvanger:"
 
-#: ui/phonetooth.glade:401
+#: ui/phonetooth.glade:407
 msgid "Characters: 0"
 msgstr "Karakters: 0"
 
-#: ui/phonetooth.glade:411
+#: ui/phonetooth.glade:417
 msgid "Messages: 0"
 msgstr "Berichten: 0"
 
-#: ui/phonetooth.glade:423
+#: ui/phonetooth.glade:429
 msgid "Encoding: GSM 7-bit"
 msgstr "Encodering: GSM 7-bit"
 
-#: ui/phonetooth.glade:454
+#: ui/phonetooth.glade:460
 msgid "Delivery report"
 msgstr "Verzend rapport"
 
-#: ui/phonetooth.glade:466
+#: ui/phonetooth.glade:472
 msgid "Store message"
 msgstr "Bericht opslaan"
 
-#: ui/phonetooth.glade:481
+#: ui/phonetooth.glade:487
+#: ui/phonetooth.glade:507
 msgid "Send message"
 msgstr "Verstuur bericht"
 
-#: ui/phonetooth.glade:519
+#: ui/phonetooth.glade:526
+msgid "Delete"
+msgstr "Verwijder"
+
+#: ui/phonetooth.glade:539
+msgid "Create directory"
+msgstr "Map aanmaken"
+
+#: ui/phonetooth.glade:561
+msgid "/"
+msgstr ""
+
+#: ui/phonetooth.glade:620
+msgid "page 2"
+msgstr ""
+
+#: ui/phonetooth.glade:634
+msgid "Browse phone"
+msgstr "Telefoon verkennen"
+
+#: ui/phonetooth.glade:665
 msgid "Preferences"
 msgstr "Voorkeuren"
 
-#: ui/phonetooth.glade:589
+#: ui/phonetooth.glade:735
 msgid " Scan "
 msgstr " Zoek "
 
-#: ui/phonetooth.glade:618
+#: ui/phonetooth.glade:764
 msgid "<b>Custom serial device</b>"
 msgstr "Ander serieel apparaat:"
 
-#: ui/phonetooth.glade:645
+#: ui/phonetooth.glade:791
 msgid "Device location:"
 msgstr "Apparaat locatie:"
 
-#: ui/phonetooth.glade:707
+#: ui/phonetooth.glade:853
 msgid "Gammu configuration index:"
 msgstr "Gammu configuratie index:"
 
-#: ui/phonetooth.glade:736
+#: ui/phonetooth.glade:882
 msgid "<b>Phone connection method</b>"
 msgstr "<b>Telefoon verbindingsmethode</b>"
 
-#: ui/phonetooth.glade:795
+#: ui/phonetooth.glade:941
 msgid "About PhoneTooth"
 msgstr "Over Phonetooth"
 
-#: ui/phonetooth.glade:806
+#: ui/phonetooth.glade:952
 msgid ""
 "This program is free software; you can redistribute it and/or modify it\n"
 "under the terms of the GNU General Public License as published by the Free\n"
@@ -291,18 +355,13 @@ msgid ""
 "FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for\n"
 "more details.\n"
 "\n"
-"You should have received a copy of the GNU General Public License along "
-"with\n"
-"this program; if not, write to the Free Software Foundation, Inc., 59 "
-"Temple\n"
+"You should have received a copy of the GNU General Public License along with\n"
+"this program; if not, write to the Free Software Foundation, Inc., 59 Temple\n"
 "Place, Suite 330, Boston, MA  02111-1307  USA."
 msgstr ""
-"Dit Programma is vrije software; U kan het verspreiden en/of wijzigen onder "
-"de\n"
-"bepalingen van de GNU Algemene Publieke Licentie, zoals uitgegeven door de "
-"Free\n"
-"Software Foundation; oftewel versie 2 van de Licentie,of (naar vrije keuze) "
-"een\n"
+"Dit Programma is vrije software; U kan het verspreiden en/of wijzigen onder de\n"
+"bepalingen van de GNU Algemene Publieke Licentie, zoals uitgegeven door de Free\n"
+"Software Foundation; oftewel versie 2 van de Licentie,of (naar vrije keuze) een\n"
 "latere versie.\n"
 "\n"
 "Dit Programma is verspreid met de hoop dat het nuttig zal zijn maar\n"
@@ -315,64 +374,55 @@ msgstr ""
 "Free Software Foundation, Inc.,\n"
 "59 Temple Place, Suite 330, Boston, MA 02111-1307 USA"
 
-#: ui/phonetooth.glade:850 ui/phonetooth.glade:883
+#: ui/phonetooth.glade:996
+#: ui/phonetooth.glade:1029
 msgid "Transferring file..."
 msgstr "Bezig met overdragen..."
 
-#: ui/phonetooth.glade:952
+#: ui/phonetooth.glade:1098
 msgid "Resolve collisions"
 msgstr "Los conflicten op"
 
-#: ui/phonetooth.glade:976
+#: ui/phonetooth.glade:1122
 msgid "Skip existing contacts"
 msgstr "Negeer bestaande contacten"
 
-#: ui/phonetooth.glade:990
+#: ui/phonetooth.glade:1136
 msgid "Overwrite existing contacts"
 msgstr "Overschrijf bestaande contacten"
 
-#: ui/phonetooth.glade:1008
+#: ui/phonetooth.glade:1154
 msgid "<b>Collision resolving method </b>"
 msgstr "<b>Conflict oplosmethode</b>"
 
-#: ui/phonetooth.glade:1081
+#: ui/phonetooth.glade:1227
 msgid "Select contacts"
 msgstr "Selecteer contactpersonen"
 
-#: ui/phonetooth.glade:1153 ui/phonetooth.glade:1186
+#: ui/phonetooth.glade:1299
+#: ui/phonetooth.glade:1332
 msgid "Sending message..."
 msgstr "Bezig met versturen..."
 
 #~ msgid "File transfer failed: "
 #~ msgstr "Bestand verzenden is mislukt:"
-
 #~ msgid "Copyright © 2008 Dirk Vanden Boer"
 #~ msgstr "Copyright © 2008 Dirk Vanden Boer"
-
 #~ msgid "Polish: dominikowski"
 #~ msgstr "Pools: dominikowski"
-
 #~ msgid "Send a file to your mobile phone"
 #~ msgstr "Stuur een bestand naar de telefoon"
-
 #~ msgid "_Send file"
 #~ msgstr "_Verzend bestand"
-
 #~ msgid "gtk-close"
 #~ msgstr "gtk-close"
-
 #~ msgid "No config file found"
 #~ msgstr "Geen configuratie bestand gevonden"
-
 #~ msgid "Load config failed (reverting to defaults): "
 #~ msgstr ""
 #~ "Configuratie bestand niet gevonden (standaard waardes worden hersteld)"
-
 #~ msgid "Connection backend:"
 #~ msgstr "Connectie methode"
-
 #~ msgid "<b>Phonetooth backend settings</b>\t"
 #~ msgstr "<b>Instellingen voor Phonetooth methode</b>\t"
 
-#~ msgid "Mobile phone:"
-#~ msgstr "Telefoon:"
