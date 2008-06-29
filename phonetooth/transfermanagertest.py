@@ -16,6 +16,8 @@ class TransferManagerTest(unittest.TestCase):
         self.transfersCompleted = False
         
     def tearDown(self):
+        if os.path.exists('subdir'):
+            os.removedirs('subdir')
         if os.path.exists('subdir1'):
             os.removedirs('subdir1')
         if os.path.exists('subdir2'):
