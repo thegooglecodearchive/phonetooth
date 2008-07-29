@@ -25,6 +25,7 @@ import time
 
 import phonebrowser
 import transfermanager
+import filetransferdialog
 
 from filecollection import File
 from filecollection import Directory
@@ -55,6 +56,7 @@ class PhoneBrowserHandler(gobject.GObject):
         self.__filenameLabel        = widgetTree.get_widget('filenameLabel')
         self.__parent = parent
         
+        self.__transferDialog = filetransferdialog.FileTransferDialog(widgetTree, parent)
         self.__treeModel = gtk.ListStore(str, gtk.gdk.Pixbuf, bool, int)
         
         self.__iconTheme    = gtk.icon_theme_get_default()
@@ -64,12 +66,12 @@ class PhoneBrowserHandler(gobject.GObject):
         self.__phoneBrowser = phonebrowser.PhoneBrowser()
         self.__phoneBrowser.connect('connected', self.__connectedCb)
         self.__phoneBrowser.connect('disconnected', self.__disconnectedCb)
-        self.__phoneBrowser.connect('started', self.__transferStartedCb)
         self.__phoneBrowser.connect('error', self.__errorCb)
         
         self.__transferManager = transfermanager.TransferManager(self.__phoneBrowser)
         self.__transferManager.connect('transferscompleted', self.__transferCompletedCb)
-        self.__transferManager.connect('progress', self.__transferProgressCb)
+        self.__transferManager.connect('progress', self.__transferDialog.progress)
+        self.__transferManager.connect('filetransferstarted', self.__transferDialog.nextFile)
         
         self.__iconView.set_model(self.__treeModel)
         self.__iconView.enable_model_drag_source(gtk.gdk.BUTTON1_MASK, [('XdndDirectSave0', gtk.TARGET_OTHER_APP, 0)], gtk.gdk.ACTION_COPY)
@@ -147,31 +149,28 @@ class PhoneBrowserHandler(gobject.GObject):
                 
                 
     def __transferFilesToLocal(self, directory, destinationPath):
+        self.__transferDialog.start(directory.getSize())
         self.__transferManager.copyToLocal(directory, destinationPath)
-        self.__showTransferDialog()
+        self.__runTransferDialog()
         
     
-    def __transferFilesToRemote(self, directory):
+    def transferFilesToRemote(self, directory):
+        self.__transferDialog.start(directory.getSize())
         self.__transferManager.copyToRemote(directory)
-        self.__showTransferDialog()
-        
-        
-    def __showTransferDialog(self):
-        self.__transferProgressBar.set_fraction(0.0)
-        self.__transferProgressBar.set_text('')
-        self.__filenameLabel.set_text('')
-        
-        response = self.__sendFileDialog.run()
+        self.__runTransferDialog()
+            
+            
+    def __runTransferDialog(self):
+        response = self.__transferDialog.run()
         if response == gtk.RESPONSE_CANCEL:
             self.__phoneBrowser.cancel()
             self.__statusBar.push(0, _('File transfer cancelled.'))
         elif response == 1:
-            self.__statusBar.push(0, _('File transfer failed') + '.')
+            self.__statusBar.push(0, _('File transfer failed.'))
         else:
-            self.__statusBar.push(0, _('File succesfully recieved.'))
-        self.__sendFileDialog.hide()
-
-            
+            self.__statusBar.push(0, _('File transfer succeeded.'))
+        
+        
     def __deleteFile(self, widget = None):
         items = self.__iconView.get_selected_items()
         for item in items:
@@ -325,32 +324,14 @@ class PhoneBrowserHandler(gobject.GObject):
         return dir
     
     
-    def __transferStartedCb(self, sender, filename):
-        gobject.idle_add(self.__filenameLabel.set_text, os.path.basename(filename))
-        
-    
-    def __transferProgressCb(self, sender = None):
-        transferInfo = self.__transferManager.transferInfo
-        gobject.idle_add(self.__transferProgressBar.set_fraction, transferInfo.progress)
-        statusString = str(transferInfo.kbPersecond) + ' kb/s  '
-
-        if transferInfo.timeRemaining != -1:
-            if transferInfo.timeRemaining >= 60:
-                statusString += '(' + str(transferInfo.timeRemaining / 60 + 1) + _(' minutes remaining') + ')'
-            else:
-                statusString += '(' + str(transferInfo.timeRemaining / 10 * 10 + 10) + _(' seconds remaining') + ')'
-        
-        gobject.idle_add(self.__transferProgressBar.set_text, statusString)
-        
-    
     def __transferCompletedCb(self, sender = None):
-        gobject.idle_add(self.__sendFileDialog.response, gtk.RESPONSE_CLOSE)
+        self.__transferDialog.close()
         self.__showCurrentDir()
         
-    
+        
     def __errorCb(self, sender, message):
+        self.__transferDialog.close()
         self.__statusBar.push(0, _('Error occured: ') + message)
-        gobject.idle_add(self.__sendFileDialog.response, 1)
         
     
     def __onDragBegin(self, widget, dragContext):
@@ -382,7 +363,6 @@ class PhoneBrowserHandler(gobject.GObject):
                 dir.parent = fileCollection
                 fileCollection.addDirectory(dir)
                 
-        print 'dest: ' + os.path.dirname(destinationPath)
         selectionData.set('text/plain', 8, 'S')
         self.__transferFilesToLocal(fileCollection, os.path.dirname(destinationPath))
         dragContext.source_window.property_delete(gtk.gdk.atom_intern('XdndDirectSave0'))
@@ -402,7 +382,7 @@ class PhoneBrowserHandler(gobject.GObject):
                     directory.addFile(File(filePath, os.path.getsize(filePath)))
                 
         dragContext.drop_finish(True, 0L)
-        self.__transferFilesToRemote(directory)            
+        self.transferFilesToRemote(directory)            
         
     
     def __onDrop(self, widget, dragContext, x, y, timestamp):

@@ -28,7 +28,9 @@ class TransferManager(gobject.GObject):
         "transferscompleted": (
             gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, []),
         "progress": (
-            gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
+            gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [gobject.TYPE_INT]),
+        "filetransferstarted": (
+            gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [gobject.TYPE_PYOBJECT])
     }
     
     def __init__(self, phoneBrowser):
@@ -43,7 +45,6 @@ class TransferManager(gobject.GObject):
         self.__transferQueue = []
         self.__currentTransferDir = None
         self.__currentPath = None
-        self.transferInfo = transferinfo.TransferInfo()
         
     
     def __del__(self):
@@ -78,7 +79,6 @@ class TransferManager(gobject.GObject):
         self.__currentTransferDir = remoteDirectory
         self.__currentTransferPath = localDirectory
         
-        self.transferInfo.start(self.__transferQueue.getSize())
         self.__transferNextFileInQueue()
                 
     
@@ -87,7 +87,6 @@ class TransferManager(gobject.GObject):
         self.__transferQueue = localDirectory
         self.__currentTransferDir = localDirectory
         
-        self.transferInfo.start(self.__transferQueue.getSize())
         self.__transferNextFileInQueue()
         
         
@@ -103,7 +102,7 @@ class TransferManager(gobject.GObject):
             if (len(self.__currentTransferDir.files) > 0):
                 fileInfo = self.__currentTransferDir.files.pop(0)
                 
-                self.transferInfo.startNextFile(fileInfo.size)
+                self.emit("filetransferstarted", fileInfo)
                 if self.__copyFromPhoneToLocal == True:
                     self.__phoneBrowser.copyToLocal(fileInfo.name, self.__currentTransferPath)
                 else:
@@ -120,8 +119,7 @@ class TransferManager(gobject.GObject):
                     
                     
     def __transferProgressCb(self, sender, bytesTransferred):
-        self.transferInfo.update(bytesTransferred)
-        self.emit('progress')
+        self.emit('progress', bytesTransferred)
         
         
     def __transferCompletedCb(self, sender = None):
