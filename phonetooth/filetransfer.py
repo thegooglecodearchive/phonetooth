@@ -18,99 +18,67 @@ import sys
 import dbus
 import dbus.glib
 import gobject
+import gtk
+import os
 
 import transferinfo
+import phonebrowser
+import filetransferdialog
 
-class FileTransfer(gobject.GObject):
-    __gsignals__ =  { 
-        "completed": (
-            gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, []),
-        "error": (
-            gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, []),
-        "progress": (
-            gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [gobject.TYPE_FLOAT, gobject.TYPE_INT, gobject.TYPE_INT])
-    }
-    
-    
-    def __init__(self):
-        gobject.GObject.__init__(self)
-        
-        self.__fileSizeInBytes = -1
-        self.__bytesTransferred = 0
-        self.__time = 0.0
-        self.__speedHistory = []
-        self.__mainLoop = None
-        self.__transferInfo = transferinfo.TransferInfo()
-        
-    
-    def __del__(self):
-        if self.__mainLoop != None and self.__mainLoop.is_running:
-            self.__mainLoop.quit()
-        
-  
-    def transferFile(self, btAddress, filename):
-        bus = dbus.SessionBus()
-        self.__filename = filename
-        
-        mgrObject = bus.get_object('org.openobex', '/org/openobex')
-        self.__dbusManager = dbus.Interface(mgrObject, 'org.openobex.Manager')
-        
-        sessionPath = self.__dbusManager.CreateBluetoothSession(btAddress, 'opp')
-        sessionObject = bus.get_object('org.openobex', sessionPath)
-        self.__dbusSession = dbus.Interface(sessionObject, 'org.openobex.Session')
-        
-        self.__dbusSession.connect_to_signal('Connected', self.__connectedCb)
-        self.__dbusSession.connect_to_signal('Disconnected', self.__disconnectedCb)
-        self.__dbusSession.connect_to_signal('Closed', self.__closedCb)
-        self.__dbusSession.connect_to_signal('ErrorOccurred', self.__errorOccurredCb)
-        self.__dbusSession.connect_to_signal('TransferProgress', self.__transferProgressCb)
-        self.__dbusSession.connect_to_signal('TransferStarted', self.__transferStartedCb)
-        self.__dbusSession.connect_to_signal('TransferCompleted', self.__transferCompletedCb)
-        
-        self.__mainLoop = gobject.MainLoop()
-        self.__mainLoop.run()
-        
-    
-    def cancelTransfer(self):
-        self.__disconnect()
-        
+from filecollection import File
+from filecollection import Directory
 
-    def __connectedCb(self):
-        self.__dbusSession.SendFile(self.__filename)
-        
-    
-    def __disconnectedCb(self):
-        self.__dbusSession.Close()
-        
-    
-    def __closedCb(self):
-        self.__mainLoop.quit()
-        
-    
-    def __disconnect(self):
-        if self.__dbusSession.IsBusy():
-            self.__dbusSession.Cancel()
-        
-        if self.__dbusSession.IsConnected():
-            self.__dbusSession.Disconnect()
-        
-        
-    def __errorOccurredCb(self, errorName, errorMessage):
-        print 'Error occurred: %s: %s' % (errorName, errorMessage)
-        self.emit("error")
-        self.__disconnect()
+from gettext import gettext as _
 
+class FileTransfer:
+    def __init__(self, widgetTree, parent):
+        self.__phoneBrowser = phonebrowser.PhoneBrowser()
+        self.__fileName = None
+        self.__parent = parent
         
-    def __transferStartedCb(self, filename, localPath, fileSizeInBytes):
-        self.__transferInfo.start(fileSizeInBytes)
+        self.__statusBar = widgetTree.get_widget('statusBar')
+        
+        self.__transferDialog = filetransferdialog.FileTransferDialog(widgetTree, parent)
+        
+        self.__phoneBrowser.connect('connected',    self.__connectedCb)
+        self.__phoneBrowser.connect('completed',    self.__transferCompletedCb)
+        self.__phoneBrowser.connect('error',        self.__errorCb)
+        self.__phoneBrowser.connect('progress',     self.__transferDialog.progress)
         
     
-    def __transferProgressCb(self, bytesTransferred):
-        self.__transferInfo.update(bytesTransferred)
-        self.emit("progress", self.__transferInfo.progress, self.__transferInfo.kbPersecond, self.__transferInfo.timeRemaining)
+    def transferFile(self, btAddress):
+        chooser = gtk.FileChooserDialog(title = None, parent = self.__parent, action = gtk.FILE_CHOOSER_ACTION_OPEN,
+                    buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+        response = chooser.run()
+        if response == gtk.RESPONSE_OK:
+            self.__filename = chooser.get_filename()
+            chooser.destroy()
+            
+            self.__transferDialog.start(os.path.getsize(self.__filename))
+            self.__transferDialog.nextFile(None, File(self.__filename, os.path.getsize(self.__filename)))
+            self.__phoneBrowser.connectToPhone(btAddress)
+            response = self.__transferDialog.run()
+            if response == gtk.RESPONSE_CANCEL:
+                self.__statusBar.push(0, _('File transfer cancelled.'))
+            elif response == 1:
+                self.__statusBar.push(0, _('File transfer failed.'))
+            else:
+                self.__statusBar.push(0, _('File transfer succeeded.'))
+        else:
+            chooser.destroy()
         
     
-    def __transferCompletedCb(self):
-        self.emit("completed")
-        self.__disconnect()
+    def __connectedCb(self, sender = None):
+        self.__phoneBrowser.copyToRemote(self.__filename)
+        
     
+    def __transferCompletedCb(self, sender = None):
+        self.__transferDialog.close()
+        self.__phoneBrowser.disconnectFromPhone()
+        
+    
+    def __errorCb(self, sender, errorMsg):
+        #self.__transferDialog.close()
+        gobject.idle_add(self.__statusBar.push, 0, errorMsg)
+        
+        

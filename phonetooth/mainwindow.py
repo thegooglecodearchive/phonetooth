@@ -28,7 +28,7 @@ from phonetooth import contactsdialog
 from phonetooth import preferences
 from phonetooth import preferencesdialog
 from phonetooth import sms
-from phonetooth import filetransferdialog
+from phonetooth import filetransfer
 from phonetooth import selectcontactsdialog
 from phonetooth import sendmessagedialog
 from phonetooth import messageinput
@@ -76,8 +76,6 @@ class MainWindow:
         self.__contactSelectionDialog = selectcontactsdialog.SelectContactsDialog(self.__widgetTree, self.__mainWindow)
         self.__sendMessageDialog = sendmessagedialog.SendMessageDialog(self.__widgetTree, self.__mainWindow)
         
-        self.__fileTransferDialog = filetransferdialog.FileTransferDialog(self.__widgetTree, self.__mainWindow)
-        
         self.__checkSendFileButtonSensitivity()
         
         dic = {'onMainWindowDestroy'            : self.__quit,
@@ -123,7 +121,8 @@ class MainWindow:
     
     def __sendFile(self, widget):
         self.__setSensitive(False)
-        self.__fileTransferDialog.run(self.__prefs.btDevice)
+        fileTransfer = filetransfer.FileTransfer(self.__widgetTree, self.__mainWindow)
+        fileTransfer.transferFile(self.__prefs.btDevice.address)
         self.__setSensitive(True)
         
 

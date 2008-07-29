@@ -30,34 +30,34 @@ APP_NAME = 'phonetooth'
 
 def main():
     setLocale()
-    
+
     gobject.threads_init()
     gtk.gdk.threads_init()
     dbus.glib.init_threads()
 
     mainWindow = mainwindow.MainWindow()
     gtk.main()
-    
+
 def setLocale():
     installed = True
-    
+
     #detect if we are running from local copy
     try:
         from phonetooth import constants
     except ImportError:
         installed = False
-    
+
     try:
         locale.setlocale(locale.LC_ALL, '')
         gettext.textdomain(APP_NAME)
         gtk.glade.textdomain(APP_NAME)
-        
+
         if installed == False:
             gettext.bindtextdomain(APP_NAME, 'locale')
             gtk.glade.bindtextdomain(APP_NAME, 'locale')
     except:
         pass
-    
+
 
 if __name__ == "__main__":
     main()

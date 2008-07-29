@@ -19,82 +19,69 @@ import gtk
 import threading
 import gobject
 
-from phonetooth import filetransfer
+import phonebrowserhandler
+import filetransferdialog
+import transferinfo
+
+from filecollection import File
+from filecollection import Directory
+
 from gettext import gettext as _
 
 class FileTransferDialog:
     def __init__(self, widgetTree, parent):
+        self.__parent = parent
+        self.__transferInfo = transferinfo.TransferInfo()
+        
         self.__sendFileDialog       = widgetTree.get_widget('sendFileDialog')
         self.__transferProgressBar  = widgetTree.get_widget('transferProgress')
         self.__filenameLabel        = widgetTree.get_widget('filenameLabel')
         self.__statusBar            = widgetTree.get_widget('statusBar')
-        self.__parent = parent
         
         self.__sendFileDialog.set_transient_for(parent)
                 
-        self.__fileTransfer = filetransfer.FileTransfer()
-        self.__fileTransfer.connect("progress", self.transferProgressCb)
-        self.__fileTransfer.connect("completed", self.transferCompletedCb)
-        self.__fileTransfer.connect("error", self.transferErrorCb)
         
-
-    def run(self, btDevice):
-        chooser = gtk.FileChooserDialog(title = None, parent = self.__parent, action = gtk.FILE_CHOOSER_ACTION_OPEN,
-                    buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-        response = chooser.run()
-        if response == gtk.RESPONSE_OK:
-            filename = chooser.get_filename()
-            chooser.destroy()
-            
-            try:
-                self.__transferProgressBar.set_fraction(0.0)
-                self.__transferProgressBar.set_text('')
-                self.__filenameLabel.set_text(os.path.basename(filename))
-                self.__pushStatusText(_('Sending file...'))
-                threading.Thread(target = self.__sendFileThread, args = (filename, btDevice)).start()
-                response = self.__sendFileDialog.run()
-                if response == gtk.RESPONSE_CANCEL:
-                    self.__fileTransfer.cancelTransfer()
-                    self.__pushStatusText(_('File transfer cancelled.'))
-                elif response == 1:
-                    self.__pushStatusText(_('File transfer failed') + '.')
-                else:
-                    self.__pushStatusText(_('File succesfully sent.'))
-            except Exception, e:
-                gobject.idle_add(self.__pushStatusText, _('File transfer failed') + ':' + str(e))
-            self.__sendFileDialog.hide()
-        else:
-            chooser.destroy()
-            
-
-    def __sendFileThread(self, filename, btDevice):
-        try:
-            self.__fileTransfer.transferFile(btDevice.address, filename)
-        except Exception, e:
-            self.transferErrorCb()
+    def __del__(self):
+        self.__phoneBrowser.disconnectFromPhone()
         
     
-    def transferProgressCb(self, sender, progress, speed, timeRemaining):
-        gobject.idle_add(self.__transferProgressBar.set_fraction, progress)
+    def run(self):
+        self.__transferProgressBar.set_fraction(0.0)
+        self.__transferProgressBar.set_text('')
         
-        statusString = str(speed) + ' kb/s  '
-        if timeRemaining != -1:
-            if timeRemaining >= 60:
-                statusString += '(' + str(timeRemaining / 60 + 1) + _(' minutes remaining') + ')'
-            else:
-                statusString += '(' + str(timeRemaining / 10 * 10 + 10) + _(' seconds remaining') + ')'
+        response = self.__sendFileDialog.run()
+        self.__sendFileDialog.hide()
+        return response
         
-        gobject.idle_add(self.__transferProgressBar.set_text, statusString)
+        
+    def cancel(self):
+        gobject.idle_add(self.__sendFileDialog.response, 1)
         
     
-    def transferCompletedCb(self, data = None):
+    def close(self):
         gobject.idle_add(self.__sendFileDialog.response, gtk.RESPONSE_CLOSE)
         
     
-    def transferErrorCb(self, data = None):
-        print 'transfer error recieved'
-        gobject.idle_add(self.__sendFileDialog.response, 1)
-
+    def start(self, totalSize):
+        self.__transferInfo.start(totalSize)
+        
     
-    def __pushStatusText(self, message):
-        self.__statusBar.push(0, message)
+    def nextFile(self, sender, file):
+        self.__filenameLabel.set_text(file.name)
+        self.__transferInfo.startNextFile(file.size)
+        
+
+    def progress(self, sender, bytesTransferred):
+        self.__transferInfo.update(bytesTransferred)
+        
+        gobject.idle_add(self.__transferProgressBar.set_fraction, self.__transferInfo.progress)
+        statusString = str(self.__transferInfo.kbPersecond) + ' kb/s  '
+
+        if self.__transferInfo.timeRemaining != -1:
+            if self.__transferInfo.timeRemaining >= 60:
+                statusString += '(' + str(self.__transferInfo.timeRemaining / 60 + 1) + _(' minutes remaining') + ')'
+            else:
+                statusString += '(' + str(self.__transferInfo.timeRemaining / 10 * 10 + 10) + _(' seconds remaining') + ')'
+        
+        gobject.idle_add(self.__transferProgressBar.set_text, statusString)
+        
