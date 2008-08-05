@@ -18,6 +18,7 @@
 
 = Nokia =
   * N70
+  * 3109c
 
 = Sagem =
   * my411V (send sms only, no contact import)
