@@ -59,9 +59,17 @@ class PhoneBrowserHandler(gobject.GObject):
         self.__transferDialog = filetransferdialog.FileTransferDialog(widgetTree, parent)
         self.__treeModel = gtk.ListStore(str, gtk.gdk.Pixbuf, bool, int)
         
+        
         self.__iconTheme    = gtk.icon_theme_get_default()
-        self.__dirImage     = self.__iconTheme.load_icon('folder', 36, gtk.ICON_LOOKUP_FORCE_SVG)
-        self.__fileImage    = self.__iconTheme.load_icon('misc', 36, gtk.ICON_LOOKUP_FORCE_SVG)
+        try:
+            self.__dirImage     = self.__iconTheme.load_icon('folder', 36, gtk.ICON_LOOKUP_FORCE_SVG)
+        except:
+            self.__dirImage     = self.__iconView.render_icon(gtk.STOCK_DIRECTORY, gtk.ICON_SIZE_DIALOG)
+            
+        try:
+            self.__fileImage    = self.__iconTheme.load_icon('misc', 36, gtk.ICON_LOOKUP_FORCE_SVG)
+        except:
+            self.__fileImage     = self.__iconView.render_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_DIALOG)
 
         self.__phoneBrowser = phonebrowser.PhoneBrowser()
         self.__phoneBrowser.connect('connected', self.__connectedCb)
