@@ -18,6 +18,7 @@ If your phone does not support AT-commands but is supported by gammu (check: htt
   * pygtk
   * pybluez
   * pyserial
+  * dbus-python
   * obex-data-server
   * python-gammu (only if you want to use the gammu back end)
 
