@@ -7,8 +7,9 @@
 
 = Sony Ericsson =
   * W610i
-  * K770i
   * K610i
+  * K700i
+  * K770i
   * K800i
   * W950i
   * Z520i
